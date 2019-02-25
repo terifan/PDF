@@ -1,40 +1,54 @@
 package pdf;
 
+import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import pdf.writer.Output;
 
 
-public class Dictionary
+public class Dictionary implements Value
 {
-	private LinkedHashMap<String, Object> mMap = new LinkedHashMap<>();
+	private LinkedHashMap<String, Value> mMap = new LinkedHashMap<>();
 
 
-	public Dictionary put(String aKey, Object aValue)
+	public Dictionary put(String aKey, Value aValue)
 	{
 		mMap.put(aKey, aValue);
 		return this;
 	}
 
 
-	@Override
-	public String toString()
+	public Dictionary put(String aKey, String aValue)
 	{
-		StringBuilder sb = new StringBuilder();
-		sb.append("<< ");
+		mMap.put(aKey, new TextValue(aValue));
+		return this;
+	}
+
+
+	public Dictionary put(String aKey, int aValue)
+	{
+		mMap.put(aKey, new NumberValue(aValue));
+		return this;
+	}
+
+
+	@Override
+	public void writeTo(Output aOutput) throws IOException
+	{
+		aOutput.print("<< ");
 		boolean first = true;
-		for (Entry<String, Object> entry : mMap.entrySet())
+		for (Entry<String, Value> entry : mMap.entrySet())
 		{
 			if (!first)
 			{
-				sb.append(" ");
+				aOutput.print(" ");
 			}
-			sb.append(entry.getKey());
-			sb.append(" ");
-			sb.append(entry.getValue());
+			aOutput.print(entry.getKey());
+			aOutput.print(" ");
+			entry.getValue().writeTo(aOutput);
 
 			first = false;
 		}
-		sb.append(" >>");
-		return sb.toString();
+		aOutput.println(" >>");
 	}
 }

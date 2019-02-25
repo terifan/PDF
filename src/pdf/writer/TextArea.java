@@ -27,9 +27,10 @@ public class TextArea
 	}
 
 
-	@Override
-	public String toString()
+	public String produce()
 	{
+		mFont.getFontRef().update(mText);
+
 		String content = "";
 
 		content += "1 0 0 RG\n" + mBoundsLeft + " " + mBoundsTop + " m\n" + mBoundsRight + " " + mBoundsTop + "l\n" + mBoundsRight + " " + mBoundsBottom + "l\n" + mBoundsLeft + " " + mBoundsBottom + "l\n" + "s\n";

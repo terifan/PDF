@@ -1,14 +1,16 @@
 package pdf;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import pdf.writer.Output;
 
 
-public class Array
+public class Array implements Value
 {
-	private ArrayList<Object> mArray = new ArrayList<>();
+	private ArrayList<Value> mArray = new ArrayList<>();
 
 
-	public Array add(Object aValue)
+	public Array add(Value aValue)
 	{
 		mArray.add(aValue);
 		return this;
@@ -22,19 +24,21 @@ public class Array
 
 
 	@Override
-	public String toString()
+	public void writeTo(Output aOutput) throws IOException
 	{
-		StringBuilder sb = new StringBuilder();
+		aOutput.print("[");
+
 		boolean first = true;
-		for (Object value : mArray)
+		for (Value value : mArray)
 		{
 			if (!first)
 			{
-				sb.append(" ");
+				aOutput.print(" ");
 			}
-			sb.append(value);
+			value.writeTo(aOutput);
 			first = false;
 		}
-		return "[" + sb.toString() + "]";
+
+		aOutput.print("]");
 	}
 }

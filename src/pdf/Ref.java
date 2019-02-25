@@ -1,7 +1,10 @@
 package pdf;
 
+import java.io.IOException;
+import pdf.writer.Output;
 
-public class Ref
+
+public class Ref implements Value
 {
 	protected int mReference;
 
@@ -19,8 +22,8 @@ public class Ref
 
 
 	@Override
-	public String toString()
+	public void writeTo(Output aOutput) throws IOException
 	{
-		return mReference + " 0 R";
+		aOutput.print(mReference + " 0 R");
 	}
 }

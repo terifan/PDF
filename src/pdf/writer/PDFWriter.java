@@ -1,29 +1,29 @@
 package pdf.writer;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.LinkedHashMap;
 import pdf.Array;
 import pdf.Dictionary;
+import pdf.FontRef;
 import pdf.Ref;
 import pdf.Struct;
 
 
 public class PDFWriter implements AutoCloseable
 {
-	private ByteArrayOutputStream mOutput;
-	private LinkedHashMap<Integer, Integer> mObjectOffsets;
+	private LinkedHashMap<Integer, Integer> mReferences;
 	private Array mPages;
+	private Output mOutput;
 
 
-	public PDFWriter(ByteArrayOutputStream aOutput) throws IOException
+	public PDFWriter(OutputStream aOutput) throws IOException
 	{
-		mOutput = aOutput;
-		mObjectOffsets = new LinkedHashMap<>();
+		mOutput = new Output(aOutput);
+		mReferences = new LinkedHashMap<>();
 		mPages = new Array();
 
-		println("%PDF-1.3");
+		mOutput.println("%PDF-1.3");
 	}
 
 
@@ -35,21 +35,20 @@ public class PDFWriter implements AutoCloseable
 
 	public Ref print(Struct aStruct) throws IOException
 	{
-		int reference = 1 + mObjectOffsets.size();
-		mObjectOffsets.put(reference, mOutput.size());
+		int reference = 1 + mReferences.size();
+		mReferences.put(reference, mOutput.size());
 
-		println(reference + " 0 obj");
-		if (aStruct.getDictionary() != null)
+		mOutput.println(reference + " 0 obj");
+
+		Dictionary dictionary = aStruct.getDictionary();
+		if (dictionary != null)
 		{
-			println(aStruct.getDictionary());
+			dictionary.writeTo(mOutput);
 		}
-		if (aStruct.getContent() != null)
-		{
-			println("stream");
-			mOutput.write(aStruct.getContent());
-			println("endstream");
-		}
-		println("endobj");
+
+		aStruct.write(mOutput);
+
+		mOutput.println("endobj");
 
 		return new Ref(reference);
 	}
@@ -64,35 +63,25 @@ public class PDFWriter implements AutoCloseable
 
 		int offset = mOutput.size();
 
-		println("xref");
-		println("0 " + (1 + mObjectOffsets.size()));
-		println("0000000000 65535 f");
-		for (Integer i : mObjectOffsets.values())
+		mOutput.println("xref");
+		mOutput.println(String.format("0 %d", 1 + mReferences.size()));
+		mOutput.println("0000000000 65535 f");
+		for (Integer i : mReferences.values())
 		{
-			println(String.format("%010d", i) + " 00000 n");
+			mOutput.println(String.format("%010d 00000 n", i));
 		}
-		println("trailer");
-		println(new Dictionary().put("/Size", 1 + mObjectOffsets.size()).put("/Root", root));
-		println("startxref");
-		println("" + offset);
-		println("%%EOF");
+		mOutput.println("trailer");
+		new Dictionary().put("/Size", 1 + mReferences.size()).put("/Root", root).writeTo(mOutput);
+		mOutput.println("startxref");
+		mOutput.println(Integer.toString(offset));
+		mOutput.println("%%EOF");
 
 		mOutput.close();
 	}
 
 
-	public void writeTo(String aFile) throws IOException
+	public Ref registerFont(FontRef aFontRef) throws IOException
 	{
-		try (FileOutputStream f = new FileOutputStream(aFile))
-		{
-			mOutput.writeTo(f);
-		}
-	}
-
-
-	private void println(Object aText) throws IOException
-	{
-		mOutput.write(aText.toString().getBytes());
-		mOutput.write('\n');
+		return print(new Struct(!true, aFontRef));
 	}
 }

@@ -10,6 +10,7 @@ enum PlatformSpecific
 	Unicode_2_0_semantics_non_BMP_allowed,
 	Unicode_variation_sequences,
 	Full_unicode_coverage,
+	//
 	// windows, index restarts here ie Symbol really is index 0
 	Symbol,
 	Unicode_BMP_only,

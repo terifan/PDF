@@ -3,12 +3,13 @@ package pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.DeflaterOutputStream;
+import pdf.writer.Output;
 
 
 public class Struct
 {
 	private Dictionary mDictionary;
-	private byte[] mContent;
+	private Value mContent;
 
 
 	public Struct()
@@ -22,13 +23,13 @@ public class Struct
 	}
 
 
-	public Struct(boolean aCompress, byte[] aContent) throws IOException
+	public Struct(boolean aCompress, Value aContent) throws IOException
 	{
 		setContent(aCompress, aContent);
 	}
 
 
-	public Struct(boolean aCompress, byte[] aContent, Dictionary aDictionary) throws IOException
+	public Struct(boolean aCompress, Value aContent, Dictionary aDictionary) throws IOException
 	{
 		setContent(aCompress, aContent);
 		setDictionary(aDictionary);
@@ -48,37 +49,54 @@ public class Struct
 	}
 
 
-	public byte[] getContent()
+	public Value getContent()
 	{
 		return mContent;
 	}
 
 
-	public void setContent(boolean aCompress, byte[] aContent) throws IOException
+	public void setContent(boolean aCompress, Value aContent) throws IOException
 	{
 		if (mDictionary == null)
 		{
 			mDictionary = new Dictionary();
 		}
 
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
 		if (aCompress)
 		{
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			try (DeflaterOutputStream dos = new DeflaterOutputStream(baos))
+			try (Output out = new Output(new DeflaterOutputStream(baos)))
 			{
-				dos.write(aContent);
+				aContent.writeTo(out);
 			}
 
-			mContent = baos.toByteArray();
+			mContent = new ByteValue(baos.toByteArray());
 
-			mDictionary.put("/Filter", "/FlateDecode");
-			mDictionary.put("/Length1", mContent.length);
+			mDictionary.put("/Filter", new TextValue("/FlateDecode"));
+			mDictionary.put("/Length1", new NumberValue(baos.size()));
 		}
 		else
 		{
-			mContent = aContent;
+			try (Output out = new Output(baos))
+			{
+				aContent.writeTo(out);
+			}
+
+			mContent = new ByteValue(baos.toByteArray());
 		}
 
-		mDictionary.put("/Length", aContent.length);
+		mDictionary.put("/Length", new NumberValue(baos.size()));
+	}
+
+
+	public void write(Output aOutput) throws IOException
+	{
+		if (mContent != null)
+		{
+			aOutput.println("stream");
+			mContent.writeTo(aOutput);
+			aOutput.println("endstream");
+		}
 	}
 }
