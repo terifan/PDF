@@ -45,5 +45,14 @@ class HHEA
 		mReserved4 = mBuffer.getInt16();
 		mMetricDataFormat = mBuffer.getInt16();
 		mNumOfLongHorMetrics = mBuffer.getUint16();
+
+		System.out.println(this);
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "HHEA{" + "mVersion=" + mVersion + ", mAscent=" + mAscent + ", mDescent=" + mDescent + ", mLineGap=" + mLineGap + ", mAdvanceWidthMax=" + mAdvanceWidthMax + ", mMinLeftSideBearing=" + mMinLeftSideBearing + ", mMinRightSideBearing=" + mMinRightSideBearing + ", mXMaxExtent=" + mXMaxExtent + ", mCaretSlopeRise=" + mCaretSlopeRise + ", mCaretSlopeRun=" + mCaretSlopeRun + ", mCaretOffset=" + mCaretOffset + ", mReserved1=" + mReserved1 + ", mReserved2=" + mReserved2 + ", mReserved3=" + mReserved3 + ", mReserved4=" + mReserved4 + ", mMetricDataFormat=" + mMetricDataFormat + ", mNumOfLongHorMetrics=" + mNumOfLongHorMetrics + '}';
 	}
 }

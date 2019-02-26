@@ -9,6 +9,9 @@ public class Symbol
 	private char mCharacter;
 	private int mSymbol;
 	private double mWidth;
+	private double mAdvance;
+	private double mLeftBearing;
+	private double mUnitsPerEm;
 
 
 	public Symbol(Font aFont, char aCharacter)
@@ -19,6 +22,9 @@ public class Symbol
 		mCharacter = aCharacter;
 		mSymbol = fontFile.findGlyphIndex(mCharacter);
 		mWidth = fontFile.getGlyphWidth(mSymbol);
+		mAdvance = fontFile.getGlyphAdvanceWidth(mSymbol);
+		mLeftBearing = fontFile.getGlyphLeftSideBearing(mSymbol);
+		mUnitsPerEm = mFont.getFontRef().getFontFile().getUnitsPerEm();
 	}
 
 
@@ -36,7 +42,19 @@ public class Symbol
 
 	public double getWidth()
 	{
-		return mFont.scale(mWidth);
+		return mWidth;
+	}
+
+
+	public double getAdvance()
+	{
+		return mAdvance / mUnitsPerEm;
+	}
+
+
+	public double getLeftBearing()
+	{
+		return mLeftBearing / mUnitsPerEm;
 	}
 
 
@@ -48,13 +66,13 @@ public class Symbol
 
 	public boolean isBreakChar()
 	{
-		return mCharacter == ' ';
+		return Character.isWhitespace(mCharacter);
 	}
 
 
 	@Override
 	public String toString()
 	{
-		return "" + mCharacter;
+		return Character.toString(mCharacter);
 	}
 }

@@ -6,18 +6,32 @@ import pdf.writer.Output;
 
 public class NumberValue implements Value
 {
-	private int mValue;
+	private Double mDouble;
+	private Integer mInteger;
+
+
+	public NumberValue(double aValue)
+	{
+		mDouble = aValue;
+	}
 
 
 	public NumberValue(int aValue)
 	{
-		mValue = aValue;
+		mInteger = aValue;
 	}
 
 
 	@Override
 	public void writeTo(Output aOutput) throws IOException
 	{
-		aOutput.print(Integer.toString(mValue));
+		if (mDouble != null)
+		{
+			aOutput.print(mDouble.toString());
+		}
+		else
+		{
+			aOutput.print(mInteger.toString());
+		}
 	}
 }

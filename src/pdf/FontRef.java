@@ -2,8 +2,8 @@ package pdf;
 
 import font.FontFile;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 import pdf.writer.Output;
 
 
@@ -11,14 +11,14 @@ public class FontRef implements Value
 {
 	private FontFile mFontFile;
 	private String mIdentity;
-	private HashMap<Character, Integer> mSymbolMap;
+	private TreeMap<Character, Integer> mSymbolMap;
 
 
 	public FontRef(FontFile aFontFile, String aIdentity)
 	{
 		mFontFile = aFontFile;
 		mIdentity = aIdentity;
-		mSymbolMap = new HashMap<>();
+		mSymbolMap = new TreeMap<>();
 	}
 
 
@@ -31,15 +31,6 @@ public class FontRef implements Value
 	public String getIdentity()
 	{
 		return mIdentity;
-	}
-
-
-	public void update(String aText)
-	{
-		for (char c : aText.toCharArray())
-		{
-			mSymbolMap.computeIfAbsent(c, i -> 1 + mSymbolMap.size());
-		}
 	}
 
 
@@ -68,5 +59,13 @@ public class FontRef implements Value
 		aOutput.println("CMapName currentdict /CMap defineresource pop");
 		aOutput.println("end");
 		aOutput.println("end");
+	}
+
+
+	public int lookup(Symbol aSymbol)
+	{
+		int symbol = aSymbol.getSymbol();
+		mSymbolMap.put(aSymbol.getCharacter(), symbol);
+		return symbol;
 	}
 }

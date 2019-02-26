@@ -1,6 +1,5 @@
 package pdf;
 
-import font.FontFile;
 import java.util.ArrayList;
 
 
@@ -29,14 +28,25 @@ public class Font
 	}
 
 
+	public double getAdvance(Symbol aSymbol)
+	{
+		return mSize * aSymbol.getAdvance();
+	}
+
+
+	public double getLeftBearing(Symbol aSymbol)
+	{
+		return mSize * aSymbol.getLeftBearing();
+	}
+
+
 	public double measureText(ArrayList<Symbol> aText, int aOffset, int aLength)
 	{
-		FontFile fontFile = mFontRef.getFontFile();
 		double len = 0;
 
 		for (int i = 0; i < aLength; i++)
 		{
-			len += scale(fontFile.getGlyphWidth(aText.get(aOffset + i).getSymbol()) - fontFile.getMinLeftSideBearing() - fontFile.getMinRightSideBearing());
+			len += getAdvance(aText.get(aOffset + i));
 		}
 
 		return len;
@@ -46,24 +56,6 @@ public class Font
 	public double getLineHeight()
 	{
 		return scale(mFontRef.getFontFile().getLineHeight());
-	}
-
-
-	public double getLineGap()
-	{
-		return scale(mFontRef.getFontFile().getLineGap());
-	}
-
-
-	public double getMinLeftSideBearing()
-	{
-		return scale(mFontRef.getFontFile().getMinLeftSideBearing());
-	}
-
-
-	public double getMinRightSideBearing()
-	{
-		return scale(mFontRef.getFontFile().getMinRightSideBearing());
 	}
 
 
@@ -79,8 +71,17 @@ public class Font
 	}
 
 
-	double scale(double aLineHeight)
+	public double getLineGap()
 	{
-		return aLineHeight * mSize / 15;
+		return scale(mFontRef.getFontFile().getLineGap());
+	}
+
+
+	private double scale(double aValue)
+	{
+//		System.out.println("bbox: "+mFontRef.getFontFile().getFontBBox()[0] + "\t" + mFontRef.getFontFile().getFontBBox()[1] + "\t" + mFontRef.getFontFile().getFontBBox()[2] + "\t" + mFontRef.getFontFile().getFontBBox()[3] + "\theight: " + mFontRef.getFontFile().getLineHeight()+ "\tgap: " + mFontRef.getFontFile().getLineGap() + "\tascent: " + mFontRef.getFontFile().getAscent() + "\tdescent: " + mFontRef.getFontFile().getDescent());
+
+//		return aValue * mSize / (mFontRef.getFontFile().getFontBBox()[3] - mFontRef.getFontFile().getFontBBox()[1]);
+		return aValue * mSize / (mFontRef.getFontFile().getAscent() - mFontRef.getFontFile().getDescent());
 	}
 }

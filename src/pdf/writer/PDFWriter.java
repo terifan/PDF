@@ -82,6 +82,6 @@ public class PDFWriter implements AutoCloseable
 
 	public Ref registerFont(FontRef aFontRef) throws IOException
 	{
-		return print(new Struct(!true, aFontRef));
+		return print(new Struct(true, aFontRef));
 	}
 }

@@ -12,4 +12,11 @@ class LongHorMetric
 		mAdvanceWidth = aAdvanceWidth;
 		mLeftSideBearing = aLeftSideBearing;
 	}
+
+
+	@Override
+	public String toString()
+	{
+		return "LongHorMetric{" + "mAdvanceWidth=" + mAdvanceWidth + ", mLeftSideBearing=" + mLeftSideBearing + '}';
+	}
 }

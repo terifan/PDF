@@ -56,5 +56,14 @@ class HEAD
 		mFontDirectionHint = mBuffer.getInt16();
 		mIndexToLocFormat = mBuffer.getInt16();
 		mGlyphDataFormat = mBuffer.getInt16();
+
+		System.out.println(this);
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "HEAD{" + "mVersion=" + mVersion + ", mFontRevision=" + mFontRevision + ", mChecksumAdjustment=" + mChecksumAdjustment + ", mFlags=" + mFlags + ", mUnitsPerEm=" + mUnitsPerEm + ", mCreated=" + mCreated + ", mModified=" + mModified + ", mXMin=" + mXMin + ", mYMin=" + mYMin + ", mXMax=" + mXMax + ", mYMax=" + mYMax + ", mMacStyle=" + mMacStyle + ", mLowestRecPPEM=" + mLowestRecPPEM + ", mFontDirectionHint=" + mFontDirectionHint + ", mIndexToLocFormat=" + mIndexToLocFormat + ", mGlyphDataFormat=" + mGlyphDataFormat + ", mScalarType=" + mScalarType + ", mNumTables=" + mNumTables + ", mSearchRange=" + mSearchRange + ", mEntrySelector=" + mEntrySelector + ", mRangeShift=" + mRangeShift + '}';
 	}
 }

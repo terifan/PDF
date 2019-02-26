@@ -21,6 +21,7 @@ public class TrueTypeFont implements FontFile
 	private HEAD mHEAD;
 	private HHEA mHHEA;
 	private HMTX mHMTX;
+	private NAME mNAME;
 	private CMap4 mCmap;
 	private HashMap<String, Table> mTables;
 
@@ -35,6 +36,31 @@ public class TrueTypeFont implements FontFile
 		readCharacterMap();
 		mHHEA = new HHEA(mBuffer, mTables);
 		mHMTX = new HMTX(mHHEA, mBuffer, mTables);
+		mNAME = new NAME(mBuffer, mTables);
+	}
+
+
+	@Override
+	public String getName()
+	{
+		return mNAME.getName(null, null, null, 1);
+	}
+
+
+	/**
+	 *   left, bottom, top, right ???
+	 */
+	@Override
+	public double[] getFontBBox()
+	{
+		return new double[]{mHEAD.mXMin,mHEAD.mYMin,mHEAD.mXMax,mHEAD.mYMax};
+	}
+
+
+	@Override
+	public int getUnitsPerEm()
+	{
+		return mHEAD.mUnitsPerEm;
 	}
 
 
@@ -44,6 +70,20 @@ public class TrueTypeFont implements FontFile
 		GLYF glyf = new GLYF(mBuffer, mTables, mHEAD, aSymbol);
 
 		return glyf.xMax - glyf.xMin;
+	}
+
+
+	@Override
+	public double getGlyphAdvanceWidth(int aSymbol)
+	{
+		return mHMTX.getMetrics(aSymbol).mAdvanceWidth;
+	}
+
+
+	@Override
+	public double getGlyphLeftSideBearing(int aSymbol)
+	{
+		return mHMTX.getMetrics(aSymbol).mLeftSideBearing;
 	}
 
 

@@ -3,6 +3,9 @@ package font;
 
 public interface FontFile
 {
+	String getName();
+
+
 	double getLineHeight();
 
 
@@ -25,4 +28,16 @@ public interface FontFile
 
 
 	double getGlyphWidth(int aSymbol);
+
+
+	double getGlyphAdvanceWidth(int aSymbol);
+
+
+	double getGlyphLeftSideBearing(int aSymbol);
+
+
+	double[] getFontBBox();
+
+
+	int getUnitsPerEm();
 }

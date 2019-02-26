@@ -17,6 +17,13 @@ public class Array implements Value
 	}
 
 
+	public Array add(double aValue)
+	{
+		mArray.add(new NumberValue(aValue));
+		return this;
+	}
+
+
 	public int size()
 	{
 		return mArray.size();

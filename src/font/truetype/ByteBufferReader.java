@@ -81,10 +81,22 @@ class ByteBufferReader
 	public String getString(int aLength)
 	{
 		byte[] buf = new byte[aLength];
+
 		for (int i = 0; i < aLength; i++)
 		{
 			buf[i] = mData[mPosition++];
 		}
+
+		if ((buf.length & 1) == 0 && buf[0] == 0)
+		{
+			char[] chars = new char[buf.length / 2];
+			for (int i = 0, j = 0; i < buf.length; i+=2)
+			{
+				chars[j++] = (char)(256 * (0xff & buf[i + 0]) + (0xff & buf[i + 1]));
+			}
+			return new String(chars);
+		}
+
 		return new String(buf);
 	}
 

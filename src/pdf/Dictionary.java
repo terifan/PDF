@@ -32,6 +32,13 @@ public class Dictionary implements Value
 	}
 
 
+	public Dictionary put(String aKey, double aValue)
+	{
+		mMap.put(aKey, new NumberValue(aValue));
+		return this;
+	}
+
+
 	@Override
 	public void writeTo(Output aOutput) throws IOException
 	{

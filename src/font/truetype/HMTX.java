@@ -5,15 +5,24 @@ import java.util.HashMap;
 
 class HMTX
 {
-	LongHorMetric[] hMetrics;
-	int[] leftSideBearing;
+	private LongHorMetric[] mMetrics;
 
 
-	public HMTX(HHEA mHHEA, ByteBufferReader mBuffer, HashMap<String, Table> mTables)
+	public HMTX(HHEA aHHEA, ByteBufferReader aBuffer, HashMap<String, Table> aTables)
 	{
-		mBuffer.position(mTables.get("hmtx").mOffset);
+		aBuffer.position(aTables.get("hmtx").mOffset);
 
-		hMetrics = new LongHorMetric[mHHEA.mNumOfLongHorMetrics];
-		leftSideBearing = new int[mHHEA.mNumOfLongHorMetrics];
+		mMetrics = new LongHorMetric[aHHEA.mNumOfLongHorMetrics];
+
+		for (int i = 0; i < aHHEA.mNumOfLongHorMetrics; i++)
+		{
+			mMetrics[i] = new LongHorMetric(aBuffer.getUint16(), aBuffer.getInt16());
+		}
+	}
+
+
+	public LongHorMetric getMetrics(int aSymbol)
+	{
+		return mMetrics[aSymbol];
 	}
 }
