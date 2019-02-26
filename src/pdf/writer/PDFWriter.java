@@ -8,6 +8,7 @@ import pdf.Dictionary;
 import pdf.FontRef;
 import pdf.Ref;
 import pdf.Struct;
+import pdf.Value;
 
 
 public class PDFWriter implements AutoCloseable
@@ -82,6 +83,12 @@ public class PDFWriter implements AutoCloseable
 
 	public Ref registerFont(FontRef aFontRef) throws IOException
 	{
-		return print(new Struct(true, aFontRef));
+		return print(new Struct(!true, aFontRef));
+	}
+
+
+	public Array getFontWidths(FontRef aFontRef)
+	{
+		return aFontRef.generateWidthsArray();
 	}
 }

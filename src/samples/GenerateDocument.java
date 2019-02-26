@@ -27,7 +27,7 @@ public class GenerateDocument
 		try
 		{
 //			Streams.transfer(new InflaterInputStream(new FileInputStream("d:\\Desktop\\pdf\\font.ttf.zip")), "d:\\Desktop\\pdf\\font.ttf");
-//			Streams.transfer(new InflaterInputStream(new FileInputStream("d:\\Desktop\\pdf\\x.txt")), "d:\\Desktop\\pdf\\xx.txt");
+			Streams.transfer(new InflaterInputStream(new FileInputStream("d:\\Desktop\\pdf\\x.txt")), "d:\\Desktop\\pdf\\xx.txt");
 
 			byte[] fontData1 = Streams.readAll("d:\\Desktop\\pdf\\Catamaran-Regular.ttf");
 			FontRef fontRef1 = new FontRef(new TrueTypeFont(fontData1), "F6");
@@ -35,7 +35,7 @@ public class GenerateDocument
 			byte[] fontData2 = Streams.readAll("d:\\Desktop\\pdf\\font.ttf");
 			FontRef fontRef2 = new FontRef(new TrueTypeFont(fontData2), "F7");
 
-			Font font1 = new Font(fontRef2, 12);
+			Font font1 = new Font(fontRef2, 11);
 			Font font2 = new Font(fontRef2, 24);
 			Font font3 = new Font(fontRef2, 8);
 			Font font4 = new Font(fontRef1, 12);
@@ -77,20 +77,24 @@ public class GenerateDocument
 				fontBBox2.add(fontRef2.getFontFile().getFontBBox()[2]);
 				fontBBox2.add(fontRef2.getFontFile().getFontBBox()[3]);
 
-				Ref refFontDescriptor1 = pdf.print(new Struct(new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", fontRef1.getFontFile().getAscent()).put("/CapHeight", 715).put("/Descent", fontRef1.getFontFile().getDescent()).put("/Flags", 8).put("/FontBBox", fontBBox1).put("/FontFile2", refFontData1).put("/FontName", "/" + fontRef1.getFontFile().getName()).put("/ItalicAngle", 0).put("/StemV", 76)));
-				Ref refFontDescriptor2 = pdf.print(new Struct(new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", fontRef2.getFontFile().getAscent()).put("/CapHeight", 715).put("/Descent", fontRef2.getFontFile().getDescent()).put("/Flags", 8).put("/FontBBox", fontBBox2).put("/FontFile2", refFontData2).put("/FontName", "/" + fontRef2.getFontFile().getName()).put("/ItalicAngle", 0).put("/StemV", 76)));
+				Ref refFontDescriptor1 = pdf.print(new Struct(new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", fontRef1.getFontFile().getAscent()).put("/CapHeight", 715).put("/Descent", fontRef1.getFontFile().getDescent()).put("/Flags", 0).put("/FontBBox", fontBBox1).put("/FontFile2", refFontData1).put("/FontName", "/" + fontRef1.getFontFile().getName()).put("/ItalicAngle", 0).put("/StemV", 76)));
+				Ref refFontDescriptor2 = pdf.print(new Struct(new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", fontRef2.getFontFile().getAscent()).put("/CapHeight", 715).put("/Descent", fontRef2.getFontFile().getDescent()).put("/Flags", 0).put("/FontBBox", fontBBox2).put("/FontFile2", refFontData2).put("/FontName", "/" + fontRef2.getFontFile().getName()).put("/ItalicAngle", 0).put("/StemV", 76)));
 
-				Ref refDescendantFont1 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + fontRef1.getFontFile().getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/DW", 0).put("/FontDescriptor", refFontDescriptor1)));
-				Ref refDescendantFont2 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + fontRef2.getFontFile().getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/DW", 0).put("/FontDescriptor", refFontDescriptor2)));
+				Ref refDescendantFont1 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + fontRef1.getFontFile().getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/FontDescriptor", refFontDescriptor1)));
+				Ref refDescendantFont2 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + fontRef2.getFontFile().getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/FontDescriptor", refFontDescriptor2)));
+
+//				Ref refDescendantFont1 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + fontRef1.getFontFile().getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/W", pdf.getFontWidths(fontRef1)).put("/FontDescriptor", refFontDescriptor1)));
+//				Ref refDescendantFont2 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + fontRef2.getFontFile().getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/W", pdf.getFontWidths(fontRef2)).put("/FontDescriptor", refFontDescriptor2)));
 
 				Ref refFont1 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type0").put("/BaseFont", "/" + fontRef1.getFontFile().getName()).put("/DescendantFonts", refDescendantFont1).put("/Encoding", "/Identity-H").put("/ToUnicode", refCMap1)));
 				Ref refFont2 = pdf.print(new Struct(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type0").put("/BaseFont", "/" + fontRef2.getFontFile().getName()).put("/DescendantFonts", refDescendantFont2).put("/Encoding", "/Identity-H").put("/ToUnicode", refCMap2)));
 
-				Dictionary dic = new Dictionary()
+				Dictionary fontsDic = new Dictionary()
 					.put("/G", refStandardFont)
-					.put("/" + fontRef1.getIdentity(), refFont1)
-					.put("/" + fontRef2.getIdentity(), refFont2);
-				Ref refResources = pdf.print(new Struct(new Dictionary().put("/Font", dic)));
+					.put(fontRef1.getIdentity(), refFont1)
+					.put(fontRef2.getIdentity(), refFont2);
+
+				Ref refResources = pdf.print(new Struct(new Dictionary().put("/Font", fontsDic)));
 
 				Ref refPage = pdf.print(new Struct(new Dictionary().put("/Type", "/Page").put("/MediaBox", "[0 0 595.28 841.89]").put("/Contents", refContent).put("/Resources", refResources)));
 

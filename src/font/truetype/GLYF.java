@@ -28,10 +28,6 @@ class GLYF
 		yMin = mBuffer.getFword();
 		xMax = mBuffer.getFword();
 		yMax = mBuffer.getFword();
-
-//		if (numberOfContours >= 0)
-//		{
-//		}
 	}
 
 

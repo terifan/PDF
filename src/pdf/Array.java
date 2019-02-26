@@ -17,10 +17,30 @@ public class Array implements Value
 	}
 
 
+	public Array add(String aValue)
+	{
+		mArray.add(new TextValue(aValue));
+		return this;
+	}
+
+
+	public Array add(int aValue)
+	{
+		mArray.add(new NumberValue(aValue));
+		return this;
+	}
+
+
 	public Array add(double aValue)
 	{
 		mArray.add(new NumberValue(aValue));
 		return this;
+	}
+
+
+	public Value get(int aIndex)
+	{
+		return mArray.get(aIndex);
 	}
 
 

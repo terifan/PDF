@@ -2,6 +2,8 @@ package pdf.writer;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Formatter;
+import java.util.Locale;
 
 
 public class Output implements AutoCloseable
@@ -32,6 +34,15 @@ public class Output implements AutoCloseable
 	public void println(String aText) throws IOException
 	{
 		byte[] buf = aText.getBytes();
+		mOutput.write(buf);
+		mOutput.write('\n');
+		mSize += buf.length + 1;
+	}
+
+
+	public void println(String aText, Object... aParams) throws IOException
+	{
+		byte[] buf = new Formatter(Locale.US).format(aText, aParams).toString().getBytes();
 		mOutput.write(buf);
 		mOutput.write('\n');
 		mSize += buf.length + 1;

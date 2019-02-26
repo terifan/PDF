@@ -2,8 +2,9 @@ package pdf;
 
 import font.FontFile;
 import java.io.IOException;
-import java.util.Map.Entry;
+import java.util.List;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 import pdf.writer.Output;
 
 
@@ -11,7 +12,7 @@ public class FontRef implements Value
 {
 	private FontFile mFontFile;
 	private String mIdentity;
-	private TreeMap<Character, Integer> mSymbolMap;
+	private TreeMap<Integer, Integer> mSymbolMap;
 
 
 	public FontRef(FontFile aFontFile, String aIdentity)
@@ -30,7 +31,86 @@ public class FontRef implements Value
 
 	public String getIdentity()
 	{
-		return mIdentity;
+		return "/" + mIdentity;
+	}
+
+
+	/**
+	 * NOTE: if this information is added to the font declaration space characters cannot be selected...
+	 */
+	public Array generateWidthsArray()
+	{
+		Array array = new Array();
+
+		List<Integer> symbols = mSymbolMap.keySet().stream().map(e->mSymbolMap.get(e)).sorted().collect(Collectors.toList());
+
+		for (int i = 0; i < symbols.size(); i++)
+		{
+			boolean done = false;
+
+			if (i < symbols.size() - 1)
+			{
+				Integer s0 = symbols.get(i + 0);
+				Integer s1 = symbols.get(i + 1);
+				double w0 = mFontFile.getGlyphWidth(s0);
+				double w1 = mFontFile.getGlyphWidth(s1);
+
+				if (w0 == w1)
+				{
+					int j = i + 1;
+					for (; j < symbols.size(); j++)
+					{
+						Integer s = symbols.get(j);
+						double w = mFontFile.getGlyphWidth(s);
+						if (w0 != w)
+						{
+							break;
+						}
+						s1 = s;
+					}
+
+					array.add(s0).add(s1).add(w0);
+					done = true;
+					i = j - 1;
+				}
+				else if (s0 + 1 == s1)
+				{
+					Array widths = new Array();
+					widths.add(w0);
+
+					int j = i + 1;
+					for (int k = 0; j < symbols.size(); k++, j++)
+					{
+						Integer s2 = symbols.get(j + 0);
+						Integer s3 = symbols.get(j + 1);
+						double w2 = mFontFile.getGlyphWidth(s2);
+						double w3 = s3 == symbols.size() ? -1 : mFontFile.getGlyphWidth(s3);
+						if (w2 == w3) // if a repetition is found
+						{
+							break;
+						}
+						if (s0 + k + 1 != s2)
+						{
+							break;
+						}
+						widths.add(w2);
+					}
+
+					array.add(s0).add(widths);
+					done = true;
+					i = j - 1;
+				}
+			}
+
+			if (!done)
+			{
+				Integer symbol = symbols.get(i);
+				double w = mFontFile.getGlyphWidth(symbol);
+				array.add(symbol).add(new Array().add(w));
+			}
+		}
+
+		return array;
 	}
 
 
@@ -47,14 +127,23 @@ public class FontRef implements Value
 		aOutput.println("1 begincodespacerange");
 		aOutput.println("<0000> <FFFF>");
 		aOutput.println("endcodespacerange");
-		aOutput.println(mSymbolMap.size() + " beginbfchar");
 
-		for (Entry<Character, Integer> entry : mSymbolMap.entrySet())
+		Integer[] keys = mSymbolMap.keySet().toArray(new Integer[mSymbolMap.size()]);
+
+		for (int outer = 0; outer < keys.length; outer += 100)
 		{
-			aOutput.println(String.format("<%04x> <%04x>", entry.getValue(), (int)entry.getKey()));
+			int size = Math.min(mSymbolMap.size() - outer * 100, 100);
+
+			aOutput.println(size + " beginbfchar");
+
+			for (int inner = outer; inner < outer + size; inner++)
+			{
+				aOutput.println(String.format("<%04x> <%04x>", mSymbolMap.get(keys[inner]), keys[inner]));
+			}
+
+			aOutput.println("endbfchar");
 		}
 
-		aOutput.println("endbfchar");
 		aOutput.println("endcmap");
 		aOutput.println("CMapName currentdict /CMap defineresource pop");
 		aOutput.println("end");
@@ -65,7 +154,7 @@ public class FontRef implements Value
 	public int lookup(Symbol aSymbol)
 	{
 		int symbol = aSymbol.getSymbol();
-		mSymbolMap.put(aSymbol.getCharacter(), symbol);
+		mSymbolMap.put((int)aSymbol.getCharacter(), symbol);
 		return symbol;
 	}
 }

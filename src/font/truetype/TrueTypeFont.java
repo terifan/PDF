@@ -205,8 +205,6 @@ public class TrueTypeFont implements FontFile
 			PlatformSpecific platformSpecific = platform == Platform.Microsoft ? PlatformSpecific.values()[7 + ps] : PlatformSpecific.values()[ps];
 
 			cmap[i] = new CMapTable(platform, platformSpecific, o);
-
-			System.out.println(cmap[i]);
 		}
 
 		mBuffer.position(mTables.get("cmap").mOffset + cmap[0].mOffset);

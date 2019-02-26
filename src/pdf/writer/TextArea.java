@@ -43,10 +43,10 @@ public class TextArea
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
 		content.println("s");
 
-		double ascent = new Symbol(mFont, mText.get(0).getText().charAt(0)).getFont().getAscent();
-		System.out.println(ascent);
+		double descent = new Symbol(mFont, mText.get(0).getText().charAt(0)).getFont().getDescent();
+		double lineHeight = new Symbol(mFont, mText.get(0).getText().charAt(0)).getFont().getLineHeight();
 
-		double boundsTop = mBoundsTop - ascent;
+		double boundsTop = mBoundsTop - descent - lineHeight;
 
 		for (Paragraph paragraph : mText)
 		{
@@ -88,9 +88,24 @@ public class TextArea
 //					content.println("q");
 //					content.println("1 0 0 1 0 0 cm");
 //					content.println("/G3 gs");
-
+//					content.println(
+//						"q\n" +
+////						"0 0 612 791.25 re\n" +
+////						"W* n\n" +
+////						"q\n" +
+////						".75 0 0 .75 0 0 cm\n" +
+//						"/G3 gs\n" +
+//						"BT\n" +
+//						font.getFontRef().getIdentity() + " " + font.getSize() + " Tf" + "\n" +
+////						"1 0 0 -1 0 0 Tm\n" +
+////						(float)(0*targetX) + " " + (float)(500+0*targetY ) + " Td " + String.format("<%04X>", font.getFontRef().lookup(new Symbol(font, 'X'))) + " Tj\n" +
+//						(float)(20+0*targetX) + " " + (float)(500+0*targetY ) + " Td <004D> Tj\n" +
+//						"ET\n" +
+//						"Q\n" +
+//						"Q"
+//					);
 					content.println("BT");
-					content.println("/" + font.getFontRef().getIdentity() + " " + font.getSize() + " Tf");
+					content.println("%s %f Tf", font.getFontRef().getIdentity(), font.getSize());
 					currentX = 0;
 
 					double currentY = 0;
@@ -105,15 +120,16 @@ public class TextArea
 					{
 						Symbol symbol = text.get(textOffset);
 
-						targetX += font.getLeftBearing(symbol);
+						content.println("0.5 w 0 1 0 RG %1$f %2$f m %3$f %2$f l %3$f %4$f l %1$f %4$f l s", targetX, targetY + font.getDescent() + font.getLineHeight(), targetX + font.getAdvance(symbol), targetY + font.getDescent());
 
-						content.print((float)(targetX - currentX) + " " + (float)(targetY - currentY) + " Td ");
-						content.println(String.format("<%04X>", font.getFontRef().lookup(symbol)) + " Tj");
+						targetX += 0 * font.getLeftBearing(symbol);
+
+						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, font.getFontRef().lookup(symbol));
 
 						currentX = targetX;
 						currentY = targetY;
 
-						targetX += font.getAdvance(symbol) - font.getLeftBearing(symbol);
+						targetX += font.getAdvance(symbol) - 0 * font.getLeftBearing(symbol);
 					}
 
 					targetY -= font.getLineHeight();
@@ -165,7 +181,6 @@ public class TextArea
 		}
 
 //		System.out.println(aText.subList(aTextOffset, aTextOffset + len));
-
 		return len;
 	}
 }

@@ -22,6 +22,18 @@ public class NumberValue implements Value
 	}
 
 
+	public Double getDouble()
+	{
+		return mDouble;
+	}
+
+
+	public Integer getInteger()
+	{
+		return mInteger;
+	}
+
+
 	@Override
 	public void writeTo(Output aOutput) throws IOException
 	{
