@@ -100,7 +100,7 @@ public class PDFWriter implements AutoCloseable
 		Ref pagesRef = print(new Obj().setDictionary(new Dictionary().put("/Count", pages.size()).put("/Type", "/Pages").put("/Kids", pages)));
 		Ref root = print(new Obj().setDictionary(new Dictionary().put("/Type", "/Catalog").put("/Pages", pagesRef)));
 
-		int offset = mOutput.size();
+		int xref = mOutput.size();
 
 		Dictionary trailer = new Dictionary().put("/Size", 1 + mReferences.size()).put("/Root", root);
 
@@ -108,15 +108,15 @@ public class PDFWriter implements AutoCloseable
 		mOutput.println(String.format("0 %d", 1 + mReferences.size()));
 		mOutput.println("0000000000 65535 f");
 
-		for (Integer i : mReferences)
+		for (Integer ref : mReferences)
 		{
-			mOutput.println(String.format("%010d 00000 n", i));
+			mOutput.println(String.format("%010d 00000 n", ref));
 		}
 
 		mOutput.println("trailer");
 		trailer.writeTo(mOutput);
 		mOutput.println("startxref");
-		mOutput.println(Integer.toString(offset));
+		mOutput.println(Integer.toString(xref));
 		mOutput.println("%%EOF");
 
 		mOutput.close();
