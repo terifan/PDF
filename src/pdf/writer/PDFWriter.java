@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 
 public class PDFWriter implements AutoCloseable
 {
-	private LinkedHashMap<Integer, Integer> mReferences;
+	private ArrayList<Integer> mReferences;
 	private ArrayList<Page> mPages;
 	private Output mOutput;
 	private HashMap<Font, Ref> mFonts;
@@ -18,7 +17,7 @@ public class PDFWriter implements AutoCloseable
 
 	public PDFWriter(OutputStream aOutput) throws IOException
 	{
-		mReferences = new LinkedHashMap<>();
+		mReferences = new ArrayList<>();
 		mPages = new ArrayList<>();
 		mFonts = new HashMap<>();
 		mCompress = true;
@@ -45,14 +44,13 @@ public class PDFWriter implements AutoCloseable
 
 	public Ref print(Obj aObject) throws IOException
 	{
-		int reference = 1 + mReferences.size();
-		mReferences.put(reference, mOutput.size());
+		mReferences.add(mOutput.size());
 
-		mOutput.println(reference + " 0 obj");
+		mOutput.println(mReferences.size() + " 0 obj");
 		aObject.write(mOutput);
 		mOutput.println("endobj");
 
-		return new Ref(reference);
+		return new Ref(mReferences.size());
 	}
 
 
@@ -110,7 +108,7 @@ public class PDFWriter implements AutoCloseable
 		mOutput.println(String.format("0 %d", 1 + mReferences.size()));
 		mOutput.println("0000000000 65535 f");
 
-		for (Integer i : mReferences.values())
+		for (Integer i : mReferences)
 		{
 			mOutput.println(String.format("%010d 00000 n", i));
 		}
