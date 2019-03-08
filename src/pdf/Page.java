@@ -56,7 +56,7 @@ public class Page implements AutoCloseable
 	{
 		if (mRefContent == null)
 		{
-			mRefContent = mWriter.print(new Obj(false, new TextValue(mBuffer.toString())));
+			mRefContent = mWriter.print(new Obj(mWriter.mCompress, new TextValue(mBuffer.toString())));
 		}
 	}
 

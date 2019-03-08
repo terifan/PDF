@@ -27,7 +27,7 @@ public class GenerateDocument
 			Style style3 = new Style(font1, 8);
 			Style style4 = new Style(font2, 12);
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\pdf\\output.pdf")))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\pdf\\output.pdf")).setCompress(false))
 			{
 				try (Page page = pdf.addPage())
 				{

@@ -13,18 +13,25 @@ public class PDFWriter implements AutoCloseable
 	private ArrayList<Page> mPages;
 	private Output mOutput;
 	private HashMap<Font, Ref> mFonts;
-
-	boolean compress = true;
+	protected boolean mCompress;
 
 
 	public PDFWriter(OutputStream aOutput) throws IOException
 	{
-		mOutput = new Output(aOutput);
 		mReferences = new LinkedHashMap<>();
 		mPages = new ArrayList<>();
 		mFonts = new HashMap<>();
+		mCompress = true;
 
+		mOutput = new Output(aOutput);
 		mOutput.println("%PDF-1.3");
+	}
+
+
+	public PDFWriter setCompress(boolean aCompress)
+	{
+		mCompress = aCompress;
+		return this;
 	}
 
 
