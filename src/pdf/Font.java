@@ -10,9 +10,12 @@ public abstract class Font
 	{
 	}
 
-	abstract String getIdentity();
 
-	abstract Ref print(PDFWriter aWriter) throws IOException;
+	public abstract String getIdentity();
+
 
 	abstract FontFile getFontFile();
+
+
+	abstract Ref print(PDFWriter aWriter) throws IOException;
 }

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 
-public class Page
+public class Page implements AutoCloseable
 {
 	private final PDFWriter mWriter;
 	private StringBuilder mBuffer;
@@ -51,13 +51,17 @@ public class Page
 	}
 
 
-	public void print() throws IOException
+	@Override
+	public void close() throws IOException
 	{
-		mRefContent = mWriter.print(new Obj(false, new TextValue(mBuffer.toString())));
+		if (mRefContent == null)
+		{
+			mRefContent = mWriter.print(new Obj(false, new TextValue(mBuffer.toString())));
+		}
 	}
 
 
-	public Ref close() throws IOException
+	Ref printHeader() throws IOException
 	{
 		Dictionary fontsDic = new Dictionary();
 

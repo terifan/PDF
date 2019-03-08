@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 
 
@@ -14,6 +13,8 @@ public class PDFWriter implements AutoCloseable
 	private ArrayList<Page> mPages;
 	private Output mOutput;
 	private HashMap<Font, Ref> mFonts;
+
+	boolean compress = true;
 
 
 	public PDFWriter(OutputStream aOutput) throws IOException
@@ -35,13 +36,13 @@ public class PDFWriter implements AutoCloseable
 	}
 
 
-	public Ref print(Obj aStruct) throws IOException
+	public Ref print(Obj aObject) throws IOException
 	{
 		int reference = 1 + mReferences.size();
 		mReferences.put(reference, mOutput.size());
 
 		mOutput.println(reference + " 0 obj");
-		aStruct.write(mOutput);
+		aObject.write(mOutput);
 		mOutput.println("endobj");
 
 		return new Ref(reference);
@@ -77,7 +78,7 @@ public class PDFWriter implements AutoCloseable
 	{
 		for (Page page : mPages)
 		{
-			page.print();
+			page.close();
 		}
 
 		for (Font font : mFonts.keySet())
@@ -88,7 +89,7 @@ public class PDFWriter implements AutoCloseable
 		Array pages = new Array();
 		for (Page page : mPages)
 		{
-			pages.add(page.close());
+			pages.add(page.printHeader());
 		}
 
 		Ref pagesRef = print(new Obj().setDictionary(new Dictionary().put("/Count", pages.size()).put("/Type", "/Pages").put("/Kids", pages)));

@@ -6,7 +6,7 @@ import java.util.Map.Entry;
 import org.terifan.bundle.Bundle;
 
 
-public class Dictionary implements Value
+public class Dictionary
 {
 	private LinkedHashMap<String, Value> mMap = new LinkedHashMap<>();
 
@@ -25,6 +25,13 @@ public class Dictionary implements Value
 	}
 
 
+	public Dictionary put(String aKey, Dictionary aValue)
+	{
+		mMap.put(aKey, new DictionaryValue(aValue));
+		return this;
+	}
+
+
 	public Dictionary put(String aKey, int aValue)
 	{
 		mMap.put(aKey, new NumberValue(aValue));
@@ -39,7 +46,6 @@ public class Dictionary implements Value
 	}
 
 
-	@Override
 	public void writeTo(Output aOutput) throws IOException
 	{
 		aOutput.print("<< ");

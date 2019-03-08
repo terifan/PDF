@@ -180,8 +180,8 @@ public class ExtendedFont extends Font implements Value
 	@Override
 	public Ref print(PDFWriter aWriter) throws IOException
 	{
-		Ref data = aWriter.print(new Obj(!true, new ByteValue(getFontData())));
-		Ref cmap = aWriter.print(new Obj(!true, this));
+		Ref data = aWriter.print(new Obj(aWriter.compress, new ByteValue(getFontData())));
+		Ref cmap = aWriter.print(new Obj(aWriter.compress, this));
 
 		Array box = new Array(mFontFile.getFontBBox());
 
