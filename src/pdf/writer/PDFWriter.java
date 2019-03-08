@@ -104,15 +104,19 @@ public class PDFWriter implements AutoCloseable
 
 		int offset = mOutput.size();
 
+		Dictionary trailer = new Dictionary().put("/Size", 1 + mReferences.size()).put("/Root", root);
+
 		mOutput.println("xref");
 		mOutput.println(String.format("0 %d", 1 + mReferences.size()));
 		mOutput.println("0000000000 65535 f");
+
 		for (Integer i : mReferences.values())
 		{
 			mOutput.println(String.format("%010d 00000 n", i));
 		}
+
 		mOutput.println("trailer");
-		new Dictionary().put("/Size", 1 + mReferences.size()).put("/Root", root).writeTo(mOutput);
+		trailer.writeTo(mOutput);
 		mOutput.println("startxref");
 		mOutput.println(Integer.toString(offset));
 		mOutput.println("%%EOF");

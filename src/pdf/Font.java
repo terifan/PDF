@@ -6,12 +6,19 @@ import java.io.IOException;
 
 public abstract class Font
 {
-	Font()
+	private String mIdentity;
+
+
+	Font(String aIdentity)
 	{
+		mIdentity = aIdentity;
 	}
 
 
-	public abstract String getIdentity();
+	public String getIdentity()
+	{
+		return mIdentity;
+	}
 
 
 	abstract FontFile getFontFile();

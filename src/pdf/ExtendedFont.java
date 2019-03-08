@@ -12,16 +12,16 @@ import java.util.stream.Collectors;
 public class ExtendedFont extends Font implements Value
 {
 	private FontFile mFontFile;
-	private String mIdentity;
 	private TreeMap<Integer, Integer> mSymbolMap;
 	private byte[] mFontData;
 
 
 	public ExtendedFont(String aIdentity, byte[] aFontData)
 	{
+		super(aIdentity);
+
 		mFontData = aFontData;
 		mFontFile = new TrueTypeFont(aFontData);
-		mIdentity = aIdentity;
 		mSymbolMap = new TreeMap<>();
 	}
 
@@ -32,15 +32,10 @@ public class ExtendedFont extends Font implements Value
 	}
 
 
+	@Override
 	public FontFile getFontFile()
 	{
 		return mFontFile;
-	}
-
-
-	public String getIdentity()
-	{
-		return "/" + mIdentity;
 	}
 
 
@@ -178,7 +173,7 @@ public class ExtendedFont extends Font implements Value
 
 
 	@Override
-	public Ref print(PDFWriter aWriter) throws IOException
+	Ref print(PDFWriter aWriter) throws IOException
 	{
 		Ref data = aWriter.print(new Obj(aWriter.mCompress, new ByteValue(getFontData())));
 		Ref cmap = aWriter.print(new Obj(aWriter.mCompress, this));

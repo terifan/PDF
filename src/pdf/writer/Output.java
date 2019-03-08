@@ -6,7 +6,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 
-public class Output implements AutoCloseable
+class Output implements AutoCloseable
 {
 	private OutputStream mOutput;
 	private int mSize;

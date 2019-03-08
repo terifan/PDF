@@ -5,20 +5,20 @@ import java.util.ArrayList;
 
 public class Style
 {
-	private Font mFontRef;
+	private Font mFont;
 	private double mSize;
 
 
 	public Style(Font aFontRef, double aSize)
 	{
-		mFontRef = aFontRef;
+		mFont = aFontRef;
 		mSize = aSize;
 	}
 
 
 	public Font getFontInstance()
 	{
-		return mFontRef;
+		return mFont;
 	}
 
 
@@ -55,25 +55,25 @@ public class Style
 
 	public double getLineHeight()
 	{
-		return scale(mFontRef.getFontFile().getLineHeight());
+		return scale(mFont.getFontFile().getLineHeight());
 	}
 
 
 	public double getAscent()
 	{
-		return scale(mFontRef.getFontFile().getAscent());
+		return scale(mFont.getFontFile().getAscent());
 	}
 
 
 	public double getDescent()
 	{
-		return scale(mFontRef.getFontFile().getDescent());
+		return scale(mFont.getFontFile().getDescent());
 	}
 
 
 	public double getLineGap()
 	{
-		return scale(mFontRef.getFontFile().getLineGap());
+		return scale(mFont.getFontFile().getLineGap());
 	}
 
 
@@ -81,6 +81,6 @@ public class Style
 	{
 //		System.out.println("bbox: "+mFontRef.getFontFile().getFontBBox()[0] + "\t" + mFontRef.getFontFile().getFontBBox()[1] + "\t" + mFontRef.getFontFile().getFontBBox()[2] + "\t" + mFontRef.getFontFile().getFontBBox()[3] + "\theight: " + mFontRef.getFontFile().getLineHeight()+ "\tgap: " + mFontRef.getFontFile().getLineGap() + "\tascent: " + mFontRef.getFontFile().getAscent() + "\tdescent: " + mFontRef.getFontFile().getDescent());
 
-		return aValue * mSize / (mFontRef.getFontFile().getAscent() - mFontRef.getFontFile().getDescent());
+		return aValue * mSize / (mFont.getFontFile().getAscent() - mFont.getFontFile().getDescent());
 	}
 }
