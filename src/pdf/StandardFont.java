@@ -1,9 +1,10 @@
 package pdf;
 
+import font.FontFile;
 import java.io.IOException;
 
 
-public class StandardFont extends PDFFont
+public class StandardFont extends Font
 {
 	private final String mIdentity;
 	private final String mTypeFace;
@@ -16,9 +17,17 @@ public class StandardFont extends PDFFont
 	}
 
 
+	@Override
 	public String getIdentity()
 	{
 		return mIdentity;
+	}
+
+
+	@Override
+	FontFile getFontFile()
+	{
+		return null;
 	}
 
 

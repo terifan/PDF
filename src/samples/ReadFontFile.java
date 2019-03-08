@@ -3,7 +3,7 @@ package samples;
 import font.FontFile;
 import font.truetype.TrueTypeFont;
 import pdf.Array;
-import pdf.Font;
+import pdf.Style;
 import pdf.ExtendedFont;
 import pdf.Obj;
 import pdf.Symbol;
@@ -19,7 +19,7 @@ public class ReadFontFile
 			byte[] fontData = Streams.readAll("d:\\Desktop\\pdf\\Catamaran-Regular.ttf");
 			FontFile fontFile = new TrueTypeFont(fontData);
 			ExtendedFont fontRef = new ExtendedFont("F7", fontData);
-			Font font = new Font(fontRef, 12);
+			Style font = new Style(fontRef, 12);
 
 			fontRef.lookup(new Symbol(font, 'a'));
 

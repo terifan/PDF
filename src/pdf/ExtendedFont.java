@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
-public class ExtendedFont extends PDFFont implements Value
+public class ExtendedFont extends Font implements Value
 {
 	private FontFile mFontFile;
 	private String mIdentity;

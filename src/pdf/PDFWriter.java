@@ -13,7 +13,7 @@ public class PDFWriter implements AutoCloseable
 	private LinkedHashMap<Integer, Integer> mReferences;
 	private ArrayList<Page> mPages;
 	private Output mOutput;
-	private HashMap<PDFFont, Ref> mFonts;
+	private HashMap<Font, Ref> mFonts;
 
 
 	public PDFWriter(OutputStream aOutput) throws IOException
@@ -57,7 +57,7 @@ public class PDFWriter implements AutoCloseable
 	/**
 	 * Registers a font, the value is null until the write closing
 	 */
-	void registerFont(PDFFont aFont) throws IOException
+	void registerFont(Font aFont) throws IOException
 	{
 		mFonts.put(aFont, null);
 	}
@@ -66,7 +66,7 @@ public class PDFWriter implements AutoCloseable
 	/**
 	 * Page calls this method when writer is closing
 	 */
-	Ref getFontRef(PDFFont aFont)
+	Ref getFontRef(Font aFont)
 	{
 		return mFonts.get(aFont);
 	}
@@ -80,7 +80,7 @@ public class PDFWriter implements AutoCloseable
 			page.print();
 		}
 
-		for (PDFFont font : mFonts.keySet())
+		for (Font font : mFonts.keySet())
 		{
 			mFonts.put(font, font.print(this));
 		}

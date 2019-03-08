@@ -9,7 +9,7 @@ public class Page
 {
 	private final PDFWriter mWriter;
 	private StringBuilder mBuffer;
-	private HashMap<String, PDFFont> mFonts;
+	private HashMap<String, Font> mFonts;
 	private Ref mRefContent;
 
 
@@ -33,9 +33,9 @@ public class Page
 	}
 
 
-	public void registerFont(PDFFont aFont) throws IOException
+	public void registerFont(Font aFont) throws IOException
 	{
-		PDFFont existing = mFonts.get(aFont.getIdentity());
+		Font existing = mFonts.get(aFont.getIdentity());
 
 		if (existing != null && existing != aFont)
 		{
@@ -61,7 +61,7 @@ public class Page
 	{
 		Dictionary fontsDic = new Dictionary();
 
-		for (Entry<String, PDFFont> font : mFonts.entrySet())
+		for (Entry<String, Font> font : mFonts.entrySet())
 		{
 			fontsDic.put(font.getKey(), mWriter.getFontRef(font.getValue()));
 		}

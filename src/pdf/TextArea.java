@@ -13,11 +13,11 @@ public class TextArea
 	private double mBoundsLeft;
 	private double mBoundsBottom;
 	private double mBoundsRight;
-	private Font mFont;
+	private Style mFont;
 	private ArrayList<Paragraph> mText;
 
 
-	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Font aFont, Paragraph... aText)
+	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Style aFont, Paragraph... aText)
 	{
 		mBoundsTop = aBoundsTop;
 		mBoundsLeft = aBoundsLeft;
@@ -77,8 +77,8 @@ public class TextArea
 						break;
 					}
 
-					Font font = text.get(textOffset).getFont();
-					ExtendedFont fontInstance = font.getFontInstance();
+					Style font = text.get(textOffset).getFont();
+					ExtendedFont fontInstance = (ExtendedFont)font.getFontInstance();
 					aPage.registerFont(fontInstance);
 
 					content.println("BT");

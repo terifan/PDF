@@ -5,7 +5,7 @@ import font.FontFile;
 
 public class Symbol
 {
-	private Font mFont;
+	private Style mFont;
 	private char mCharacter;
 	private int mGlyphIndex;
 	private double mWidth;
@@ -13,9 +13,9 @@ public class Symbol
 	private double mLeftBearing;
 
 
-	public Symbol(Font aFont, char aCharacter)
+	public Symbol(Style aFont, char aCharacter)
 	{
-		FontFile fontFile = aFont.getFontInstance().getFontFile();
+		FontFile fontFile = ((ExtendedFont)aFont.getFontInstance()).getFontFile();
 
 		mFont = aFont;
 		mCharacter = aCharacter;
@@ -56,7 +56,7 @@ public class Symbol
 	}
 
 
-	public Font getFont()
+	public Style getFont()
 	{
 		return mFont;
 	}
