@@ -11,7 +11,7 @@ public class StandardFont extends Font
 
 	public StandardFont(String aIdentity, String aTypeFace)
 	{
-		super(aIdentity.startsWith("/") ? aIdentity : "/" + aIdentity);
+		super(aIdentity);
 
 		mTypeFace = aTypeFace;
 	}

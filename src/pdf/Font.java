@@ -11,7 +11,7 @@ public abstract class Font
 
 	Font(String aIdentity)
 	{
-		mIdentity = aIdentity;
+		mIdentity = aIdentity.startsWith("/") ? aIdentity : "/" + aIdentity;
 	}
 
 
