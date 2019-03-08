@@ -1,7 +1,7 @@
 package pdf;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import pdf.writer.Output;
 
 
 @FunctionalInterface

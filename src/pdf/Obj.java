@@ -3,33 +3,32 @@ package pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.zip.DeflaterOutputStream;
-import pdf.writer.Output;
 
 
-public class Struct
+public class Obj
 {
 	private Dictionary mDictionary;
 	private Value mContent;
 
 
-	public Struct()
+	public Obj()
 	{
 	}
 
 
-	public Struct(Dictionary aDictionary)
+	public Obj(Dictionary aDictionary)
 	{
 		setDictionary(aDictionary);
 	}
 
 
-	public Struct(boolean aCompress, Value aContent) throws IOException
+	public Obj(boolean aCompress, Value aContent) throws IOException
 	{
 		setContent(aCompress, aContent);
 	}
 
 
-	public Struct(boolean aCompress, Value aContent, Dictionary aDictionary) throws IOException
+	public Obj(boolean aCompress, Value aContent, Dictionary aDictionary) throws IOException
 	{
 		setContent(aCompress, aContent);
 		setDictionary(aDictionary);
@@ -42,7 +41,7 @@ public class Struct
 	}
 
 
-	public Struct setDictionary(Dictionary aDictionary)
+	public Obj setDictionary(Dictionary aDictionary)
 	{
 		mDictionary = aDictionary;
 		return this;
@@ -92,11 +91,26 @@ public class Struct
 
 	public void write(Output aOutput) throws IOException
 	{
+		Dictionary dictionary = mDictionary;
+		if (dictionary != null)
+		{
+			dictionary.writeTo(aOutput);
+		}
+
 		if (mContent != null)
 		{
 			aOutput.println("stream");
 			mContent.writeTo(aOutput);
 			aOutput.println("endstream");
 		}
+	}
+
+
+	public String asString() throws IOException
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Output out = new Output(baos);
+		write(out);
+		return baos.toString();
 	}
 }

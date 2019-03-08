@@ -1,7 +1,6 @@
 package pdf;
 
 import java.io.IOException;
-import pdf.writer.Output;
 
 
 public class NumberValue implements Value

@@ -7,24 +7,22 @@ public class Symbol
 {
 	private Font mFont;
 	private char mCharacter;
-	private int mSymbol;
+	private int mGlyphIndex;
 	private double mWidth;
 	private double mAdvance;
 	private double mLeftBearing;
-	private double mUnitsPerEm;
 
 
 	public Symbol(Font aFont, char aCharacter)
 	{
-		FontFile fontFile = aFont.getFontRef().getFontFile();
+		FontFile fontFile = aFont.getFontInstance().getFontFile();
 
 		mFont = aFont;
 		mCharacter = aCharacter;
-		mSymbol = fontFile.findGlyphIndex(mCharacter);
-		mWidth = fontFile.getGlyphWidth(mSymbol);
-		mAdvance = fontFile.getGlyphAdvanceWidth(mSymbol);
-		mLeftBearing = fontFile.getGlyphLeftSideBearing(mSymbol);
-		mUnitsPerEm = mFont.getFontRef().getFontFile().getUnitsPerEm();
+		mGlyphIndex = fontFile.findGlyphIndex(mCharacter);
+		mWidth = fontFile.getGlyphWidth(mGlyphIndex);
+		mAdvance = fontFile.getGlyphAdvanceWidth(mGlyphIndex) / fontFile.getUnitsPerEm();
+		mLeftBearing = fontFile.getGlyphLeftSideBearing(mGlyphIndex) / fontFile.getUnitsPerEm();
 	}
 
 
@@ -34,9 +32,9 @@ public class Symbol
 	}
 
 
-	public int getSymbol()
+	public int getGlyphIndex()
 	{
-		return mSymbol;
+		return mGlyphIndex;
 	}
 
 
@@ -48,13 +46,13 @@ public class Symbol
 
 	public double getAdvance()
 	{
-		return mAdvance / mUnitsPerEm;
+		return mAdvance;
 	}
 
 
 	public double getLeftBearing()
 	{
-		return mLeftBearing / mUnitsPerEm;
+		return mLeftBearing;
 	}
 
 

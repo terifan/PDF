@@ -1,13 +1,10 @@
-package pdf.writer;
+package pdf;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import pdf.Symbol;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
-import pdf.Font;
-import pdf.Paragraph;
 
 
 public class TextArea
@@ -31,7 +28,7 @@ public class TextArea
 	}
 
 
-	public String produce() throws IOException
+	String produce(Page aPage) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
@@ -81,31 +78,11 @@ public class TextArea
 					}
 
 					Font font = text.get(textOffset).getFont();
+					ExtendedFont fontInstance = font.getFontInstance();
+					aPage.registerFont(fontInstance);
 
-//					content.println("q");
-//					content.println("0 0 595.28 841.89 re");
-//					content.println("W* n");
-//					content.println("q");
-//					content.println("1 0 0 1 0 0 cm");
-//					content.println("/G3 gs");
-//					content.println(
-//						"q\n" +
-////						"0 0 612 791.25 re\n" +
-////						"W* n\n" +
-////						"q\n" +
-////						".75 0 0 .75 0 0 cm\n" +
-//						"/G3 gs\n" +
-//						"BT\n" +
-//						font.getFontRef().getIdentity() + " " + font.getSize() + " Tf" + "\n" +
-////						"1 0 0 -1 0 0 Tm\n" +
-////						(float)(0*targetX) + " " + (float)(500+0*targetY ) + " Td " + String.format("<%04X>", font.getFontRef().lookup(new Symbol(font, 'X'))) + " Tj\n" +
-//						(float)(20+0*targetX) + " " + (float)(500+0*targetY ) + " Td <004D> Tj\n" +
-//						"ET\n" +
-//						"Q\n" +
-//						"Q"
-//					);
 					content.println("BT");
-					content.println("%s %f Tf", font.getFontRef().getIdentity(), font.getSize());
+					content.println("%s %f Tf", fontInstance.getIdentity(), font.getSize());
 					currentX = 0;
 
 					double currentY = 0;
@@ -120,11 +97,11 @@ public class TextArea
 					{
 						Symbol symbol = text.get(textOffset);
 
-						content.println("0.5 w 0 1 0 RG %1$f %2$f m %3$f %2$f l %3$f %4$f l %1$f %4$f l s", targetX, targetY + font.getDescent() + font.getLineHeight(), targetX + font.getAdvance(symbol), targetY + font.getDescent());
+//						content.println("0.5 w 0 1 0 RG %1$f %2$f m %3$f %2$f l %3$f %4$f l %1$f %4$f l s", targetX, targetY + font.getDescent() + font.getLineHeight(), targetX + font.getAdvance(symbol), targetY + font.getDescent());
 
 						targetX += 0 * font.getLeftBearing(symbol);
 
-						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, font.getFontRef().lookup(symbol));
+						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, fontInstance.lookup(symbol));
 
 						currentX = targetX;
 						currentY = targetY;
@@ -141,8 +118,6 @@ public class TextArea
 				}
 
 				content.println("ET");
-//				content.println("Q");
-//				content.println("Q");
 			}
 
 			boundsTop = targetY;

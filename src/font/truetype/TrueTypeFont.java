@@ -48,12 +48,15 @@ public class TrueTypeFont implements FontFile
 
 
 	/**
-	 *   left, bottom, top, right ???
+	 * left, bottom, top, right ???
 	 */
 	@Override
 	public double[] getFontBBox()
 	{
-		return new double[]{mHEAD.mXMin,mHEAD.mYMin,mHEAD.mXMax,mHEAD.mYMax};
+		return new double[]
+		{
+			mHEAD.mXMin, mHEAD.mYMin, mHEAD.mXMax, mHEAD.mYMax
+		};
 	}
 
 

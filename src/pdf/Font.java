@@ -5,18 +5,18 @@ import java.util.ArrayList;
 
 public class Font
 {
-	private FontRef mFontRef;
+	private ExtendedFont mFontRef;
 	private double mSize;
 
 
-	public Font(FontRef aFontRef, double aSize)
+	public Font(ExtendedFont aFontRef, double aSize)
 	{
 		mFontRef = aFontRef;
 		mSize = aSize;
 	}
 
 
-	public FontRef getFontRef()
+	public ExtendedFont getFontInstance()
 	{
 		return mFontRef;
 	}
@@ -81,7 +81,6 @@ public class Font
 	{
 //		System.out.println("bbox: "+mFontRef.getFontFile().getFontBBox()[0] + "\t" + mFontRef.getFontFile().getFontBBox()[1] + "\t" + mFontRef.getFontFile().getFontBBox()[2] + "\t" + mFontRef.getFontFile().getFontBBox()[3] + "\theight: " + mFontRef.getFontFile().getLineHeight()+ "\tgap: " + mFontRef.getFontFile().getLineGap() + "\tascent: " + mFontRef.getFontFile().getAscent() + "\tdescent: " + mFontRef.getFontFile().getDescent());
 
-//		return aValue * mSize / (mFontRef.getFontFile().getFontBBox()[3] - mFontRef.getFontFile().getFontBBox()[1]);
 		return aValue * mSize / (mFontRef.getFontFile().getAscent() - mFontRef.getFontFile().getDescent());
 	}
 }

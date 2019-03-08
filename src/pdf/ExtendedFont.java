@@ -1,25 +1,34 @@
 package pdf;
 
 import font.FontFile;
+import font.truetype.TrueTypeFont;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import pdf.writer.Output;
 
 
-public class FontRef implements Value
+public class ExtendedFont extends PDFFont implements Value
 {
 	private FontFile mFontFile;
 	private String mIdentity;
 	private TreeMap<Integer, Integer> mSymbolMap;
+	private byte[] mFontData;
 
 
-	public FontRef(FontFile aFontFile, String aIdentity)
+	public ExtendedFont(String aIdentity, byte[] aFontData)
 	{
-		mFontFile = aFontFile;
+		mFontData = aFontData;
+		mFontFile = new TrueTypeFont(aFontData);
 		mIdentity = aIdentity;
 		mSymbolMap = new TreeMap<>();
+	}
+
+
+	public byte[] getFontData()
+	{
+		return mFontData;
 	}
 
 
@@ -36,7 +45,7 @@ public class FontRef implements Value
 
 
 	/**
-	 * NOTE: if this information is added to the font declaration space characters cannot be selected...
+	 * NOTE: problem exists! If this information is added to the font declaration space characters cannot be selected...
 	 */
 	public Array generateWidthsArray()
 	{
@@ -151,10 +160,31 @@ public class FontRef implements Value
 	}
 
 
+	public String generateCMap() throws IOException
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		Output out = new Output(baos);
+		writeTo(out);
+		return baos.toString();
+	}
+
+
 	public int lookup(Symbol aSymbol)
 	{
-		int symbol = aSymbol.getSymbol();
+		int symbol = aSymbol.getGlyphIndex();
 		mSymbolMap.put((int)aSymbol.getCharacter(), symbol);
 		return symbol;
+	}
+
+
+	@Override
+	public Ref print(PDFWriter aWriter) throws IOException
+	{
+		Ref data = aWriter.print(new Obj(!true, new ByteValue(getFontData())));
+		Ref cmap = aWriter.print(new Obj(!true, this));
+
+		Array box = new Array(mFontFile.getFontBBox());
+
+		return aWriter.print(new Obj(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type0").put("/BaseFont", "/" + mFontFile.getName()).put("/DescendantFonts", new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + mFontFile.getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/FontDescriptor", new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", mFontFile.getAscent()).put("/CapHeight", 715).put("/Descent", mFontFile.getDescent()).put("/Flags", 0).put("/FontBBox", box).put("/FontFile2", data).put("/FontName", "/" + mFontFile.getName()).put("/ItalicAngle", 0).put("/StemV", 76))).put("/Encoding", "/Identity-H").put("/ToUnicode", cmap)));
 	}
 }

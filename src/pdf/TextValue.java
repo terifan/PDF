@@ -1,7 +1,6 @@
 package pdf;
 
 import java.io.IOException;
-import pdf.writer.Output;
 
 
 public class TextValue implements Value
@@ -12,6 +11,12 @@ public class TextValue implements Value
 	public TextValue(String aValue)
 	{
 		mValue = aValue;
+	}
+
+
+	public String getValue()
+	{
+		return mValue;
 	}
 
 

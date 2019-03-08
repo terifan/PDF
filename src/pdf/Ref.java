@@ -1,7 +1,6 @@
 package pdf;
 
 import java.io.IOException;
-import pdf.writer.Output;
 
 
 public class Ref implements Value
@@ -18,6 +17,12 @@ public class Ref implements Value
 	public int getRef()
 	{
 		return mReference;
+	}
+
+
+	void setRef(int aReference)
+	{
+		mReference = aReference;
 	}
 
 
