@@ -5,22 +5,20 @@ import font.FontFile;
 
 public class Symbol
 {
-	private Style mFont;
+	private Style mStyle;
 	private char mCharacter;
 	private int mGlyphIndex;
-	private double mWidth;
 	private double mAdvance;
 	private double mLeftBearing;
 
 
-	public Symbol(Style aFont, char aCharacter)
+	public Symbol(Style aStyle, char aCharacter)
 	{
-		FontFile fontFile = ((ExtendedFont)aFont.getFontInstance()).getFontFile();
+		FontFile fontFile = ((ExtendedFont)aStyle.getFontInstance()).getFontFile();
 
-		mFont = aFont;
+		mStyle = aStyle;
 		mCharacter = aCharacter;
 		mGlyphIndex = fontFile.findGlyphIndex(mCharacter);
-		mWidth = fontFile.getGlyphWidth(mGlyphIndex);
 		mAdvance = fontFile.getGlyphAdvanceWidth(mGlyphIndex) / fontFile.getUnitsPerEm();
 		mLeftBearing = fontFile.getGlyphLeftSideBearing(mGlyphIndex) / fontFile.getUnitsPerEm();
 	}
@@ -38,12 +36,6 @@ public class Symbol
 	}
 
 
-	public double getWidth()
-	{
-		return mWidth;
-	}
-
-
 	public double getAdvance()
 	{
 		return mAdvance;
@@ -56,21 +48,14 @@ public class Symbol
 	}
 
 
-	public Style getFont()
+	public Style getStyle()
 	{
-		return mFont;
+		return mStyle;
 	}
 
 
 	public boolean isBreakChar()
 	{
 		return Character.isWhitespace(mCharacter);
-	}
-
-
-	@Override
-	public String toString()
-	{
-		return Character.toString(mCharacter);
 	}
 }

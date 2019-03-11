@@ -13,17 +13,17 @@ public class TextArea
 	private double mBoundsLeft;
 	private double mBoundsBottom;
 	private double mBoundsRight;
-	private Style mFont;
+	private Style mStyle;
 	private ArrayList<Paragraph> mText;
 
 
-	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Style aFont, Paragraph... aText)
+	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Style aStyle, Paragraph... aText)
 	{
 		mBoundsTop = aBoundsTop;
 		mBoundsLeft = aBoundsLeft;
 		mBoundsBottom = aBoundsBottom;
 		mBoundsRight = aBoundsRight;
-		mFont = aFont;
+		mStyle = aStyle;
 		mText = new ArrayList<>(Arrays.asList(aText));
 	}
 
@@ -40,8 +40,8 @@ public class TextArea
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
 		content.println("s");
 
-		double descent = new Symbol(mFont, mText.get(0).getText().charAt(0)).getFont().getDescent();
-		double lineHeight = new Symbol(mFont, mText.get(0).getText().charAt(0)).getFont().getLineHeight();
+		double descent = new Symbol(mStyle, mText.get(0).getText().charAt(0)).getStyle().getDescent();
+		double lineHeight = new Symbol(mStyle, mText.get(0).getText().charAt(0)).getStyle().getLineHeight();
 
 		double boundsTop = mBoundsTop - descent - lineHeight;
 
@@ -51,14 +51,7 @@ public class TextArea
 
 			for (int i = 0; i < paragraph.getText().length(); i++)
 			{
-				try
-				{
-					text.add(new Symbol(mFont, paragraph.getText().charAt(i)));
-				}
-				catch (Exception e)
-				{
-					e.printStackTrace(System.out);
-				}
+				text.add(new Symbol(mStyle, paragraph.getText().charAt(i)));
 			}
 
 			double targetY = boundsTop;
@@ -77,12 +70,11 @@ public class TextArea
 						break;
 					}
 
-					Style font = text.get(textOffset).getFont();
-					ExtendedFont fontInstance = (ExtendedFont)font.getFontInstance();
-					aPage.registerFont(fontInstance);
+					Style style = text.get(textOffset).getStyle();
+					aPage.registerFont(style);
 
 					content.println("BT");
-					content.println("%s %f Tf", fontInstance.getIdentity(), font.getSize());
+					content.println("%s %f Tf", style.getIdentity(), style.getSize());
 					currentX = 0;
 
 					double currentY = 0;
@@ -97,19 +89,15 @@ public class TextArea
 					{
 						Symbol symbol = text.get(textOffset);
 
-//						content.println("0.5 w 0 1 0 RG %1$f %2$f m %3$f %2$f l %3$f %4$f l %1$f %4$f l s", targetX, targetY + font.getDescent() + font.getLineHeight(), targetX + font.getAdvance(symbol), targetY + font.getDescent());
-
-						targetX += 0 * font.getLeftBearing(symbol);
-
-						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, fontInstance.lookup(symbol));
+						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, style.lookup(symbol));
 
 						currentX = targetX;
 						currentY = targetY;
 
-						targetX += font.getAdvance(symbol) - 0 * font.getLeftBearing(symbol);
+						targetX += style.getAdvance(symbol);
 					}
 
-					targetY -= font.getLineHeight();
+					targetY -= style.getLineHeight();
 
 					if (breakLine.get())
 					{
@@ -142,7 +130,7 @@ public class TextArea
 
 			Symbol symbol = aText.get(aTextOffset + i);
 
-			double x = aTargetX + symbol.getFont().measureText(aText, aTextOffset, i);
+			double x = aTargetX + symbol.getStyle().measureText(aText, aTextOffset, i);
 
 			if (x > aMaxLineLength)
 			{

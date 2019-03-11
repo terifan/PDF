@@ -33,6 +33,12 @@ public class Page implements AutoCloseable
 	}
 
 
+	public void registerFont(Style aStyle) throws IOException
+	{
+		registerFont(aStyle.fontInstance);
+	}
+
+
 	public void registerFont(Font aFont) throws IOException
 	{
 		Font existing = mFonts.get(aFont.getIdentity());
