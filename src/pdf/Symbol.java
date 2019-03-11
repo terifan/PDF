@@ -7,20 +7,14 @@ public class Symbol
 {
 	private Style mStyle;
 	private char mCharacter;
-	private int mGlyphIndex;
-	private double mAdvance;
-	private double mLeftBearing;
+	private FontFile mFontFile;
 
 
 	public Symbol(Style aStyle, char aCharacter)
 	{
-		FontFile fontFile = ((ExtendedFont)aStyle.getFontInstance()).getFontFile();
-
 		mStyle = aStyle;
 		mCharacter = aCharacter;
-		mGlyphIndex = fontFile.findGlyphIndex(mCharacter);
-		mAdvance = fontFile.getGlyphAdvanceWidth(mGlyphIndex) / fontFile.getUnitsPerEm();
-		mLeftBearing = fontFile.getGlyphLeftSideBearing(mGlyphIndex) / fontFile.getUnitsPerEm();
+		mFontFile = mStyle.getFontInstance().getFontFile();
 	}
 
 
@@ -30,27 +24,27 @@ public class Symbol
 	}
 
 
+	public Style getStyle()
+	{
+		return mStyle;
+	}
+
+
 	public int getGlyphIndex()
 	{
-		return mGlyphIndex;
+		return mFontFile.findGlyphIndex(mCharacter);
 	}
 
 
 	public double getAdvance()
 	{
-		return mAdvance;
+		return mFontFile.getGlyphAdvanceWidth(getGlyphIndex()) / mFontFile.getUnitsPerEm();
 	}
 
 
 	public double getLeftBearing()
 	{
-		return mLeftBearing;
-	}
-
-
-	public Style getStyle()
-	{
-		return mStyle;
+		return mFontFile.getGlyphLeftSideBearing(getGlyphIndex()) / mFontFile.getUnitsPerEm();
 	}
 
 
