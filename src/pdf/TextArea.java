@@ -14,17 +14,17 @@ public class TextArea
 	private double mBoundsBottom;
 	private double mBoundsRight;
 	private Style mStyle;
-	private ArrayList<Paragraph> mText;
+	private ArrayList<Paragraph> mParagraphs;
 
 
-	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Style aStyle, Paragraph... aText)
+	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Style aStyle, Paragraph... aParagraph)
 	{
 		mBoundsTop = aBoundsTop;
 		mBoundsLeft = aBoundsLeft;
 		mBoundsBottom = aBoundsBottom;
 		mBoundsRight = aBoundsRight;
 		mStyle = aStyle;
-		mText = new ArrayList<>(Arrays.asList(aText));
+		mParagraphs = new ArrayList<>(Arrays.asList(aParagraph));
 	}
 
 
@@ -40,12 +40,9 @@ public class TextArea
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
 		content.println("s");
 
-		double descent = new Symbol(mStyle, mText.get(0).getText().charAt(0)).getStyle().getDescent();
-		double lineHeight = new Symbol(mStyle, mText.get(0).getText().charAt(0)).getStyle().getLineHeight();
+		double boundsTop = mBoundsTop - mStyle.getDescent() - mStyle.getLineHeight();
 
-		double boundsTop = mBoundsTop - descent - lineHeight;
-
-		for (Paragraph paragraph : mText)
+		for (Paragraph paragraph : mParagraphs)
 		{
 			ArrayList<Symbol> text = new ArrayList<>();
 
@@ -56,7 +53,7 @@ public class TextArea
 
 			double targetY = boundsTop;
 
-			for (int textOffset = 0; textOffset < text.size();)
+			for (int offset = 0; offset < text.size();)
 			{
 				double targetX = mBoundsLeft;
 				double currentX;
@@ -64,13 +61,13 @@ public class TextArea
 				for (;;)
 				{
 					AtomicBoolean breakLine = new AtomicBoolean(false);
-					int nextSegmentLength = layoutLine(text, textOffset, targetX, breakLine, mBoundsRight);
+					int nextSegmentLength = layoutLine(text, offset, targetX, breakLine, mBoundsRight);
 					if (nextSegmentLength == 0)
 					{
 						break;
 					}
 
-					Style style = text.get(textOffset).getStyle();
+					Style style = text.get(offset).getStyle();
 					aPage.registerFont(style);
 
 					content.println("BT");
@@ -81,13 +78,13 @@ public class TextArea
 
 					if (targetY < mBoundsBottom)
 					{
-						textOffset = text.size();
+						offset = text.size();
 						break;
 					}
 
-					for (int i = 0; i < nextSegmentLength; i++, textOffset++)
+					for (int i = 0; i < nextSegmentLength; i++, offset++)
 					{
-						Symbol symbol = text.get(textOffset);
+						Symbol symbol = text.get(offset);
 
 						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, style.lookup(symbol));
 
