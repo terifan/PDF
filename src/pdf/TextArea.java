@@ -13,17 +13,15 @@ public class TextArea
 	private double mBoundsLeft;
 	private double mBoundsBottom;
 	private double mBoundsRight;
-	private Style mStyle;
 	private ArrayList<Paragraph> mParagraphs;
 
 
-	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Style aStyle, Paragraph... aParagraph)
+	public TextArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Paragraph... aParagraph)
 	{
 		mBoundsTop = aBoundsTop;
 		mBoundsLeft = aBoundsLeft;
 		mBoundsBottom = aBoundsBottom;
 		mBoundsRight = aBoundsRight;
-		mStyle = aStyle;
 		mParagraphs = new ArrayList<>(Arrays.asList(aParagraph));
 	}
 
@@ -40,17 +38,11 @@ public class TextArea
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
 		content.println("s");
 
-		double boundsTop = mBoundsTop - mStyle.getDescent() - mStyle.getLineHeight();
+		double boundsTop = mBoundsTop - mParagraphs.get(0).getText().get(0).getStyle().getDescent() - mParagraphs.get(0).getText().get(0).getStyle().getLineHeight();
 
 		for (Paragraph paragraph : mParagraphs)
 		{
-			ArrayList<Symbol> text = new ArrayList<>();
-
-			for (int i = 0; i < paragraph.getText().length(); i++)
-			{
-				text.add(new Symbol(mStyle, paragraph.getText().charAt(i)));
-			}
-
+			ArrayList<Symbol> text = paragraph.getText();
 			double targetY = boundsTop;
 
 			for (int offset = 0; offset < text.size();)

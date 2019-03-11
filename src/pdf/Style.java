@@ -1,5 +1,6 @@
 package pdf;
 
+import font.FontFile;
 import java.util.ArrayList;
 
 
@@ -7,7 +8,7 @@ public class Style
 {
 	private Font mFont;
 	private double mSize;
-	ExtendedFont fontInstance;
+	private FontFile mFontFile;
 
 
 	public Style(Font aFontRef, double aSize)
@@ -15,13 +16,13 @@ public class Style
 		mFont = aFontRef;
 		mSize = aSize;
 
-		fontInstance = (ExtendedFont)getFontInstance();
+		mFontFile = mFont.getFontFile();
 	}
 
 
 	public String getIdentity()
 	{
-		return fontInstance.getIdentity();
+		return mFont.getIdentity();
 	}
 
 
@@ -37,15 +38,33 @@ public class Style
 	}
 
 
+	public int getGlyphIndex(int aCharacter)
+	{
+		return mFontFile.findGlyphIndex(aCharacter);
+	}
+
+
+	public double getAdvance(int aCharacter)
+	{
+		return mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFontFile.getUnitsPerEm();
+	}
+
+
 	public double getAdvance(Symbol aSymbol)
 	{
-		return mSize * aSymbol.getAdvance();
+		return mSize * getAdvance(aSymbol.getCharacter());
+	}
+
+
+	public double getLeftBearing(int aCharacter)
+	{
+		return mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFontFile.getUnitsPerEm();
 	}
 
 
 	public double getLeftBearing(Symbol aSymbol)
 	{
-		return mSize * aSymbol.getLeftBearing();
+		return mSize * getLeftBearing(aSymbol.getCharacter());
 	}
 
 
@@ -86,16 +105,14 @@ public class Style
 	}
 
 
-	private double scale(double aValue)
+	public int lookup(Symbol aSymbol)
 	{
-//		System.out.println("bbox: "+mFontRef.getFontFile().getFontBBox()[0] + "\t" + mFontRef.getFontFile().getFontBBox()[1] + "\t" + mFontRef.getFontFile().getFontBBox()[2] + "\t" + mFontRef.getFontFile().getFontBBox()[3] + "\theight: " + mFontRef.getFontFile().getLineHeight()+ "\tgap: " + mFontRef.getFontFile().getLineGap() + "\tascent: " + mFontRef.getFontFile().getAscent() + "\tdescent: " + mFontRef.getFontFile().getDescent());
-
-		return aValue * mSize / (mFont.getFontFile().getAscent() - mFont.getFontFile().getDescent());
+		return mFontFile.findGlyphIndex(aSymbol.getCharacter());
 	}
 
 
-	public int lookup(Symbol aSymbol)
+	private double scale(double aValue)
 	{
-		return fontInstance.lookup(aSymbol);
+		return aValue * mSize / (mFont.getFontFile().getAscent() - mFont.getFontFile().getDescent());
 	}
 }

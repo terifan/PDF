@@ -166,7 +166,7 @@ public class ExtendedFont extends Font implements Value
 
 	public int lookup(Symbol aSymbol)
 	{
-		int symbol = aSymbol.getGlyphIndex();
+		int symbol = aSymbol.getStyle().lookup(aSymbol);
 		mSymbolMap.put((int)aSymbol.getCharacter(), symbol);
 		return symbol;
 	}
