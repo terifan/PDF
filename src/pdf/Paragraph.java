@@ -5,22 +5,18 @@ import java.util.ArrayList;
 
 public class Paragraph
 {
-	private ArrayList<Symbol> mText;
+	private ArrayList<Span> mSpans;
 
 
 	public Paragraph(Style aStyle, String aText)
 	{
-		mText = new ArrayList<>();
-
-		for (int i = 0; i < aText.length(); i++)
-		{
-			mText.add(new Symbol(aStyle, aText.charAt(i)));
-		}
+		mSpans = new ArrayList<>();
+		mSpans.add(new Span(aStyle, aText));
 	}
 
 
-	public ArrayList<Symbol> getText()
+	public ArrayList<Span> getSpans()
 	{
-		return mText;
+		return mSpans;
 	}
 }

@@ -18,6 +18,12 @@ public class StandardFont extends Font
 
 
 	@Override
+	void registerGlyph(int aGlyph, int aCharacter)
+	{
+	}
+
+
+	@Override
 	FontFile getFontFile()
 	{
 		return null;

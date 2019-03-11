@@ -133,7 +133,7 @@ public class TrueTypeFont implements FontFile
 
 
 	@Override
-	public int findGlyphIndex(int aCharacter)
+	public int findGlyphIndexImpl(int aCharacter)
 	{
 		return mCmap.findGlyphIndex(aCharacter);
 	}

@@ -24,5 +24,8 @@ public abstract class Font
 	abstract FontFile getFontFile();
 
 
+	abstract void registerGlyph(int aGlyph, int aCharacter);
+
+
 	abstract Ref print(PDFWriter aWriter) throws IOException;
 }

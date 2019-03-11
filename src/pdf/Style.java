@@ -1,7 +1,6 @@
 package pdf;
 
 import font.FontFile;
-import java.util.ArrayList;
 
 
 public class Style
@@ -9,6 +8,10 @@ public class Style
 	private Font mFont;
 	private double mSize;
 	private FontFile mFontFile;
+	private double mLineHeight;
+	private double mAscent;
+	private double mDescent;
+	private double mLineGap;
 
 
 	public Style(Font aFont, double aSize)
@@ -17,6 +20,10 @@ public class Style
 		mSize = aSize;
 
 		mFontFile = mFont.getFontFile();
+		mLineHeight = scale(mFontFile.getLineHeight());
+		mAscent = scale(mFontFile.getAscent());
+		mDescent = scale(mFontFile.getDescent());
+		mLineGap = scale(mFontFile.getLineGap());
 	}
 
 
@@ -38,69 +45,67 @@ public class Style
 	}
 
 
-	public double getLineHeight()
-	{
-		return scale(mFont.getFontFile().getLineHeight());
-	}
-
-
 	public double getAscent()
 	{
-		return scale(mFont.getFontFile().getAscent());
+		return mAscent;
 	}
 
 
 	public double getDescent()
 	{
-		return scale(mFont.getFontFile().getDescent());
+		return mDescent;
 	}
 
 
 	public double getLineGap()
 	{
-		return scale(mFont.getFontFile().getLineGap());
+		return mLineGap;
 	}
 
 
-	public int lookup(Symbol aSymbol)
+	public double getLineHeight()
 	{
-		return mFontFile.findGlyphIndex(aSymbol.getCharacter());
+		return mLineHeight;
 	}
 
 
 	public int getGlyphIndex(int aCharacter)
 	{
-		return mFontFile.findGlyphIndex(aCharacter);
+		int glyph = mFontFile.findGlyphIndexImpl(aCharacter);
+
+		mFont.registerGlyph(aCharacter, glyph);
+
+		return glyph;
 	}
 
 
-	public double getAdvance(Symbol aSymbol)
+	public double getAdvance(char aCharacter)
 	{
-		return mSize * mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aSymbol.getCharacter())) / mFontFile.getUnitsPerEm();
+		return mSize * mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFontFile.getUnitsPerEm();
 	}
 
 
-	public double getLeftBearing(Symbol aSymbol)
+	public double getLeftBearing(char aCharacter)
 	{
-		return mSize * mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aSymbol.getCharacter())) / mFontFile.getUnitsPerEm();
-	}
-
-
-	public double measureText(ArrayList<Symbol> aText, int aOffset, int aLength)
-	{
-		double len = 0;
-
-		for (int i = 0; i < aLength; i++)
-		{
-			len += getAdvance(aText.get(aOffset + i));
-		}
-
-		return len;
+		return mSize * mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFontFile.getUnitsPerEm();
 	}
 
 
 	private double scale(double aValue)
 	{
-		return aValue * mSize / (mFont.getFontFile().getAscent() - mFont.getFontFile().getDescent());
+		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
+	}
+
+
+	public double measureText(String aText, int aOffset, int aLength)
+	{
+		double len = 0;
+
+		for (int i = 0; i < aLength; i++)
+		{
+			len += getAdvance(aText.charAt(aOffset + i));
+		}
+
+		return len;
 	}
 }

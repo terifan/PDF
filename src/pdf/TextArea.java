@@ -38,63 +38,71 @@ public class TextArea
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
 		content.println("s");
 
-		double boundsTop = mBoundsTop - mParagraphs.get(0).getText().get(0).getStyle().getDescent() - mParagraphs.get(0).getText().get(0).getStyle().getLineHeight();
+		Style style = mParagraphs.get(0).getSpans().get(0).getStyle();
+
+		double boundsTop = mBoundsTop - style.getDescent() - style.getLineHeight();
 
 		for (Paragraph paragraph : mParagraphs)
 		{
-			ArrayList<Symbol> text = paragraph.getText();
+			ArrayList<Span> spans = paragraph.getSpans();
 			double targetY = boundsTop;
 
-			for (int offset = 0; offset < text.size();)
+			for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
 			{
-				double targetX = mBoundsLeft;
-				double currentX;
+				Span span = spans.get(spanIndex);
+				String text = span.getText();
 
-				for (;;)
+				style = span.getStyle();
+				aPage.registerFont(style);
+
+				for (int offset = 0; offset < text.length();)
 				{
-					AtomicBoolean breakLine = new AtomicBoolean(false);
-					int nextSegmentLength = layoutLine(text, offset, targetX, breakLine, mBoundsRight);
-					if (nextSegmentLength == 0)
+					double targetX = mBoundsLeft;
+					double currentX;
+
+					for (;;)
 					{
-						break;
+						AtomicBoolean breakLine = new AtomicBoolean(false);
+						int nextSegmentLength = layoutLine(span, offset, targetX, breakLine, mBoundsRight);
+						if (nextSegmentLength == 0)
+						{
+							break;
+						}
+
+						content.println("BT");
+						content.println("%s %f Tf", style.getIdentity(), style.getSize());
+						currentX = 0;
+
+						double currentY = 0;
+
+						if (targetY < mBoundsBottom)
+						{
+							offset = text.length();
+							break;
+						}
+
+						for (int i = 0; i < nextSegmentLength; i++, offset++)
+						{
+							char ch = text.charAt(offset);
+
+							content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, style.getGlyphIndex(ch));
+
+							currentX = targetX;
+							currentY = targetY;
+
+							targetX += style.getAdvance(ch);
+						}
+
+						targetY -= style.getLineHeight();
+
+						if (breakLine.get())
+						{
+							break;
+						}
 					}
 
-					Style style = text.get(offset).getStyle();
-					aPage.registerFont(style);
-
-					content.println("BT");
-					content.println("%s %f Tf", style.getIdentity(), style.getSize());
-					currentX = 0;
-
-					double currentY = 0;
-
-					if (targetY < mBoundsBottom)
-					{
-						offset = text.size();
-						break;
-					}
-
-					for (int i = 0; i < nextSegmentLength; i++, offset++)
-					{
-						Symbol symbol = text.get(offset);
-
-						content.println("%f %f Td <%04X> Tj", targetX - currentX, targetY - currentY, style.lookup(symbol));
-
-						currentX = targetX;
-						currentY = targetY;
-
-						targetX += style.getAdvance(symbol);
-					}
-
-					targetY -= style.getLineHeight();
-
-					if (breakLine.get())
-					{
-						break;
-					}
+					content.println("ET");
 				}
-
-				content.println("ET");
 			}
 
 			boundsTop = targetY;
@@ -104,11 +112,11 @@ public class TextArea
 	}
 
 
-	private static int layoutLine(ArrayList<Symbol> aText, int aTextOffset, double aTargetX, AtomicBoolean aBreakLine, double aMaxLineLength)
+	private static int layoutLine(Span aSpan, int aTextOffset, double aTargetX, AtomicBoolean aBreakLine, double aMaxLineLength)
 	{
 		int len = -1;
 
-		for (int i = 1, limit = aText.size() - aTextOffset; i <= limit; i++)
+		for (int i = 1, limit = aSpan.getText().length() - aTextOffset; i <= limit; i++)
 		{
 			if (i == limit)
 			{
@@ -117,16 +125,16 @@ public class TextArea
 				break;
 			}
 
-			Symbol symbol = aText.get(aTextOffset + i);
+			char ch = aSpan.getText().charAt(aTextOffset + i);
 
-			double x = aTargetX + symbol.getStyle().measureText(aText, aTextOffset, i);
+			double x = aTargetX + aSpan.getStyle().measureText(aSpan.getText(), aTextOffset, i);
 
 			if (x > aMaxLineLength)
 			{
 				aBreakLine.set(true);
 				break;
 			}
-			if (symbol.isBreakChar())
+			if (ch == ' ')
 			{
 				len = i + 1;
 			}

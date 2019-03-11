@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 public class ExtendedFont extends Font implements Value
 {
 	private FontFile mFontFile;
-	private TreeMap<Integer, Integer> mSymbolMap;
+	private TreeMap<Integer, Integer> mGlyphMap;
 	private byte[] mFontData;
 
 
@@ -22,7 +22,7 @@ public class ExtendedFont extends Font implements Value
 
 		mFontData = aFontData;
 		mFontFile = new TrueTypeFont(aFontData);
-		mSymbolMap = new TreeMap<>();
+		mGlyphMap = new TreeMap<>();
 	}
 
 
@@ -46,7 +46,7 @@ public class ExtendedFont extends Font implements Value
 	{
 		Array array = new Array();
 
-		List<Integer> symbols = mSymbolMap.keySet().stream().map(e->mSymbolMap.get(e)).sorted().collect(Collectors.toList());
+		List<Integer> symbols = mGlyphMap.keySet().stream().map(e->mGlyphMap.get(e)).sorted().collect(Collectors.toList());
 
 		for (int i = 0; i < symbols.size(); i++)
 		{
@@ -132,17 +132,17 @@ public class ExtendedFont extends Font implements Value
 		aOutput.println("<0000> <FFFF>");
 		aOutput.println("endcodespacerange");
 
-		Integer[] keys = mSymbolMap.keySet().toArray(new Integer[mSymbolMap.size()]);
+		Integer[] keys = mGlyphMap.keySet().toArray(new Integer[mGlyphMap.size()]);
 
 		for (int outer = 0; outer < keys.length; outer += 100)
 		{
-			int size = Math.min(mSymbolMap.size() - outer * 100, 100);
+			int size = Math.min(mGlyphMap.size() - outer * 100, 100);
 
 			aOutput.println(size + " beginbfchar");
 
 			for (int inner = outer; inner < outer + size; inner++)
 			{
-				aOutput.println(String.format("<%04x> <%04x>", mSymbolMap.get(keys[inner]), keys[inner]));
+				aOutput.println(String.format("<%04x> <%04x>", mGlyphMap.get(keys[inner]), keys[inner]));
 			}
 
 			aOutput.println("endbfchar");
@@ -164,11 +164,10 @@ public class ExtendedFont extends Font implements Value
 	}
 
 
-	public int lookup(Symbol aSymbol)
+	@Override
+	public void registerGlyph(int aGlyph, int aCharacter)
 	{
-		int symbol = aSymbol.getStyle().lookup(aSymbol);
-		mSymbolMap.put((int)aSymbol.getCharacter(), symbol);
-		return symbol;
+		mGlyphMap.put(aGlyph, aCharacter);
 	}
 
 

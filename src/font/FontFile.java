@@ -24,7 +24,10 @@ public interface FontFile
 	double getMinRightSideBearing();
 
 
-	int findGlyphIndex(int aCharacter);
+	/**
+	 * Do not call this directly, use Font.findGlyphIndex() instead!
+	 */
+	int findGlyphIndexImpl(int aCharacter);
 
 
 	double getGlyphWidth(int aSymbol);
