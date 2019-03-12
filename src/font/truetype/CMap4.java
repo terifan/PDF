@@ -41,7 +41,7 @@ class CMap4 implements CMap
 	{
 		for (int i = 0; i < startCode.length; i++)
 		{
-//				System.out.printf("%8d %8d %8d %8d\n", startCode[i], endCode[i], idDelta[i], idRangeOffset[i]);
+//			System.out.printf("%8d %8d %8d %8d\n", startCode[i], endCode[i], idDelta[i], idRangeOffset[i]);
 
 			if (endCode[i] >= aCharacter)
 			{
@@ -49,7 +49,14 @@ class CMap4 implements CMap
 
 				if (idRangeOffset[i] != 0)
 				{
-					glyphIndex = glyphIndexArray[idRangeOffset[i] / 2 + (aCharacter - startCode[i]) + i - startCode.length];
+					int magic = idRangeOffset[i] / 2 + (aCharacter - startCode[i]) + i - startCode.length;
+
+					if (magic < 0 || magic > glyphIndexArray.length)
+					{
+						return -1;
+					}
+
+					glyphIndex = glyphIndexArray[magic];
 
 					if (glyphIndex == 0)
 					{

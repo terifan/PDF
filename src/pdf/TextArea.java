@@ -38,14 +38,13 @@ public class TextArea
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
 		content.println("s");
 
-		Style style = mParagraphs.get(0).getSpans().get(0).getStyle();
-
-		double boundsTop = mBoundsTop - style.getDescent() - style.getLineHeight();
+		double boundsTop = mBoundsTop;
 
 		for (Paragraph paragraph : mParagraphs)
 		{
 			ArrayList<Span> spans = paragraph.getSpans();
-			double targetY = boundsTop;
+			Style style = paragraph.getSpans().get(0).getStyle();
+			double targetY = boundsTop - style.getDescent() - style.getLineHeight();
 
 			for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
 			{
@@ -69,17 +68,18 @@ public class TextArea
 							break;
 						}
 
-						content.println("BT");
-						content.println("%s %f Tf", style.getIdentity(), style.getSize());
-						currentX = 0;
-
-						double currentY = 0;
-
 						if (targetY < mBoundsBottom)
 						{
 							offset = text.length();
 							break;
 						}
+
+						content.println("BT");
+						content.println("%s %f Tf", style.getIdentity(), style.getSize());
+
+						currentX = 0;
+
+						double currentY = 0;
 
 						for (int i = 0; i < nextSegmentLength; i++, offset++)
 						{
@@ -105,7 +105,7 @@ public class TextArea
 				}
 			}
 
-			boundsTop = targetY;
+			boundsTop = targetY + style.getDescent() + style.getLineHeight();
 		}
 
 		return baos.toString();

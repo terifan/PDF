@@ -45,8 +45,6 @@ class HHEA
 		mReserved4 = mBuffer.getInt16();
 		mMetricDataFormat = mBuffer.getInt16();
 		mNumOfLongHorMetrics = mBuffer.getUint16();
-
-		System.out.println(this);
 	}
 
 

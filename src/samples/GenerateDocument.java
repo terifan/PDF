@@ -7,6 +7,7 @@ import pdf.Font;
 import pdf.Paragraph;
 import pdf.PDFWriter;
 import pdf.Page;
+import pdf.Span;
 import pdf.StandardFont;
 import pdf.TextArea;
 import util.Streams;
@@ -20,14 +21,16 @@ public class GenerateDocument
 		{
 			Font font0 = new StandardFont("G", "Helvetica");
 			Font font1 = new ExtendedFont("F6", Streams.readAll("d:\\Desktop\\pdf\\Catamaran-Regular.ttf"));
-			Font font2 = new ExtendedFont("F7", Streams.readAll("d:\\Desktop\\pdf\\font.ttf"));
+			Font font2 = new ExtendedFont("F7", Streams.readAll("d:\\Desktop\\pdf\\AmaticSC-Regular.ttf"));
+			Font font3 = new ExtendedFont("F8", Streams.readAll("d:\\Desktop\\pdf\\Montez-Regular.ttf"));
+			Font font4 = new ExtendedFont("F9", Streams.readAll("d:\\Desktop\\pdf\\Muli.ttf"));
 
-			Style style1 = new Style(font1, 11);
-			Style style2 = new Style(font1, 24);
+			Style style1 = new Style(font4, 11);
+			Style style2 = new Style(font3, 24);
 			Style style3 = new Style(font1, 8);
 			Style style4 = new Style(font2, 12);
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\pdf\\output.pdf")).setCompress(false))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\pdf\\output_java.pdf")).setCompress(false))
 			{
 				try (Page page = pdf.addPage())
 				{
@@ -38,15 +41,19 @@ public class GenerateDocument
 					page.append(new TextArea(625, 70, 475, 550, new Paragraph(style4, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki."), new Paragraph(style4, "Moje miasto jest czwarte w Polsce pod względem liczby ludności. Znajdziesz w nim miejsca, które nazywają się tak samo jak inne miejsca na świecie – np. Kilimandżaro albo Morskie Oko. Znana jest też Fontanna Multimedialna umieszczona obok Hali Stulecia."), new Paragraph(style4, "Jeszcze kilkadziesiąt lat temu miasto nie należało do Polski. Moje miasto ma mnóstwo mostów, rzek oraz wysp i wysepek. W moim mieście znajdziecie też fosę, która cały czas działa i w której cały czas jest woda. Z mojego miasta bliżej jest do stolicy Niemiec – Berlina niż do stolicy Polski – Warszawy."), new Paragraph(style4, "Miasto jest bardzo lubiane przez turystów – każdego roku miliony z nich chodzą po ulicach miasta. Wielu z nich odwiedza nasze słynne ZOO. Bardzo popularne w nim jest Afrykarium, w którym możliwe jest oglądanie wielu zwierząt w prawie naturalnych warunkach. Dla miłośników kultury miasto oferuje liczne teatry, kina i muzea. Miasto zostało wybrane Europejską Stolicą Kultury 2016 i Światową Stolicą Książki 2016."), new Paragraph(style4, "Czy wystarczy już tych podpowiedzi? Jeśli nie – to jeszcze ostatnia: łacińska nazwa mojego miasta to Vratislavia, a niemiecka to Breslau. Czy już znasz odpowiedź? Tak, to Wrocław!")));
 
 					page.registerFont(font0);
-					page.append("BT /G 24 Tf 175 820 Td (Hello World!) Tj ET\n");
+//					page.append("BT /G 24 Tf 175 820 Td (Hello World!) Tj ET\n");
 				}
 
 				try (Page page = pdf.addPage())
 				{
-					page.append(new TextArea(625, 70, 475, 550, new Paragraph(style4, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki."), new Paragraph(style4, "Moje miasto jest czwarte w Polsce pod względem liczby ludności. Znajdziesz w nim miejsca, które nazywają się tak samo jak inne miejsca na świecie – np. Kilimandżaro albo Morskie Oko. Znana jest też Fontanna Multimedialna umieszczona obok Hali Stulecia."), new Paragraph(style4, "Jeszcze kilkadziesiąt lat temu miasto nie należało do Polski. Moje miasto ma mnóstwo mostów, rzek oraz wysp i wysepek. W moim mieście znajdziecie też fosę, która cały czas działa i w której cały czas jest woda. Z mojego miasta bliżej jest do stolicy Niemiec – Berlina niż do stolicy Polski – Warszawy."), new Paragraph(style4, "Miasto jest bardzo lubiane przez turystów – każdego roku miliony z nich chodzą po ulicach miasta. Wielu z nich odwiedza nasze słynne ZOO. Bardzo popularne w nim jest Afrykarium, w którym możliwe jest oglądanie wielu zwierząt w prawie naturalnych warunkach. Dla miłośników kultury miasto oferuje liczne teatry, kina i muzea. Miasto zostało wybrane Europejską Stolicą Kultury 2016 i Światową Stolicą Książki 2016."), new Paragraph(style4, "Czy wystarczy już tych podpowiedzi? Jeśli nie – to jeszcze ostatnia: łacińska nazwa mojego miasta to Vratislavia, a niemiecka to Breslau. Czy już znasz odpowiedź? Tak, to Wrocław!")));
+					page.append(new TextArea(800, 70, 475, 550,
+						new Paragraph(new Span(style1, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki.")),
+						new Paragraph(new Span(style2, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki.")),
+						new Paragraph(new Span(style3, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki.")),
+						new Paragraph(new Span(style4, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki."))
+					));
 
-					page.registerFont(font0);
-					page.append("BT /G 24 Tf 175 820 Td (Hello World!) Tj ET\n");
+					page.append(new TextArea(250, 70, 100, 550,  new Paragraph(new Span(style4, "Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki.")), new Paragraph(new Span(style4, "Moje miasto jest czwarte w Polsce pod względem liczby ludności. Znajdziesz w nim miejsca, które nazywają się tak samo jak inne miejsca na świecie – np. Kilimandżaro albo Morskie Oko. Znana jest też Fontanna Multimedialna umieszczona obok Hali Stulecia.")), new Paragraph(new Span(style4, "Jeszcze kilkadziesiąt lat temu miasto nie należało do Polski. Moje miasto ma mnóstwo mostów, rzek oraz wysp i wysepek. W moim mieście znajdziecie też fosę, która cały czas działa i w której cały czas jest woda. Z mojego miasta bliżej jest do stolicy Niemiec – Berlina niż do stolicy Polski – Warszawy.")), new Paragraph(new Span(style4, "Miasto jest bardzo lubiane przez turystów – każdego roku miliony z nich chodzą po ulicach miasta. Wielu z nich odwiedza nasze słynne ZOO. Bardzo popularne w nim jest Afrykarium, w którym możliwe jest oglądanie wielu zwierząt w prawie naturalnych warunkach. Dla miłośników kultury miasto oferuje liczne teatry, kina i muzea. Miasto zostało wybrane Europejską Stolicą Kultury 2016 i Światową Stolicą Książki 2016.")), new Paragraph(new Span(style4, "Czy wystarczy już tych podpowiedzi? Jeśli nie – to jeszcze ostatnia: łacińska nazwa mojego miasta to Vratislavia, a niemiecka to Breslau. Czy już znasz odpowiedź? Tak, to Wrocław!"))));
 				}
 			}
 		}

@@ -135,7 +135,14 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public int findGlyphIndexImpl(int aCharacter)
 	{
-		return mCmap.findGlyphIndex(aCharacter);
+		int glyph = mCmap.findGlyphIndex(aCharacter);
+
+		if (glyph == -1)
+		{
+			throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", " + (char)aCharacter);
+		}
+
+		return glyph;
 	}
 
 
@@ -152,13 +159,11 @@ public class TrueTypeFont implements FontFile
 			String tag = mBuffer.getString(4);
 			Table table = new Table(mBuffer.getInt32(), mBuffer.getInt32(), mBuffer.getInt32());
 
-			System.out.println(tag + " " + table);
-
 			if (!tag.equals("head"))
 			{
-				if ((int)calculateTableChecksum(table.mOffset, table.mLength) != table.mChecksum)
+				if (table.mOffset + table.mLength > mBuffer.length() || (int)calculateTableChecksum(table.mOffset, table.mLength) != table.mChecksum)
 				{
-					throw new IllegalStateException("Checksum error: " + calculateTableChecksum(table.mOffset, table.mLength) + " != " + table.mChecksum);
+					throw new IllegalStateException("Checksum error: tag: " + tag + ", table: " + table);
 				}
 			}
 

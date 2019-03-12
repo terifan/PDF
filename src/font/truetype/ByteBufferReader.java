@@ -13,6 +13,12 @@ class ByteBufferReader
 	}
 
 
+	public int length()
+	{
+		return mData.length;
+	}
+
+
 	public void position(int aPosition)
 	{
 		mPosition = aPosition;
@@ -33,7 +39,14 @@ class ByteBufferReader
 
 	public int getUint8()
 	{
-		return 0xFF & mData[mPosition++];
+		try
+		{
+			return 0xFF & mData[mPosition++];
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			return 0;
+		}
 	}
 
 

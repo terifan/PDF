@@ -142,7 +142,7 @@ public class ExtendedFont extends Font implements Value
 
 			for (int inner = outer; inner < outer + size; inner++)
 			{
-				aOutput.println(String.format("<%04x> <%04x>", mGlyphMap.get(keys[inner]), keys[inner]));
+				aOutput.println(String.format("<%04X> <%04X>", mGlyphMap.get(keys[inner]), keys[inner]));
 			}
 
 			aOutput.println("endbfchar");

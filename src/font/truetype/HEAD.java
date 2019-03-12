@@ -56,8 +56,6 @@ class HEAD
 		mFontDirectionHint = mBuffer.getInt16();
 		mIndexToLocFormat = mBuffer.getInt16();
 		mGlyphDataFormat = mBuffer.getInt16();
-
-		System.out.println(this);
 	}
 
 
