@@ -31,6 +31,18 @@ class Output implements AutoCloseable
 	}
 
 
+	public void print(double aNumber) throws IOException
+	{
+		String s = "" + aNumber;
+		if (s.endsWith(".0"))
+		{
+			s = s.substring(0, s.length() - 2);
+		}
+
+		print(s.getBytes());
+	}
+
+
 	public void println(String aText) throws IOException
 	{
 		byte[] buf = aText.getBytes();

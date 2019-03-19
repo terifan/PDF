@@ -2,16 +2,30 @@ package pdf;
 
 import font.FontFile;
 import java.io.IOException;
+import java.util.UUID;
 
 
 public abstract class Font
 {
+	private final UUID mUUID;
 	private String mIdentity;
 
 
-	Font(String aIdentity)
+	Font()
 	{
-		mIdentity = aIdentity.startsWith("/") ? aIdentity : "/" + aIdentity;
+		mUUID = UUID.randomUUID();
+	}
+
+
+	UUID getUUID()
+	{
+		return mUUID;
+	}
+
+
+	void setIdentity(String aIdentity)
+	{
+		mIdentity = aIdentity;
 	}
 
 

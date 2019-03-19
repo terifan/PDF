@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class TextArea
+public class TextArea implements Producer
 {
 	private double mBoundsTop;
 	private double mBoundsLeft;
@@ -26,17 +26,18 @@ public class TextArea
 	}
 
 
-	String produce(Page aPage) throws IOException
+	@Override
+	public String produce(PDFWriter aPDFWriter, Page aPage) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		content.println("1 0 0 RG");
-		content.println(mBoundsLeft + " " + mBoundsTop + " m");
-		content.println(mBoundsRight + " " + mBoundsTop + " l");
-		content.println(mBoundsRight + " " + mBoundsBottom + " l");
-		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
-		content.println("s");
+//		content.println("1 0 0 RG");
+//		content.println(mBoundsLeft + " " + mBoundsTop + " m");
+//		content.println(mBoundsRight + " " + mBoundsTop + " l");
+//		content.println(mBoundsRight + " " + mBoundsBottom + " l");
+//		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
+//		content.println("s");
 
 		double boundsTop = mBoundsTop;
 

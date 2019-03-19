@@ -17,7 +17,7 @@ public class ReadFontFile
 		{
 			byte[] fontData = Streams.readAll("d:\\Desktop\\pdf\\Catamaran-Regular.ttf");
 			FontFile fontFile = new TrueTypeFont(fontData);
-			ExtendedFont font = new ExtendedFont("F7", fontData);
+			ExtendedFont font = new ExtendedFont(fontData);
 			Style style = new Style(font, 12);
 
 			font.registerGlyph(fontFile.findGlyphIndexImpl('a'), 'a');

@@ -16,10 +16,8 @@ public class ExtendedFont extends Font implements Value
 	private byte[] mFontData;
 
 
-	public ExtendedFont(String aIdentity, byte[] aFontData)
+	public ExtendedFont(byte[] aFontData)
 	{
-		super(aIdentity);
-
 		mFontData = aFontData;
 		mFontFile = new TrueTypeFont(aFontData);
 		mGlyphMap = new TreeMap<>();
@@ -174,7 +172,7 @@ public class ExtendedFont extends Font implements Value
 	@Override
 	Ref print(PDFWriter aWriter) throws IOException
 	{
-		Ref data = aWriter.print(new Obj(aWriter.mCompress, new ByteValue(getFontData())));
+		Ref data = aWriter.print(new Obj(aWriter.mCompress, new ArrayValue(getFontData())));
 		Ref cmap = aWriter.print(new Obj(aWriter.mCompress, this));
 
 		Array box = new Array(mFontFile.getFontBBox());

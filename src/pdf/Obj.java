@@ -70,7 +70,7 @@ public class Obj
 				aContent.writeTo(out);
 			}
 
-			mContent = new ByteValue(baos.toByteArray());
+			mContent = new ArrayValue(baos.toByteArray());
 
 			mDictionary.put("/Filter", new TextValue("/FlateDecode"));
 			mDictionary.put("/Length1", new NumberValue(baos.size()));
@@ -82,7 +82,7 @@ public class Obj
 				aContent.writeTo(out);
 			}
 
-			mContent = new ByteValue(baos.toByteArray());
+			mContent = new ArrayValue(baos.toByteArray());
 		}
 
 		mDictionary.put("/Length", new NumberValue(baos.size()));

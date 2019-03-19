@@ -9,10 +9,8 @@ public class StandardFont extends Font
 	private String mTypeFace;
 
 
-	public StandardFont(String aIdentity, String aTypeFace)
+	public StandardFont(String aTypeFace)
 	{
-		super(aIdentity);
-
 		mTypeFace = aTypeFace;
 	}
 

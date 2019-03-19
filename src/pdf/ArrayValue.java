@@ -3,12 +3,12 @@ package pdf;
 import java.io.IOException;
 
 
-public class ByteValue implements Value
+public class ArrayValue implements Value
 {
 	private byte[] mValue;
 
 
-	public ByteValue(byte[] aValue)
+	public ArrayValue(byte[] aValue)
 	{
 		mValue = aValue;
 	}
