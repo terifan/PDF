@@ -25,6 +25,7 @@ public class Page implements AutoCloseable
 		mFonts = new HashMap<>();
 		mResourcesDictionary = new Dictionary();
 		mIdentityMap = new HashMap<>();
+		mXObjectResourceDictionary = new Dictionary();
 	}
 
 
@@ -34,9 +35,9 @@ public class Page implements AutoCloseable
 	}
 
 
-	public void append(String aPDFCode)
+	public void append(String aRawPdfCode)
 	{
-		mBuffer.append(aPDFCode);
+		mBuffer.append(aRawPdfCode);
 	}
 
 
@@ -68,7 +69,7 @@ public class Page implements AutoCloseable
 			mIdentityMap.put(aImage.getUUID(), identity);
 			aImage.setIdentity(identity);
 
-			registerXObject(aImage.getIdentity(), aImage.writeTo(mWriter));
+			mXObjectResourceDictionary.put(identity, aImage.writeTo(mWriter));
 		}
 	}
 
@@ -80,18 +81,6 @@ public class Page implements AutoCloseable
 		{
 			mRefContent = mWriter.print(new Obj(mWriter.mCompress, new TextValue(mBuffer.toString())));
 		}
-	}
-
-
-	void registerXObject(String aName, Ref aRef)
-	{
-		if (mXObjectResourceDictionary == null)
-		{
-			mXObjectResourceDictionary = new Dictionary();
-			mResourcesDictionary.put("/XObject", mXObjectResourceDictionary);
-		}
-
-		mXObjectResourceDictionary.put(aName, aRef);
 	}
 
 
@@ -110,10 +99,9 @@ public class Page implements AutoCloseable
 			resDic.put("/Font", fontsDic);
 		}
 
-		if (mXObjectResourceDictionary != null)
+		if (!mXObjectResourceDictionary.isEmpty())
 		{
-//			Ref ref = mWriter.print(new Obj().setDictionary(new Dictionary().put("/XObject", mXObjectResourceDictionary)));
-
+			mResourcesDictionary.put("/XObject", mXObjectResourceDictionary);
 			resDic.put("/XObject", mXObjectResourceDictionary);
 		}
 

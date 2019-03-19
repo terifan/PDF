@@ -11,6 +11,17 @@ public class Dictionary
 	private LinkedHashMap<String, Value> mMap = new LinkedHashMap<>();
 
 
+	public Dictionary()
+	{
+	}
+
+
+	public boolean isEmpty()
+	{
+		return mMap.isEmpty();
+	}
+
+
 	public Dictionary put(String aKey, Value aValue)
 	{
 		mMap.put(aKey, aValue);

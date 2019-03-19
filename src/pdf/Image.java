@@ -19,13 +19,23 @@ public class Image
 	private int mComponentCount;
 	private int mBitsPerComponent;
 	private String mIdentity;
+	private Ref mResourceRef;
 
 
-	public Image(byte[] aData, boolean aPngImage)
+	public Image(byte[] aData, boolean aPngImage) throws IOException
 	{
 		mUUID = UUID.randomUUID();
 		mImageData = aData;
 		mPNGImage = aPngImage;
+
+		if (mPNGImage)
+		{
+			preparePNG();
+		}
+		else
+		{
+			prepareJPEG();
+		}
 	}
 
 
@@ -47,35 +57,31 @@ public class Image
 	}
 
 
-	public Ref writeTo(PDFWriter aWriter) throws IOException
+	Ref writeTo(PDFWriter aWriter) throws IOException
 	{
-		if (mPNGImage)
+		if (mResourceRef == null)
 		{
-			preparePNG();
-		}
-		else
-		{
-			prepareJPEG();
-		}
+			Dictionary dic = new Dictionary();
+			dic.put("/Filter", mPNGImage ? "/FlateDecode" : "/DCTDecode");
+			dic.put("/Type", "/XObject");
+			dic.put("/Subtype", "/Image");
+			dic.put("/Width", mWidth);
+			dic.put("/Height", mHeight);
+			dic.put("/BitsPerComponent", mBitsPerComponent);
+			dic.put("/Length", mImageData.length);
 
-		Dictionary dic = new Dictionary();
-		dic.put("/Filter", mPNGImage ? "/FlateDecode" : "/DCTDecode");
-		dic.put("/Type", "/XObject");
-		dic.put("/Subtype", "/Image");
-		dic.put("/Width", mWidth);
-		dic.put("/Height", mHeight);
-		dic.put("/BitsPerComponent", mBitsPerComponent);
-		dic.put("/Length", mImageData.length);
+			switch (mComponentCount)
+			{
+				case 1: dic.put("/ColorSpace", "/DeviceGray"); break;
+				case 3: dic.put("/ColorSpace", "/DeviceRGB"); break;
+				case 4: dic.put("/ColorSpace", "/DeviceCMYK"); break;
+				default: throw new IOException("Unsupported number of color channels in image: " + mComponentCount);
+			}
 
-		switch (mComponentCount)
-		{
-			case 1: dic.put("/ColorSpace", "/DeviceGray"); break;
-			case 3: dic.put("/ColorSpace", "/DeviceRGB"); break;
-			case 4: dic.put("/ColorSpace", "/DeviceCMYK"); break;
-			default: throw new IOException("Unsupported number of color channels in image: " + mComponentCount);
+			mResourceRef = aWriter.print(new Obj(false, new ArrayValue(mImageData), dic));
 		}
 
-		return aWriter.print(new Obj(false, new ArrayValue(mImageData), dic));
+		return mResourceRef;
 	}
 
 
