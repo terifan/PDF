@@ -14,6 +14,7 @@ public class ExtendedFont extends Font implements Value
 	private FontFile mFontFile;
 	private TreeMap<Integer, Integer> mGlyphMap;
 	private byte[] mFontData;
+	private Ref mResourceRef;
 
 
 	public ExtendedFont(byte[] aFontData)
@@ -172,11 +173,18 @@ public class ExtendedFont extends Font implements Value
 	@Override
 	Ref print(PDFWriter aWriter) throws IOException
 	{
-		Ref data = aWriter.print(new Obj(aWriter.mCompress, new ArrayValue(getFontData())));
-		Ref cmap = aWriter.print(new Obj(aWriter.mCompress, this));
+		if (mResourceRef == null)
+		{
+			Ref data = aWriter.print(new Obj(aWriter.mCompress, new ArrayValue(getFontData())));
+			Ref cmap = aWriter.print(new Obj(aWriter.mCompress, this));
 
-		Array box = new Array(mFontFile.getFontBBox());
+			Array box = new Array(mFontFile.getFontBBox());
 
-		return aWriter.print(new Obj(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type0").put("/BaseFont", "/" + mFontFile.getName()).put("/DescendantFonts", new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + mFontFile.getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/FontDescriptor", new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", mFontFile.getAscent()).put("/CapHeight", 715).put("/Descent", mFontFile.getDescent()).put("/Flags", 0).put("/FontBBox", box).put("/FontFile2", data).put("/FontName", "/" + mFontFile.getName()).put("/ItalicAngle", 0).put("/StemV", 76))).put("/Encoding", "/Identity-H").put("/ToUnicode", cmap)));
+			mResourceRef = aWriter.print(new Obj(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type0").put("/BaseFont", "/" + mFontFile.getName()).put("/DescendantFonts", new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + mFontFile.getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/FontDescriptor", new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", mFontFile.getAscent()).put("/CapHeight", 715).put("/Descent", mFontFile.getDescent()).put("/Flags", 0).put("/FontBBox", box).put("/FontFile2", data).put("/FontName", "/" + mFontFile.getName()).put("/ItalicAngle", 0).put("/StemV", 76))).put("/Encoding", "/Identity-H").put("/ToUnicode", cmap)));
+
+			mFontData = null;
+		}
+
+		return mResourceRef;
 	}
 }

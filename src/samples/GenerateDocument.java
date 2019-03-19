@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import pdf.Style;
 import pdf.ExtendedFont;
 import pdf.Font;
+import pdf.Resource;
 import pdf.Image;
 import pdf.ImageArea;
 import pdf.Paragraph;

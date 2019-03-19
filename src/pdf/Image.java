@@ -4,27 +4,23 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.UUID;
 import java.util.zip.DeflaterOutputStream;
 import javax.imageio.ImageIO;
 
 
-public class Image
+public class Image extends Resource
 {
-	private final UUID mUUID;
 	private byte[] mImageData;
 	private boolean mPNGImage;
 	private int mWidth;
 	private int mHeight;
 	private int mComponentCount;
 	private int mBitsPerComponent;
-	private String mIdentity;
 	private Ref mResourceRef;
 
 
 	public Image(byte[] aData, boolean aPngImage) throws IOException
 	{
-		mUUID = UUID.randomUUID();
 		mImageData = aData;
 		mPNGImage = aPngImage;
 
@@ -39,25 +35,8 @@ public class Image
 	}
 
 
-	UUID getUUID()
-	{
-		return mUUID;
-	}
-
-
-	void setIdentity(String aIdentity)
-	{
-		mIdentity = aIdentity;
-	}
-
-
-	public String getIdentity()
-	{
-		return mIdentity;
-	}
-
-
-	Ref writeTo(PDFWriter aWriter) throws IOException
+	@Override
+	Ref print(PDFWriter aWriter) throws IOException
 	{
 		if (mResourceRef == null)
 		{
@@ -79,6 +58,8 @@ public class Image
 			}
 
 			mResourceRef = aWriter.print(new Obj(false, new ArrayValue(mImageData), dic));
+
+			mImageData = null;
 		}
 
 		return mResourceRef;

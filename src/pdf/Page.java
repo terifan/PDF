@@ -10,7 +10,7 @@ public class Page implements AutoCloseable
 {
 	private final PDFWriter mWriter;
 	private StringBuilder mBuffer;
-	private HashMap<String, Font> mFonts;
+	private HashMap<String, Resource> mFonts;
 	private int mImageCount;
 	private Ref mRefContent;
 	private Dictionary mXObjectResourceDictionary;
@@ -69,7 +69,7 @@ public class Page implements AutoCloseable
 			mIdentityMap.put(aImage.getUUID(), identity);
 			aImage.setIdentity(identity);
 
-			mXObjectResourceDictionary.put(identity, aImage.writeTo(mWriter));
+			mXObjectResourceDictionary.put(identity, aImage.print(mWriter));
 		}
 	}
 
@@ -92,7 +92,7 @@ public class Page implements AutoCloseable
 		if (!mFonts.isEmpty())
 		{
 			Dictionary fontsDic = new Dictionary();
-			for (Entry<String, Font> font : mFonts.entrySet())
+			for (Entry<String, Resource> font : mFonts.entrySet())
 			{
 				fontsDic.put(font.getKey(), mWriter.getFontRef(font.getValue()));
 			}
