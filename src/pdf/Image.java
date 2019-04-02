@@ -51,10 +51,17 @@ public class Image extends Resource
 
 			switch (mComponentCount)
 			{
-				case 1: dic.put("/ColorSpace", "/DeviceGray"); break;
-				case 3: dic.put("/ColorSpace", "/DeviceRGB"); break;
-				case 4: dic.put("/ColorSpace", "/DeviceCMYK"); break;
-				default: throw new IOException("Unsupported number of color channels in image: " + mComponentCount);
+				case 1:
+					dic.put("/ColorSpace", "/DeviceGray");
+					break;
+				case 3:
+					dic.put("/ColorSpace", "/DeviceRGB");
+					break;
+				case 4:
+					dic.put("/ColorSpace", "/DeviceCMYK");
+					break;
+				default:
+					throw new IOException("Unsupported number of color channels in image: " + mComponentCount);
 			}
 
 			mResourceRef = aWriter.print(new Obj(false, new ArrayValue(mImageData), dic));
@@ -118,58 +125,58 @@ public class Image extends Resource
 			mBitsPerComponent = 8;
 		}
 
-		byte [] tempBuffer;
+		byte[] tempBuffer;
 
 		if (mComponentCount == 1)
 		{
-			tempBuffer = new byte[(image.getWidth()+7) / 8];
+			tempBuffer = new byte[(image.getWidth() + 7) / 8];
 
 			ByteArrayOutputStream dstBuffer = new ByteArrayOutputStream();
-			DeflaterOutputStream out = new DeflaterOutputStream(dstBuffer);
-
-			for (int y = 0; y < image.getHeight(); y++)
+			try (DeflaterOutputStream out = new DeflaterOutputStream(dstBuffer))
 			{
-				for (int x = 0, i = 0; x < image.getWidth(); x+=8, i++)
+				for (int y = 0; y < image.getHeight(); y++)
 				{
-					int c = 0;
-
-					for (int z = 0; z < Math.min(8, image.getWidth()-x); z++)
+					for (int x = 0, i = 0; x < image.getWidth(); x += 8, i++)
 					{
-						c |= (image.getRGB(x+z,y) & 1) << (7-z);
+						int c = 0;
+
+						for (int z = 0; z < Math.min(8, image.getWidth() - x); z++)
+						{
+							c |= (image.getRGB(x + z, y) & 1) << (7 - z);
+						}
+						tempBuffer[i] = (byte)c;
 					}
-					tempBuffer[i] = (byte)c;
+
+					out.write(tempBuffer);
 				}
 
-				out.write(tempBuffer);
+				out.finish();
 			}
-
-			out.finish();
-			out.close();
 
 			mImageData = dstBuffer.toByteArray();
 		}
 		else
 		{
 			ByteArrayOutputStream dstBuffer = new ByteArrayOutputStream();
-			DeflaterOutputStream out = new DeflaterOutputStream(dstBuffer);
-
-			tempBuffer = new byte[3*image.getWidth()];
-
-			for (int y = 0; y < image.getHeight(); y++)
+			try (DeflaterOutputStream out = new DeflaterOutputStream(dstBuffer))
 			{
-				for (int x = 0, i = 0; x < image.getWidth(); x++)
+				tempBuffer = new byte[3 * image.getWidth()];
+
+				for (int y = 0; y < image.getHeight(); y++)
 				{
-					int c = image.getRGB(x,y);
-					tempBuffer[i++] = (byte)(c>>16);
-					tempBuffer[i++] = (byte)(c>>8);
-					tempBuffer[i++] = (byte)(c);
+					for (int x = 0, i = 0; x < image.getWidth(); x++)
+					{
+						int c = image.getRGB(x, y);
+						tempBuffer[i++] = (byte)(c >> 16);
+						tempBuffer[i++] = (byte)(c >> 8);
+						tempBuffer[i++] = (byte)(c);
+					}
+
+					out.write(tempBuffer);
 				}
 
-				out.write(tempBuffer);
+				out.finish();
 			}
-
-			out.finish();
-			out.close();
 
 			mImageData = dstBuffer.toByteArray();
 		}
