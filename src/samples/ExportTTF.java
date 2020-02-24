@@ -57,15 +57,15 @@ public class ExportTTF
 
 				if (lookup.get(key) != null)
 				{
-					glyphIndex.putArray(Integer.toString(c), new Array(g, lookup.get(key)));
+					glyphIndex.putArray(Integer.toString(c), Array.of(g, lookup.get(key)));
 				}
 				else
 				{
-					glyphIndex.putArray(Integer.toString(c), new Array(g, glyphMetrics.size()));
+					glyphIndex.putArray(Integer.toString(c), Array.of(g, glyphMetrics.size()));
 
 					lookup.put(key, glyphMetrics.size());
 
-					glyphMetrics.add(new Array(aw, lb));
+					glyphMetrics.add(Array.of(aw, lb));
 				}
 			}
 			catch (Exception e)
