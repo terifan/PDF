@@ -23,21 +23,21 @@ public class GenerateDocument
 		try
 		{
 			Font font0 = new StandardFont("Helvetica");
-			Font font1 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\Catamaran-Regular.ttf"));
-			Font font2 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\AmaticSC-Regular.ttf"));
-			Font font3 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\Montez-Regular.ttf"));
-			Font font4 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\OpenSans-Regular.ttf"));
+			Font font1 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\Lux-Montag.ttf"));
+			Font font2 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\Ubuntu-R.ttf"));
+			Font font3 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\OpenSans-Regular.ttf"));
+			Font font4 = new ExtendedFont(Streams.readAll("d:\\Desktop\\pdf\\coolvetica rg.ttf"));
 
-			Style style1 = new Style(font4, 11);
-			Style style2 = new Style(font4, 24);
-			Style style3 = new Style(font1, 8);
-			Style style4 = new Style(font2, 12);
-			Style style5 = new Style(font3, 8);
+			Style style1 = new Style(font1, 11);
+			Style style2 = new Style(font2, 24);
+			Style style3 = new Style(font3, 8);
+			Style style4 = new Style(font4, 12);
+			Style style5 = new Style(font1, 8);
 
 			Image image1 = new Image(Streams.readAll("d:\\Desktop\\pdf\\image1.jpg"), false);
 			Image image2 = new Image(Streams.readAll("d:\\Desktop\\pdf\\image2.png"), true);
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\pdf\\output_java.pdf")).setCompress(!false))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\pdf\\output_java.pdf")).setCompress(true))
 			{
 				try (Page page = pdf.addPage())
 				{
