@@ -2,6 +2,7 @@ package samples;
 
 import font.FontFile;
 import font.truetype.TrueTypeFont;
+import java.io.File;
 import java.util.HashMap;
 import org.terifan.bundle.Array;
 import org.terifan.bundle.Bundle;
@@ -14,10 +15,11 @@ public class ExportTTF
 	{
 		try
 		{
-			export("d:\\Desktop\\pdf\\Catamaran-Regular.ttf");
-			export("d:\\Desktop\\pdf\\AmaticSC-Regular.ttf");
-			export("d:\\Desktop\\pdf\\Montez-Regular.ttf");
-			export("d:\\Desktop\\pdf\\Muli.ttf");
+			File dir = new File("d:\\Desktop\\pdf");
+			export(new File("d:\\Desktop\\pdf\\lux-montag\\lux-montag.ttf"), dir);
+			export(new File("d:\\Desktop\\pdf\\ubuntu\\ubuntu-r.ttf"), dir);
+			export(new File("d:\\Desktop\\pdf\\open-sans\\opensans-regular.ttf"), dir);
+			export(new File("d:\\Desktop\\pdf\\coolvetica\\coolvetica compressed rg.ttf"), dir);
 		}
 		catch (Throwable e)
 		{
@@ -26,7 +28,7 @@ public class ExportTTF
 	}
 
 
-	private static void export(String aInputTTF)
+	private static void export(File aInputTTF, File aOutputFolder)
 	{
 		FontFile fontFile = new TrueTypeFont(Streams.readAll(aInputTTF));
 
@@ -86,6 +88,6 @@ public class ExportTTF
 		bundle.putBundle("GlyphIndex", glyphIndex);
 		bundle.putArray("GlyphMetrics", glyphMetrics);
 
-		Streams.transfer(bundle.marshalJSON(!false).getBytes(), aInputTTF + ".json");
+		Streams.transfer(bundle.marshalJSON(!false).getBytes(), new File(aOutputFolder, aInputTTF.getName() + ".json"));
 	}
 }
