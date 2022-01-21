@@ -36,7 +36,7 @@ public class GenerateDocument
 			Image image1 = new Image(Streams.readAll("d:\\Desktop\\pdf\\image1.jpg"), false);
 			Image image2 = new Image(Streams.readAll("d:\\Desktop\\pdf\\image2.png"), true);
 
-			String russian = "- Я живу в центре Европы - в Польше. Но в каком городе я живу? Ниже я дам несколько советов, которые помогут вам решить эту загадку.";
+			String russian = "- Я живу в центре Европы - в Польше. Но в каком городе живу? Ниже я дам несколько советов, которые помогут вам решить эту загадку.";
 			String greek = "- Ζω στη μέση της Ευρώπης - στην Πολωνία. Αλλά σε ποια πόλη μένω; Παρακάτω θα παρουσιάσω μερικές συμβουλές που θα σας βοηθήσουν να λύσετε αυτό το παζλ.";
 			String polish = "- Mieszkam w środku Europy – w Polsce. Ale w którym mieście mieszkam? Poniżej przedstawię kilka podpowiedzi które powinny ułatwić rozwiązanie tej zagadki.";
 
