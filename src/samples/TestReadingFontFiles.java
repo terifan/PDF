@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
 import org.terifan.pdfwriter.ExtendedFont;
 import org.terifan.pdfwriter.PDFWriter;
 import org.terifan.pdfwriter.Page;
@@ -17,7 +15,7 @@ import org.terifan.pdfwriter.TextArea;
 /**
  * brute force testing Windows TTF files
  */
-public class TestTTF
+public class TestReadingFontFiles
 {
 	public static void main(String ... args)
 	{

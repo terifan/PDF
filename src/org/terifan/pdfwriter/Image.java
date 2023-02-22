@@ -11,20 +11,27 @@ import javax.imageio.ImageIO;
 public class Image extends Resource
 {
 	private byte[] mImageData;
-	private boolean mPNGImage;
 	private int mWidth;
 	private int mHeight;
 	private int mComponentCount;
 	private int mBitsPerComponent;
 	private Ref mResourceRef;
+	private Format mFormat;
 
 
-	public Image(byte[] aData, boolean aPngImage) throws IOException
+	public enum Format
+	{
+		PNG,
+		JPEG
+	}
+
+
+	public Image(byte[] aData, Format aFormat) throws IOException
 	{
 		mImageData = aData;
-		mPNGImage = aPngImage;
+		mFormat = aFormat;
 
-		if (mPNGImage)
+		if (mFormat == Format.PNG)
 		{
 			preparePNG();
 		}
@@ -41,7 +48,7 @@ public class Image extends Resource
 		if (mResourceRef == null)
 		{
 			Dictionary dic = new Dictionary();
-			dic.put("/Filter", mPNGImage ? "/FlateDecode" : "/DCTDecode");
+			dic.put("/Filter", mFormat == Format.PNG ? "/FlateDecode" : "/DCTDecode");
 			dic.put("/Type", "/XObject");
 			dic.put("/Subtype", "/Image");
 			dic.put("/Width", mWidth);
@@ -49,7 +56,7 @@ public class Image extends Resource
 			dic.put("/BitsPerComponent", mBitsPerComponent);
 			dic.put("/Length", mImageData.length);
 
-			switch (mComponentCount)
+ 			switch (mComponentCount)
 			{
 				case 1:
 					dic.put("/ColorSpace", "/DeviceGray");
@@ -65,7 +72,6 @@ public class Image extends Resource
 			}
 
 			mResourceRef = aWriter.print(new Obj(false, new ArrayValue(mImageData), dic));
-
 			mImageData = null;
 		}
 
@@ -75,9 +81,7 @@ public class Image extends Resource
 
 	private void prepareJPEG() throws IOException
 	{
-		ByteArrayInputStream in = new ByteArrayInputStream(mImageData);
-
-		try
+		try (ByteArrayInputStream in = new ByteArrayInputStream(mImageData))
 		{
 			in.skip(4);
 
@@ -101,10 +105,6 @@ public class Image extends Resource
 			mComponentCount = in.read();
 			mBitsPerComponent = 8;
 		}
-		finally
-		{
-			in.close();
-		}
 	}
 
 
@@ -125,13 +125,12 @@ public class Image extends Resource
 			mBitsPerComponent = 8;
 		}
 
-		byte[] tempBuffer;
+		ByteArrayOutputStream dstBuffer = new ByteArrayOutputStream();
 
 		if (mComponentCount == 1)
 		{
-			tempBuffer = new byte[(image.getWidth() + 7) / 8];
+			byte[] temp = new byte[(image.getWidth() + 7) / 8];
 
-			ByteArrayOutputStream dstBuffer = new ByteArrayOutputStream();
 			try (DeflaterOutputStream out = new DeflaterOutputStream(dstBuffer))
 			{
 				for (int y = 0; y < image.getHeight(); y++)
@@ -139,46 +138,38 @@ public class Image extends Resource
 					for (int x = 0, i = 0; x < image.getWidth(); x += 8, i++)
 					{
 						int c = 0;
-
 						for (int z = 0; z < Math.min(8, image.getWidth() - x); z++)
 						{
 							c |= (image.getRGB(x + z, y) & 1) << (7 - z);
 						}
-						tempBuffer[i] = (byte)c;
+						temp[i] = (byte)c;
 					}
 
-					out.write(tempBuffer);
+					out.write(temp);
 				}
-
-				out.finish();
 			}
-
-			mImageData = dstBuffer.toByteArray();
 		}
 		else
 		{
-			ByteArrayOutputStream dstBuffer = new ByteArrayOutputStream();
 			try (DeflaterOutputStream out = new DeflaterOutputStream(dstBuffer))
 			{
-				tempBuffer = new byte[3 * image.getWidth()];
+				byte[] temp = new byte[3 * image.getWidth()];
 
 				for (int y = 0; y < image.getHeight(); y++)
 				{
 					for (int x = 0, i = 0; x < image.getWidth(); x++)
 					{
 						int c = image.getRGB(x, y);
-						tempBuffer[i++] = (byte)(c >> 16);
-						tempBuffer[i++] = (byte)(c >> 8);
-						tempBuffer[i++] = (byte)(c);
+						temp[i++] = (byte)(c >> 16);
+						temp[i++] = (byte)(c >> 8);
+						temp[i++] = (byte)(c);
 					}
 
-					out.write(tempBuffer);
+					out.write(temp);
 				}
-
-				out.finish();
 			}
-
-			mImageData = dstBuffer.toByteArray();
 		}
+
+		mImageData = dstBuffer.toByteArray();
 	}
 }

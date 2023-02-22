@@ -89,7 +89,7 @@ public class Obj
 	}
 
 
-	public void write(Output aOutput) throws IOException
+	void write(Output aOutput) throws IOException
 	{
 		Dictionary dictionary = mDictionary;
 		if (dictionary != null)

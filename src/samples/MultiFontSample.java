@@ -13,25 +13,25 @@ import org.terifan.pdfwriter.StandardFont;
 import org.terifan.pdfwriter.TextArea;
 
 
-public class GenerateDocument
+public class MultiFontSample
 {
 	public static void main(String... args)
 	{
 		try
 		{
 			Font font0 = new StandardFont("Helvetica");
-			Font font1 = new ExtendedFont(GenerateDocument.class.getResourceAsStream("segoepr.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(GenerateDocument.class.getResourceAsStream("verdana.ttf").readAllBytes());
-			Font font3 = new ExtendedFont(GenerateDocument.class.getResourceAsStream("impact.ttf").readAllBytes());
-			Font font4 = new ExtendedFont(GenerateDocument.class.getResourceAsStream("opensans.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(MultiFontSample.class.getResourceAsStream("segoepr.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(MultiFontSample.class.getResourceAsStream("verdana.ttf").readAllBytes());
+			Font font3 = new ExtendedFont(MultiFontSample.class.getResourceAsStream("impact.ttf").readAllBytes());
+			Font font4 = new ExtendedFont(MultiFontSample.class.getResourceAsStream("opensans.ttf").readAllBytes());
 
 			Style style1 = new Style(font1, 11);
 			Style style2 = new Style(font2, 13);
 			Style style3 = new Style(font3, 15);
 			Style style4 = new Style(font4, 17);
 
-			Image image1 = new Image(GenerateDocument.class.getResourceAsStream("image1.jpg").readAllBytes(), false);
-			Image image2 = new Image(GenerateDocument.class.getResourceAsStream("image2.png").readAllBytes(), true);
+			Image image1 = new Image(MultiFontSample.class.getResourceAsStream("image1.jpg").readAllBytes(), Image.Format.JPEG);
+			Image image2 = new Image(MultiFontSample.class.getResourceAsStream("image2.png").readAllBytes(), Image.Format.PNG);
 
 			String russian = "ибо многое, о люди, то же самое произойдет и с вами, как с судьей в этом вопросе, даже более, если вы так преданы им: ибо я видел, что, если вы имеете такое же мнение о других, то также произойдет и о вы, даже если бы это было не так: те, которые не негодуют на тех, кто рождается, но все те, кто стремится причинить такой малый вред, довольны. Если я человек, кто бы он ни был, о, присутствующий у его могилы, по причине чего вы объявляете о человеческих добродетелях в письменных текстах, я embsammen, если тем, кому о них рассказывали в течение нескольких дней, они говорят: но потому что все они люди, все время не хватает по причине, пока вы внемлите рабочим. , по этой причине и город испытывает меня, предусмотренный теми, кто говорит напрасно, из малого заповедь сделана , будучи, таким образом, аббатом, если вы действительно прощаете их, а не слушателей.";
 			String greek = "περὶ πολλοῦ ἂν ποιησαίμην, ὦ ἄνδρες, τὸ τοιούτους ὑμᾶς ἐμοὶ δικαστὰς περὶ τούτου τοῦ πράγματος γενέσθαι, οἷοίπερ ἂν ὑμῖν αὐτοῖς εἴητε τοιαῦτα πεπονθότες: εὖ γὰρ οἶδ᾽ ὅτι, εἰ τὴν αὐτὴν γνώμην περὶ τῶν ἄλλων ἔχοιτε, ἥνπερ περὶ ὑμῶν αὐτῶν, οὐκ ἂν εἴη: ὅστις οὐκ ἐπὶ τοῖς γεγενημένοις ἀγανακτοίη, ἀλλὰ πάντες ἂν περὶ τῶν τὰ τοιαῦτα ἐπιτηδευόντων τὰς ζημίας μικρὰς ἡγοῖσθε. εἰ μὲν ἡγούμην οἷόν τε εἶναι, ὦ παρόντες ἐπὶ τῷδε τῷ τάφῳ, λόγῳ δηλῶσαι τὴν τῶν ἐνθάδε κειμένων ἀνδρῶν ἀρετήν, ἐμεμψάμην ἂν τοῖς ἐπαγγείλασιν ἐπ᾽ αὐτοῖς ἐξ ὀλίγων ἡμερῶν λέγειν: ἐπειδὴ δὲ πᾶσιν ἀνθρώποις ὁ πᾶς χρόνος οὐχ ἱκανὸς λόγον ἴσον παρασκευάσαι τοῖς τούτων ἔργοις, διὰ τοῦτο καὶ ἡ πόλις μοι δοκεῖ, προνοουμένη τῶν ἐνθάδε λεγόντων, ἐξ ὀλίγου τὴν πρόσταξιν ποιεῖσθαι, ἡγουμένη οὕτως ἂν μάλιστα συγγνώμης αὐτοὺς παρὰ τῶν ἀκουσάντων τυγχάνειν.";
