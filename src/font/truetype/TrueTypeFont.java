@@ -22,7 +22,7 @@ public class TrueTypeFont implements FontFile
 	private HHEA mHHEA;
 	private HMTX mHMTX;
 	private NAME mNAME;
-	private CMap4 mCmap;
+	private CMap[] mCmap;
 	private HashMap<String, Table> mTables;
 
 
@@ -135,14 +135,20 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public int findGlyphIndexImpl(int aCharacter)
 	{
-		int glyph = mCmap.findGlyphIndex(aCharacter);
-
-		if (glyph == -1)
+		for (CMap cmap : mCmap)
 		{
-			throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", " + (char)aCharacter);
+			if (cmap != null)
+			{
+				int glyph = cmap.findGlyphIndex(aCharacter);
+
+				if (glyph != -1)
+				{
+					return glyph;
+				}
+			}
 		}
 
-		return glyph;
+		throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", " + (char)aCharacter);
 	}
 
 
@@ -161,7 +167,7 @@ public class TrueTypeFont implements FontFile
 
 			if (!tag.equals("head"))
 			{
-				if (table.mOffset + table.mLength > mBuffer.length() || (int)calculateTableChecksum(table.mOffset, table.mLength) != table.mChecksum)
+				if (table.mOffset + table.mLength > mBuffer.length() || calculateTableChecksum(table.mOffset, table.mLength) != table.mChecksum)
 				{
 					throw new IllegalStateException("Checksum error: tag: " + tag + ", table: " + table);
 				}
@@ -172,7 +178,7 @@ public class TrueTypeFont implements FontFile
 	}
 
 
-	private long calculateTableChecksum(int aOffset, int aLength)
+	private int calculateTableChecksum(int aOffset, int aLength)
 	{
 		int old = mBuffer.position();
 
@@ -185,16 +191,17 @@ public class TrueTypeFont implements FontFile
 		}
 
 		mBuffer.position(old);
-		return sum;
+		return (int)sum;
 	}
 
 
+	// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html
 	private void readCharacterMap()
 	{
 		mBuffer.position(mTables.get("cmap").mOffset);
 
-		int version = mBuffer.getInt16();
-		int numberSubtables = mBuffer.getInt16();
+		int version = mBuffer.getUint16();
+		int numberSubtables = mBuffer.getUint16();
 
 		if (version != 0)
 		{
@@ -205,27 +212,40 @@ public class TrueTypeFont implements FontFile
 
 		for (int i = 0; i < numberSubtables; i++)
 		{
-			int p = mBuffer.getInt16();
-			int ps = mBuffer.getInt16();
-			int o = mBuffer.getInt32();
+			int platformId = mBuffer.getUint16();
+			int platformSpecificId = mBuffer.getUint16();
+			int offset = mBuffer.getInt32();
 
-			Platform platform = Platform.values()[p];
-			PlatformSpecific platformSpecific = platform == Platform.Microsoft ? PlatformSpecific.values()[7 + ps] : PlatformSpecific.values()[ps];
+			if (offset < 0)
+			{
+				throw new IllegalArgumentException();
+			}
 
-			cmap[i] = new CMapTable(platform, platformSpecific, o);
+			Platform platform = Platform.values()[platformId];
+			PlatformSpecific platformSpecific = platform == Platform.Microsoft ? PlatformSpecific.values()[PlatformSpecific.Symbol.ordinal() + platformSpecificId] : PlatformSpecific.values()[platformSpecificId];
+
+			cmap[i] = new CMapTable(platform, platformSpecific, (int)offset);
 		}
 
-		mBuffer.position(mTables.get("cmap").mOffset + cmap[0].mOffset);
+		mCmap = new CMap[numberSubtables];
 
-		int cmapFormat = mBuffer.getUint16();
-
-		switch (cmapFormat)
+		for (int i = 0; i < numberSubtables; i++)
 		{
-			case 4:
-				mCmap = new CMap4(mBuffer);
-				break;
-			default:
-				throw new IllegalStateException("Cmap not implemented: " + cmapFormat);
+			mBuffer.position(mTables.get("cmap").mOffset + cmap[i].mOffset);
+
+			int cmapFormat = mBuffer.getUint16();
+
+			switch (cmapFormat)
+			{
+				case 0:
+					mCmap[i] = new CMap0(mBuffer);
+					break;
+				case 4:
+					mCmap[i] = new CMap4(mBuffer);
+					break;
+//				default:
+//					throw new IllegalStateException("Cmap not implemented: " + cmapFormat);
+			}
 		}
 	}
 }

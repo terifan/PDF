@@ -3,9 +3,9 @@ package font.truetype;
 
 enum PlatformSpecific
 {
-	Default_semantics,
+	Version_1_0_semantics,
 	Version_1_1_semantics,
-	ISO10646_1993_semantics,
+	ISO_10646_1993_semantics,
 	Unicode_2_0_semantics_BMP_only,
 	Unicode_2_0_semantics_non_BMP_allowed,
 	Unicode_variation_sequences,

@@ -37,6 +37,19 @@ class ByteBufferReader
 	}
 
 
+	public int getInt8()
+	{
+		try
+		{
+			return mData[mPosition++];
+		}
+		catch (ArrayIndexOutOfBoundsException e)
+		{
+			return 0;
+		}
+	}
+
+
 	public int getUint8()
 	{
 		try
@@ -114,7 +127,7 @@ class ByteBufferReader
 	}
 
 
-	public int[] getUint16array(int aLength)
+	public int[] getUint16Array(int aLength)
 	{
 		int[] buffer = new int[aLength];
 		for (int i = 0; i < buffer.length; i++)
@@ -125,12 +138,34 @@ class ByteBufferReader
 	}
 
 
-	public int[] getInt16array(int aLength)
+	public int[] getInt16Array(int aLength)
 	{
 		int[] buffer = new int[aLength];
 		for (int i = 0; i < buffer.length; i++)
 		{
 			buffer[i] = getInt16();
+		}
+		return buffer;
+	}
+
+
+	public int[] getUint8Array(int aLength)
+	{
+		int[] buffer = new int[aLength];
+		for (int i = 0; i < buffer.length; i++)
+		{
+			buffer[i] = getUint8();
+		}
+		return buffer;
+	}
+
+
+	public int[] getInt8Array(int aLength)
+	{
+		int[] buffer = new int[aLength];
+		for (int i = 0; i < buffer.length; i++)
+		{
+			buffer[i] = getInt8();
 		}
 		return buffer;
 	}
