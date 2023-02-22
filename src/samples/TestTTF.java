@@ -6,12 +6,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
-import pdf.ExtendedFont;
-import pdf.PDFWriter;
-import pdf.Page;
-import pdf.Paragraph;
-import pdf.Style;
-import pdf.TextArea;
+import org.terifan.pdfwriter.ExtendedFont;
+import org.terifan.pdfwriter.PDFWriter;
+import org.terifan.pdfwriter.Page;
+import org.terifan.pdfwriter.Paragraph;
+import org.terifan.pdfwriter.Style;
+import org.terifan.pdfwriter.TextArea;
 
 
 /**

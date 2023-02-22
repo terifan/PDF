@@ -1,0 +1,56 @@
+package org.terifan.font.truetype;
+
+import java.util.HashMap;
+
+
+class HHEA
+{
+	double mVersion;
+	float mAscent;
+	float mDescent;
+	float mLineGap;
+	float mAdvanceWidthMax;
+	float mMinLeftSideBearing;
+	float mMinRightSideBearing;
+	float mXMaxExtent;
+	int mCaretSlopeRise;
+	int mCaretSlopeRun;
+	float mCaretOffset;
+	int mReserved1;
+	int mReserved2;
+	int mReserved3;
+	int mReserved4;
+	int mMetricDataFormat;
+	int mNumOfLongHorMetrics;
+
+
+	public HHEA(ByteBufferReader mBuffer, HashMap<String, Table> mTables)
+	{
+		mBuffer.position(mTables.get("hhea").mOffset);
+
+		mVersion = mBuffer.getFixed();
+		mAscent = mBuffer.getFword();
+		mDescent = mBuffer.getFword();
+		mLineGap = mBuffer.getFword();
+		mAdvanceWidthMax = mBuffer.getFword();
+		mMinLeftSideBearing = mBuffer.getFword();
+		mMinRightSideBearing = mBuffer.getFword();
+		mXMaxExtent = mBuffer.getFword();
+		mCaretSlopeRise = mBuffer.getInt16();
+		mCaretSlopeRun = mBuffer.getInt16();
+		mCaretOffset = mBuffer.getFword();
+		mReserved1 = mBuffer.getInt16();
+		mReserved2 = mBuffer.getInt16();
+		mReserved3 = mBuffer.getInt16();
+		mReserved4 = mBuffer.getInt16();
+		mMetricDataFormat = mBuffer.getInt16();
+		mNumOfLongHorMetrics = mBuffer.getUint16();
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "HHEA{" + "mVersion=" + mVersion + ", mAscent=" + mAscent + ", mDescent=" + mDescent + ", mLineGap=" + mLineGap + ", mAdvanceWidthMax=" + mAdvanceWidthMax + ", mMinLeftSideBearing=" + mMinLeftSideBearing + ", mMinRightSideBearing=" + mMinRightSideBearing + ", mXMaxExtent=" + mXMaxExtent + ", mCaretSlopeRise=" + mCaretSlopeRise + ", mCaretSlopeRun=" + mCaretSlopeRun + ", mCaretOffset=" + mCaretOffset + ", mReserved1=" + mReserved1 + ", mReserved2=" + mReserved2 + ", mReserved3=" + mReserved3 + ", mReserved4=" + mReserved4 + ", mMetricDataFormat=" + mMetricDataFormat + ", mNumOfLongHorMetrics=" + mNumOfLongHorMetrics + '}';
+	}
+}

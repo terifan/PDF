@@ -1,23 +1,16 @@
 package samples;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.stream.Collectors;
-import pdf.Style;
-import pdf.ExtendedFont;
-import pdf.Font;
-import pdf.Image;
-import pdf.ImageArea;
-import pdf.Paragraph;
-import pdf.PDFWriter;
-import pdf.Page;
-import pdf.Span;
-import pdf.StandardFont;
-import pdf.TextArea;
+import org.terifan.pdfwriter.Style;
+import org.terifan.pdfwriter.ExtendedFont;
+import org.terifan.pdfwriter.Font;
+import org.terifan.pdfwriter.Image;
+import org.terifan.pdfwriter.ImageArea;
+import org.terifan.pdfwriter.Paragraph;
+import org.terifan.pdfwriter.PDFWriter;
+import org.terifan.pdfwriter.Page;
+import org.terifan.pdfwriter.StandardFont;
+import org.terifan.pdfwriter.TextArea;
 
 
 public class GenerateDocument
@@ -37,8 +30,8 @@ public class GenerateDocument
 			Style style3 = new Style(font3, 15);
 			Style style4 = new Style(font4, 17);
 
-			Image image1 = new Image(Files.readAllBytes(Paths.get("d:\\Desktop\\_desktop\\pdf\\image1.jpg")), false);
-			Image image2 = new Image(Files.readAllBytes(Paths.get("d:\\Desktop\\_desktop\\pdf\\image2.png")), true);
+			Image image1 = new Image(GenerateDocument.class.getResourceAsStream("image1.jpg").readAllBytes(), false);
+			Image image2 = new Image(GenerateDocument.class.getResourceAsStream("image2.png").readAllBytes(), true);
 
 			String russian = "ибо многое, о люди, то же самое произойдет и с вами, как с судьей в этом вопросе, даже более, если вы так преданы им: ибо я видел, что, если вы имеете такое же мнение о других, то также произойдет и о вы, даже если бы это было не так: те, которые не негодуют на тех, кто рождается, но все те, кто стремится причинить такой малый вред, довольны. Если я человек, кто бы он ни был, о, присутствующий у его могилы, по причине чего вы объявляете о человеческих добродетелях в письменных текстах, я embsammen, если тем, кому о них рассказывали в течение нескольких дней, они говорят: но потому что все они люди, все время не хватает по причине, пока вы внемлите рабочим. , по этой причине и город испытывает меня, предусмотренный теми, кто говорит напрасно, из малого заповедь сделана , будучи, таким образом, аббатом, если вы действительно прощаете их, а не слушателей.";
 			String greek = "περὶ πολλοῦ ἂν ποιησαίμην, ὦ ἄνδρες, τὸ τοιούτους ὑμᾶς ἐμοὶ δικαστὰς περὶ τούτου τοῦ πράγματος γενέσθαι, οἷοίπερ ἂν ὑμῖν αὐτοῖς εἴητε τοιαῦτα πεπονθότες: εὖ γὰρ οἶδ᾽ ὅτι, εἰ τὴν αὐτὴν γνώμην περὶ τῶν ἄλλων ἔχοιτε, ἥνπερ περὶ ὑμῶν αὐτῶν, οὐκ ἂν εἴη: ὅστις οὐκ ἐπὶ τοῖς γεγενημένοις ἀγανακτοίη, ἀλλὰ πάντες ἂν περὶ τῶν τὰ τοιαῦτα ἐπιτηδευόντων τὰς ζημίας μικρὰς ἡγοῖσθε. εἰ μὲν ἡγούμην οἷόν τε εἶναι, ὦ παρόντες ἐπὶ τῷδε τῷ τάφῳ, λόγῳ δηλῶσαι τὴν τῶν ἐνθάδε κειμένων ἀνδρῶν ἀρετήν, ἐμεμψάμην ἂν τοῖς ἐπαγγείλασιν ἐπ᾽ αὐτοῖς ἐξ ὀλίγων ἡμερῶν λέγειν: ἐπειδὴ δὲ πᾶσιν ἀνθρώποις ὁ πᾶς χρόνος οὐχ ἱκανὸς λόγον ἴσον παρασκευάσαι τοῖς τούτων ἔργοις, διὰ τοῦτο καὶ ἡ πόλις μοι δοκεῖ, προνοουμένη τῶν ἐνθάδε λεγόντων, ἐξ ὀλίγου τὴν πρόσταξιν ποιεῖσθαι, ἡγουμένη οὕτως ἂν μάλιστα συγγνώμης αὐτοὺς παρὰ τῶν ἀκουσάντων τυγχάνειν.";
@@ -46,7 +39,7 @@ public class GenerateDocument
 			String latvian = "jo daudz kas, ak, cilvēki, notiks ar jums kā šīs lietas tiesnesim, vēl jo vairāk, ja jūs viņiem tik ļoti uzticēsities: jo esmu redzējis, ka, ja jums būs tāds pats viedoklis par citiem, tas notiks arī jūs, pat ja tā nebūtu: tie, kas nav sašutuši par dzimušajiem, bet visi tie, kas cenšas nodarīt tik mazu ļaunumu, ir apmierināti. Ja es esmu cilvēks, lai kas arī viņš būtu, ak, kas atrodas pie viņa kapa, kura dēļ jūs rakstītajos tekstos pasludināt cilvēku tikumus, es apsveicu, ja tiem, kam par tiem ir stāstīts dažas dienas, viņi saka: jo viņi visi ir vīrieši, ar visu laiku nepietiek, kamēr jūs rūpējaties par strādniekiem. , šī iemesla dēļ arī pilsēta mani pārbauda, ​​ko nodrošina tie, kas runā veltīgi, no mazuma rodas bauslis , tādējādi būdams abats, ja tiešām jūs viņiem piedodat, nevis klausītāji.";
 			String english = "for many things, O people, will happen to you as the judge of this matter, the more so if you put so much trust in them: for I have seen that if you have the same opinion of others, it will happen to you also, even if so would not be: those who are not outraged at the born, but all those who seek to do so little harm are satisfied. If I am a man, whoever he may be, O who is at his grave, for whose sake you in the written to proclaim the virtues of men in texts, I congratulate them if those who have been told about them for a few days say: because they are all men, all the time is not enough while you take care of the workers. , for this reason also the city examines me, which is provided by those who speak in vain, from a little comes the commandment , thus being an abbot, if indeed you forgive them and not the listeners.";
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\Desktop\\_desktop\\pdf\\output_java.pdf")).setCompress(true))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(true))
 			{
 				try (Page page = pdf.addPage())
 				{
