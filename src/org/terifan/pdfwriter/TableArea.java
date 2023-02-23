@@ -2,6 +2,7 @@ package org.terifan.pdfwriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import static org.terifan.pdfwriter.Utilities.fillRect;
 
 
 public class TableArea implements Producer
@@ -11,6 +12,7 @@ public class TableArea implements Producer
 	private double mBoundsBottom;
 	private double mBoundsRight;
 	private Table mTable;
+	private Color mBackgroundColor;
 
 
 	public TableArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Table aTable)
@@ -23,6 +25,19 @@ public class TableArea implements Producer
 	}
 
 
+	public Color getBackgroundColor()
+	{
+		return mBackgroundColor;
+	}
+
+
+	public TableArea setBackgroundColor(Color aBackgroundColor)
+	{
+		mBackgroundColor = aBackgroundColor;
+		return this;
+	}
+
+
 	@Override
 	public String produce(PDFWriter aPDFWriter, Page aPage) throws IOException
 	{
@@ -30,12 +45,7 @@ public class TableArea implements Producer
 
 		Output content = new Output(baos);
 
-		content.println("0.8 0.8 0.8 rg");
-		content.println(mBoundsLeft + " " + mBoundsTop + " m");
-		content.println(mBoundsRight + " " + mBoundsTop + " l");
-		content.println(mBoundsRight + " " + mBoundsBottom + " l");
-		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
-		content.println("f");
+		fillRect(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackgroundColor, null);
 
 		double boundsWidth = mBoundsRight - mBoundsLeft;
 		double[] columnWidths = mTable.getColumnWidths();
@@ -66,45 +76,48 @@ public class TableArea implements Producer
 				break;
 			}
 
+			double y1 = y0 - rowHeight;
+
+			boolean visible = false;
+			for (int column = 0; column < columnWidths.length; column++)
+			{
+				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
+				if (!paragraph.getLayout().isEmpty())
+				{
+					visible |= y0 - paragraph.getLayout().get(0).mHeight > mBoundsBottom;
+				}
+			}
+			if(!visible)
+			{
+				break;
+			}
+
+			fillRect(content, mBoundsLeft, y0, mBoundsRight, y1, mTable.getFillColor(), mTable.getStrokeColor());
+
 			x0 = mBoundsLeft;
 			for (int column = 0; column < columnWidths.length; column++)
 			{
 				double cw = columnWidths[column] * boundsWidth;
 				double x1 = x0 + cw;
-				double y1 = y0 - rowHeight;
-
-//				content.println("0 0 1 RG");
-//				content.println(x0 + " " + y0 + " m");
-//				content.println(x1 + " " + y0 + " l");
-//				content.println(x1 + " " + y1 + " l");
-//				content.println(x0 + " " + y1 + " l");
-//				content.println("s");
 
 				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
+
+				fillRect(content, x0, y0, x1, Math.max(y1, mBoundsBottom), mTable.getCellFillColor(), mTable.getCellBorderColor());
 
 				paragraph.produce(aPDFWriter, content, aPage, y0, x0, mBoundsBottom, x1);
 
 				x0 = x1;
 			}
 
-			if (y0 - rowHeight < mBoundsBottom) break;
-
 			y0 -= rowHeight;
+
+			if (y0 < mBoundsBottom)
+			{
+				break;
+			}
 
 			mTable.mRenderRow++;
 		}
-
-//		content.print("q ");
-//		content.print(mBoundsRight - mBoundsLeft);
-//		content.print(" 0 ");
-//		content.print(" 0 ");
-//		content.print(mBoundsTop - mBoundsBottom);
-//		content.print(" ");
-//		content.print(mBoundsLeft);
-//		content.print(" ");
-//		content.print(mBoundsBottom);
-//		content.print(" cm " + mTable.getIdentity());
-//		content.println(" Do Q");
 
 		return baos.toString();
 	}

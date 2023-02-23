@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static org.terifan.pdfwriter.Utilities.fillRect;
 
 
 public class Paragraph
@@ -14,7 +15,7 @@ public class Paragraph
 	private double mHeight;
 	private Color mStrokeColor;
 	private Color mFillColor;
-	private ArrayList<ArrayList<Chunk>> mLayout;
+	private ArrayList<Row> mLayout;
 	private boolean mReady;
 
 
@@ -76,6 +77,12 @@ public class Paragraph
 	}
 
 
+	public ArrayList<Row> getLayout()
+	{
+		return mLayout;
+	}
+
+
 	public ArrayList<Span> getSpans()
 	{
 		return mSpans;
@@ -104,7 +111,6 @@ public class Paragraph
 			ArrayList<Chunk> row = mLayout.get(0);
 
 			double rowHeight = 0;
-
 			for (Chunk chunk : row)
 			{
 				rowHeight = Math.max(rowHeight, chunk.span.getStyle().getLineHeight());
@@ -117,19 +123,25 @@ public class Paragraph
 
 			mLayout.remove(0);
 
-			if (firstRow && (mStrokeColor != null || mFillColor != null))
+			if (firstRow)
 			{
-				double y1 = Math.max(aBoundsTop - mHeight, aBoundsBottom);
-
-				if (mStrokeColor != null) aContent.println("%s RG", mStrokeColor);
-				if (mFillColor != null) aContent.println("%s rg", mFillColor);
-				aContent.println(aBoundsLeft + " " + aBoundsTop + " m");
-				aContent.println(aBoundsRight + " " + aBoundsTop + " l");
-				aContent.println(aBoundsRight + " " + y1 + " l");
-				aContent.println(aBoundsLeft + " " + y1 + " l");
-				aContent.println(mFillColor != null && mStrokeColor != null ? "B" : mFillColor != null ? "f" : "s");
-
+				fillRect(aContent, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mStrokeColor);
 				firstRow = false;
+			}
+
+			if (mAlignment == Alignment.CENTER || mAlignment == Alignment.RIGHT)
+			{
+				double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+				if (mAlignment == Alignment.CENTER)
+				{
+					adjust /= 2;
+				}
+				for (Chunk chunk : row)
+				{
+					chunk.x0 += adjust;
+					chunk.x1 += adjust;
+					chunk.xt += adjust;
+				}
 			}
 
 			for (Chunk chunk : row)
@@ -142,28 +154,17 @@ public class Paragraph
 				chunk.y1 = nextOffsetY - rowHeight;
 				chunk.yt = chunk.y1 + style.getLineHeight();
 
-				if (style.getBoxStrokeColor() != null || style.getBoxFillColor() != null)
-				{
-					double x1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
-
-					if (style.getBoxStrokeColor() != null) aContent.println("%s RG", style.getBoxStrokeColor());
-					if (style.getBoxFillColor() != null) aContent.println("%s rg", style.getBoxFillColor());
-					aContent.println(chunk.x0 + " " + chunk.y0 + " m");
-					aContent.println(x1 + " " + chunk.y0 + " l");
-					aContent.println(x1 + " " + chunk.y1 + " l");
-					aContent.println(chunk.x0 + " " + chunk.y1 + " l");
-					aContent.println(style.getBoxFillColor() != null && style.getBoxStrokeColor() != null ? "B" : style.getBoxFillColor() != null ? "f" : "s");
-				}
+				fillRect(aContent, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, style.getFillColor(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
 					double x1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
 
 					aContent.println("%s rg", style.getHighlightColor());
-					aContent.println(chunk.x0 + " " + chunk.yt + " m");
-					aContent.println(x1 + " " + chunk.yt + " l");
-					aContent.println(x1 + " " + chunk.y1 + " l");
-					aContent.println(chunk.x0 + " " + chunk.y1 + " l");
+					aContent.println("%f %f m", chunk.x0, chunk.yt);
+					aContent.println("%f %f l", x1, chunk.yt);
+					aContent.println("%f %f l", x1, chunk.y1);
+					aContent.println("%f %f l", chunk.x0, chunk.y1);
 					aContent.println("f");
 				}
 
@@ -206,8 +207,8 @@ public class Paragraph
 	{
 		mReady = true;
 
-		ArrayList<ArrayList<Chunk>> rows = new ArrayList<>();
-		ArrayList<Chunk> currentRow = new ArrayList<>();
+		ArrayList<Row> rows = new ArrayList<>();
+		Row currentRow = new Row();
 		rows.add(currentRow);
 
 		ArrayList<Span> spans = getSpans();
@@ -259,7 +260,7 @@ public class Paragraph
 				if (oBreakLine.get())
 				{
 					x = aBoundsLeft;
-					currentRow = new ArrayList<>();
+					currentRow = new Row();
 					rows.add(currentRow);
 				}
 			}
@@ -268,7 +269,7 @@ public class Paragraph
 		mLayout = rows;
 		mHeight = 0;
 
-		for (ArrayList<Chunk> row : mLayout)
+		for (Row row : mLayout)
 		{
 			double rowHeight = 0;
 
@@ -277,6 +278,7 @@ public class Paragraph
 				rowHeight = Math.max(rowHeight, chunk.span.getStyle().getLineHeight());
 			}
 
+			row.mHeight = rowHeight;
 			mHeight += rowHeight;
 		}
 	}
@@ -303,11 +305,13 @@ public class Paragraph
 				break;
 			}
 
-			if (aSpan.getText().charAt(aTextOffset + i) == '-')
+			char c = aSpan.getText().charAt(aTextOffset + i);
+
+			if (c == '-' || c == '.' || c == ':' || c == ';' || c == '/')
 			{
 				len = i;
 			}
-			else if (aSpan.getText().charAt(aTextOffset + i) == ' ' || aSpan.getText().charAt(aTextOffset + i) == '-')
+			else if (c == ' ')
 			{
 				len = i + 1;
 			}
@@ -317,7 +321,13 @@ public class Paragraph
 	}
 
 
-	private static class Chunk
+	static class Row extends ArrayList<Chunk>
+	{
+		double mHeight;
+	}
+
+
+	static class Chunk
 	{
 		double x0;
 		double x1;

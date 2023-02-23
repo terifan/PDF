@@ -47,14 +47,17 @@ public class TestTable
 
 				Table table = new Table(0.3, 0.5, 0.2)
 					.setRepeatHeader(true)
-					.setBreakRows(!true);
+					.setBreakRows(!true)
+//					.setCellFillColor(Color.YELLOW)
+					.setCellBorderColor(Color.RED)
+					;
 
 				table.setHeader(Arrays.asList(
 					new Paragraph(new Style(fonts[0], sizes[1]), "ID"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Description"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Price")
 				));
-				for (int i = 0; i < 10; i++)
+				for (int i = 0; i < 100; i++)
 				{
 					ArrayList<Span> name = new ArrayList<>();
 					name.add(new Span(new Style().setFont(fonts[0]), i + " "));
@@ -67,28 +70,31 @@ public class TestTable
 							.setTextColor(textColors[rnd.nextInt(textColors.length)]);
 
 						if (rnd.nextBoolean()) style.setHighlightColor(highlightColors[rnd.nextInt(highlightColors.length)]);
-						if (rnd.nextBoolean()) style.setBoxStrokeColor(boxStrokeColor[rnd.nextInt(boxStrokeColor.length)]);
-						if (rnd.nextBoolean()) style.setBoxFillColor(boxFillColor[rnd.nextInt(boxFillColor.length)]);
+						if (rnd.nextBoolean()) style.setBorderColor(boxStrokeColor[rnd.nextInt(boxStrokeColor.length)]);
+						if (rnd.nextBoolean()) style.setFillColor(boxFillColor[rnd.nextInt(boxFillColor.length)]);
 
-						name.add(new Span(style, i+words.get(rnd.nextInt(words.size())) + " "));
+						name.add(new Span(style, i+words.get(rnd.nextInt(words.size())) + "s "));
 					}
 
 					table.addRow(Arrays.asList(
 						new Paragraph(new Style(fonts[0], sizes[1]), "product-" + i),
-						new Paragraph(name).setStrokeColor(Color.RED),
-						new Paragraph(new Style(fonts[0], sizes[1]), String.format("%5.2f", rnd.nextDouble()*100)).setAlignment(Alignment.RIGHT)
+						new Paragraph(name),
+						new Paragraph(new Style(fonts[0], sizes[1]), String.format("%.2f", rnd.nextDouble()*100)).setAlignment(Alignment.RIGHT)
 					));
 				}
 
 				try (Page page = pdf.addPage())
 				{
-					page.append(new TableArea(780, 70, 470, 530, table));
-					page.append(new TableArea(450, 70, 70, 530, table));
+					page.append(new TableArea(780, 70, 420, 530, table));
+					page.append(new TableArea(400, 70, 70, 530, table));
 				}
 
-				try (Page page = pdf.addPage())
+				while (!table.isConsumed())
 				{
-					page.append(new TableArea(780, 70, 70, 530, table));
+					try (Page page = pdf.addPage())
+					{
+						page.append(new TableArea(780, 70, 70, 530, table).setBackgroundColor(Color.LIGHT_GRAY));
+					}
 				}
 			}
 		}

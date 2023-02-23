@@ -1,12 +1,10 @@
 package org.terifan.pdfwriter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class Table implements Producer
+public class Table
 {
 	private List<Paragraph> mHeader;
 	private List<List<Paragraph>> mContents;
@@ -15,7 +13,11 @@ public class Table implements Producer
 	private boolean mRepeatHeader;
 	private boolean mBreakRows;
 	private Margins mMargins;
-	private Color mGridColor;
+	private Color mStrokeColor;
+	private Color mFillColor;
+	private Color mCellBorderColor;
+	private Color mCellFillColor;
+	private Margins mCellPadding;
 	private boolean mDrawGrid;
 	private double mRowPaddingBottom;
 
@@ -28,8 +30,73 @@ public class Table implements Producer
 
 		mContents = new ArrayList<>();
 		mHeader = new ArrayList<>();
-		mGridColor = Color.BLACK;
 		mMargins = new Margins();
+		mCellPadding = new Margins(0, 0, 0, 0);
+	}
+
+
+	public Margins getCellPadding()
+	{
+		return mCellPadding;
+	}
+
+
+	public Table setCellPadding(Margins aCellPadding)
+	{
+		mCellPadding = aCellPadding;
+		return this;
+	}
+
+
+	public Color getCellBorderColor()
+	{
+		return mCellBorderColor;
+	}
+
+
+	public Table setCellBorderColor(Color aCellBorderColor)
+	{
+		this.mCellBorderColor = aCellBorderColor;
+		return this;
+	}
+
+
+	public Color getCellFillColor()
+	{
+		return mCellFillColor;
+	}
+
+
+	public Table setCellFillColor(Color aCellFillColor)
+	{
+		this.mCellFillColor = aCellFillColor;
+		return this;
+	}
+
+
+	public Color getStrokeColor()
+	{
+		return mStrokeColor;
+	}
+
+
+	public Table setStrokeColor(Color aStrokeColor)
+	{
+		this.mStrokeColor = aStrokeColor;
+		return this;
+	}
+
+
+	public Color getFillColor()
+	{
+		return mFillColor;
+	}
+
+
+	public Table setFillColor(Color aFillColor)
+	{
+		this.mFillColor = aFillColor;
+		return this;
 	}
 
 
@@ -115,44 +182,9 @@ public class Table implements Producer
 	}
 
 
-//	public Table add(double aWidth, ContentStream aContentStream)
-//	{
-//		if (mColumnCount > 0 && mNextColumn == mColumnCount)
-//		{
-//			mNextColumn = 0;
-//			mWriteRow++;
-//		}
-//
-//		if (mColumnWidths.size() == mWriteRow)
-//		{
-//			mColumnWidths.add(new ArrayList<>());
-//			mContents.add(new ArrayList<>());
-//		}
-//
-//		mColumnWidths.get(mWriteRow).add(aWidth);
-//		mContents.get(mWriteRow).add(aContentStream);
-//
-//		mNextColumn++;
-//
-//		return this;
-//	}
-
-
 	public Margins getMargins()
 	{
 		return mMargins;
-	}
-
-
-	public Color getGridColor()
-	{
-		return mGridColor;
-	}
-
-
-	public void setGridColor(Color aGridColor)
-	{
-		mGridColor = aGridColor;
 	}
 
 
@@ -162,124 +194,8 @@ public class Table implements Producer
 	}
 
 
-	@Override
-	public String produce(PDFWriter aPDFWriter, Page aPage) throws IOException
+	public boolean isConsumed()
 	{
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Output content = new Output(baos);
-
-		return baos.toString();
+		return mRenderRow >= mContents.size();
 	}
-
-//	public String getContent(double aOriginX, double aOriginY, double aWidth, double aHeight) throws IOException
-//	{
-//		StringBuilder builder = new StringBuilder();
-//
-//		mLayoutHeight = 0;
-//
-//		boolean drawExtraTableHeader = mRepeatFirstRow && mReadRow > 0;
-//
-//		for (; mReadRow < mContents.size();)
-//		{
-//			int row = mReadRow;
-//			if (drawExtraTableHeader)
-//			{
-//				row = 0;
-//			}
-//
-//			double offsetX = 0;
-//			double rowHeight = 0;
-//			boolean consumed = true;
-//
-//			for (int column = 0; column < mColumnWidths.get(row).size(); column++)
-//			{
-//				double x = aOriginX + offsetX;
-//				double y = aOriginY - mLayoutHeight;
-//				double w = aWidth * mColumnWidths.get(row).get(column);
-//				double h = aHeight - mLayoutHeight;
-//
-//				if (drawExtraTableHeader)
-//				{
-//					mContents.get(row).get(column).reuseContent();
-//				}
-//
-//				ContentArea contentArea = new ContentArea(x, y, w, h, mContents.get(row).get(column));
-//				builder.append(contentArea.getContent());
-//				rowHeight = Math.max(rowHeight, contentArea.getLayoutHeight() + mRowPaddingBottom);
-//				offsetX += w;
-//
-//				consumed &= mContents.get(row).get(column).isConsumed();
-//			}
-//
-//			offsetX = 0;
-//
-//			// draw grid
-//			if (mDrawGrid)
-//			{
-//				builder.append("q 0.5 w ");
-//				builder.append(mGridColor + " RG ");
-//				for (int column = 0; column < mColumnWidths.get(mReadRow).size(); column++)
-//				{
-//					double x = aOriginX + offsetX;
-//					double y = aOriginY - mLayoutHeight;
-//					double w = aWidth * mColumnWidths.get(mReadRow).get(column);
-//					double h = rowHeight;
-//					builder.append(new Rectangle(x, y, w, h).getContent());
-//					offsetX += w;
-//				}
-//				builder.append("Q\r\n");
-//			}
-//
-//			mLayoutHeight += rowHeight;
-//
-//			if (consumed)
-//			{
-//				if (!drawExtraTableHeader)
-//				{
-//					mReadRow++;
-//				}
-//
-//				if (mLayoutHeight > aHeight)
-//				{
-//					break;
-//				}
-//			}
-//			else
-//			{
-//				break;
-//			}
-//
-//			drawExtraTableHeader = false;
-//		}
-//
-//		return builder.toString();
-//	}
-
-
-//	@Override
-//	public boolean isConsumed()
-//	{
-//		return mReadRow == mContents.size();
-//	}
-//
-//
-//	@Override
-//	public void reuseContent()
-//	{
-//		mReadRow = 0;
-//		mLayoutHeight = 0;
-//
-//		for (int row = 0; row < mContents.size(); row++)
-//		{
-//			for (int column = 0; column < mContents.get(row).size(); column++)
-//			{
-//				if (mContents.get(row).get(column) == null)
-//				{
-//					throw new IllegalArgumentException("Content in column " + column + ", row " + row + " is null.");
-//				}
-//
-//				mContents.get(row).get(column).reuseContent();
-//			}
-//		}
-//	}
 }

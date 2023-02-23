@@ -8,8 +8,8 @@ public class Style
 	private Font mFont;
 	private double mSize;
 	private Color mTextColor;
-	private Color mBoxStrokeColor;
-	private Color mBoxFillColor;
+	private Color mBorderColor;
+	private Color mFillColor;
 	private Color mHighlightColor;
 	private FontFile mFontFile;
 
@@ -43,28 +43,28 @@ public class Style
 	}
 
 
-	public Color getBoxStrokeColor()
+	public Color getBorderColor()
 	{
-		return mBoxStrokeColor;
+		return mBorderColor;
 	}
 
 
-	public Style setBoxStrokeColor(Color aBoxStrokeColor)
+	public Style setBorderColor(Color aBorderColor)
 	{
-		mBoxStrokeColor = aBoxStrokeColor;
+		mBorderColor = aBorderColor;
 		return this;
 	}
 
 
-	public Color getBoxFillColor()
+	public Color getFillColor()
 	{
-		return mBoxFillColor;
+		return mFillColor;
 	}
 
 
-	public Style setBoxFillColor(Color aBoxFillColor)
+	public Style setFillColor(Color aFillColor)
 	{
-		mBoxFillColor = aBoxFillColor;
+		mFillColor = aFillColor;
 		return this;
 	}
 
