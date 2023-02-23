@@ -3,7 +3,8 @@ package org.terifan.pdfwriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
-import static org.terifan.pdfwriter.Utilities.fillRect;
+import static org.terifan.pdfwriter.Utilities.renderRectangle;
+import static org.terifan.pdfwriter.Utilities.renderLine;
 
 
 public class TableArea implements Producer
@@ -43,10 +44,9 @@ public class TableArea implements Producer
 	public String produce(PDFWriter aPDFWriter, Page aPage) throws IOException
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
 		Output content = new Output(baos);
 
-		fillRect(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackgroundColor, null);
+		renderRectangle(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, null, null, mBackgroundColor, null);
 
 		double y = mBoundsTop;
 
@@ -56,15 +56,15 @@ public class TableArea implements Producer
 			{
 				p.reset();
 			}
-			y = renderRow(aPDFWriter, aPage, content, y, mTable.getHeader());
+			y = renderRow(aPDFWriter, aPage, content, y, mTable.getHeader(), -1);
 			mTable.setHeaderConsumed(true);
 		}
 
 		if (y > 0)
 		{
-			for (; mTable.mRenderRow < mTable.getContents().size(); )
+			for (int tableRowIndex = 0; mTable.mRenderRow < mTable.getContents().size(); tableRowIndex++)
 			{
-				y = renderRow(aPDFWriter, aPage, content, y, mTable.getContents().get(mTable.mRenderRow));
+				y = renderRow(aPDFWriter, aPage, content, y, mTable.getContents().get(mTable.mRenderRow), tableRowIndex);
 
 				if (y < 0)
 				{
@@ -79,7 +79,7 @@ public class TableArea implements Producer
 	}
 
 
-	private double renderRow(PDFWriter aPDFWriter, Page aPage, Output aContent, double aY0, List<Paragraph> aRow) throws IOException
+	private double renderRow(PDFWriter aPDFWriter, Page aPage, Output aContent, double aY0, List<Paragraph> aRow, int aTableRowIndex) throws IOException
 	{
 		double boundsWidth = mBoundsRight - mBoundsLeft;
 		double[] columnWidths = mTable.getColumnWidths();
@@ -114,7 +114,7 @@ public class TableArea implements Producer
 			Paragraph paragraph = aRow.get(column);
 			if (!paragraph.getLayout().isEmpty())
 			{
-				visible |= aY0 - paragraph.getLayout().get(0).mHeight > mBoundsBottom;
+				visible |= aY0 - paragraph.getLayout().get(0).height > mBoundsBottom;
 			}
 		}
 		if(!visible)
@@ -122,7 +122,7 @@ public class TableArea implements Producer
 			return -1;
 		}
 
-		fillRect(aContent, mBoundsLeft, aY0, mBoundsRight, y1, mTable.getFillColor(), mTable.getStrokeColor());
+		renderRectangle(aContent, mBoundsLeft, aY0, mBoundsRight, y1, null, null, mTable.getFillColor(), mTable.getStrokeColor());
 
 		x0 = mBoundsLeft;
 		for (int column = 0; column < columnWidths.length; column++)
@@ -132,7 +132,20 @@ public class TableArea implements Producer
 
 			Paragraph paragraph = aRow.get(column);
 
-			fillRect(aContent, x0, aY0, x1, Math.max(y1, mBoundsBottom), mTable.getCellFillColor(), mTable.getCellBorderColor());
+			renderRectangle(aContent, x0, aY0, x1, Math.max(y1, mBoundsBottom), null, null, mTable.getCellFillColor(), mTable.getCellBorderColor());
+
+			if (column > 0)
+			{
+				renderLine(aContent, x0, aY0, x0, Math.max(y1, mBoundsBottom), mTable.getVerticalGridThickness(), mTable.getVerticalGridColor());
+			}
+			if (aTableRowIndex == 0)
+			{
+				renderLine(aContent, x0, aY0, x1, aY0, mTable.getHeaderGridThickness(), mTable.getHeaderGridColor());
+			}
+			else if (aTableRowIndex > 0)
+			{
+				renderLine(aContent, x0, aY0, x1, aY0, mTable.getHorizontalGridThickness(), mTable.getHorizontalGridColor());
+			}
 
 			paragraph.produce(aPDFWriter, aContent, aPage, aY0, x0, mBoundsBottom, x1);
 

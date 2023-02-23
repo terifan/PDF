@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import static org.terifan.pdfwriter.Utilities.fillRect;
+import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
 public class Paragraph
@@ -15,6 +15,7 @@ public class Paragraph
 	private double mHeight;
 	private Color mStrokeColor;
 	private Color mFillColor;
+	private Margins mMargins;
 	private ArrayList<Row> mLayout;
 	private boolean mReady;
 
@@ -35,6 +36,7 @@ public class Paragraph
 	{
 		mSpans = new ArrayList<>(aSpans);
 		mAlignment = Alignment.LEFT;
+		mMargins = new Margins();
 	}
 
 
@@ -60,6 +62,19 @@ public class Paragraph
 	public Paragraph setFillColor(Color aFillColor)
 	{
 		this.mFillColor = aFillColor;
+		return this;
+	}
+
+
+	public Margins getMargins()
+	{
+		return mMargins;
+	}
+
+
+	public Paragraph setMargins(Margins aMargins)
+	{
+		this.mMargins = aMargins;
 		return this;
 	}
 
@@ -95,13 +110,19 @@ public class Paragraph
 	}
 
 
-	public boolean isReady()
+	public boolean isConsumed()
+	{
+		return mLayout.isEmpty();
+	}
+
+
+	boolean isReady()
 	{
 		return mReady;
 	}
 
 
-	public void reset()
+	void reset()
 	{
 		mReady = false;
 	}
@@ -109,20 +130,19 @@ public class Paragraph
 
 	public double produce(PDFWriter aPDFWriter, Output aContent, Page aPage, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight) throws IOException
 	{
+		if (mLayout == null)
+		{
+			layout(aBoundsTop, aBoundsLeft, aBoundsBottom, aBoundsRight);
+		}
+
 		boolean firstRow = true;
-		double nextOffsetY = aBoundsTop;
+		double nextOffsetY = aBoundsTop - mMargins.top;
 
 		while (!mLayout.isEmpty())
 		{
-			ArrayList<Chunk> row = mLayout.get(0);
+			Row row = mLayout.get(0);
 
-			double rowHeight = 0;
-			for (Chunk chunk : row)
-			{
-				rowHeight = Math.max(rowHeight, chunk.span.getStyle().getLineHeight());
-			}
-
-			if (nextOffsetY - rowHeight < aBoundsBottom)
+			if (nextOffsetY - row.height < aBoundsBottom)
 			{
 				break;
 			}
@@ -131,22 +151,40 @@ public class Paragraph
 
 			if (firstRow)
 			{
-				fillRect(aContent, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mStrokeColor);
+				renderRectangle(aContent, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), null, null, mFillColor, mStrokeColor);
 				firstRow = false;
 			}
 
-			if (mAlignment == Alignment.CENTER || mAlignment == Alignment.RIGHT)
+			if (mAlignment != Alignment.LEFT)
 			{
 				double adjust = aBoundsRight - row.get(row.size() - 1).xt;
-				if (mAlignment == Alignment.CENTER)
+				if (mAlignment == Alignment.SPLIT)
 				{
-					adjust /= 2;
+					adjust -= mMargins.right;
+					for (int i = row.size() / 2; i < row.size(); i++)
+					{
+						Chunk chunk = row.get(i);
+						chunk.x0 += adjust;
+						chunk.x1 += adjust;
+						chunk.xt += adjust;
+					}
 				}
-				for (Chunk chunk : row)
+				else
 				{
-					chunk.x0 += adjust;
-					chunk.x1 += adjust;
-					chunk.xt += adjust;
+					if (mAlignment == Alignment.CENTER)
+					{
+						adjust /= 2;
+					}
+					else
+					{
+						adjust -= mMargins.right;
+					}
+					for (Chunk chunk : row)
+					{
+						chunk.x0 += adjust;
+						chunk.x1 += adjust;
+						chunk.xt += adjust;
+					}
 				}
 			}
 
@@ -157,10 +195,10 @@ public class Paragraph
 				aContent.println("BT");
 
 				chunk.y0 = nextOffsetY;
-				chunk.y1 = nextOffsetY - rowHeight;
-				chunk.yt = chunk.y1 + style.getLineHeight();
+				chunk.y1 = nextOffsetY - row.height;
+				chunk.yt = chunk.y1 + style.getLineHeight() - mMargins.top;
 
-				fillRect(aContent, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, style.getFillColor(), style.getBorderColor());
+				renderRectangle(aContent, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, null, null, style.getFillColor(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
@@ -201,8 +239,8 @@ public class Paragraph
 				aContent.println("ET");
 			}
 
-			mHeight -= rowHeight;
-			nextOffsetY -= rowHeight;
+			mHeight -= row.height;
+			nextOffsetY -= row.height;
 		}
 
 		return nextOffsetY;
@@ -226,7 +264,7 @@ public class Paragraph
 			return;
 		}
 
-		double x = aBoundsLeft;
+		double x = aBoundsLeft + mMargins.left;
 
 		for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
 		{
@@ -237,7 +275,7 @@ public class Paragraph
 			{
 				AtomicBoolean oBreakLine = new AtomicBoolean(false);
 
-				int chunkLen = findSpanCutoff(span, offset, x, oBreakLine, aBoundsRight, currentRow.isEmpty());
+				int chunkLen = findSpanCutoff(span, offset, x, oBreakLine, aBoundsRight - mMargins.right, currentRow.isEmpty());
 				if (chunkLen == 0)
 				{
 					break;
@@ -265,7 +303,7 @@ public class Paragraph
 
 				if (oBreakLine.get())
 				{
-					x = aBoundsLeft;
+					x = aBoundsLeft + mMargins.left;
 					currentRow = new Row();
 					rows.add(currentRow);
 				}
@@ -273,7 +311,7 @@ public class Paragraph
 		}
 
 		mLayout = rows;
-		mHeight = 0;
+		mHeight = mMargins.top + mMargins.bottom;
 
 		for (Row row : mLayout)
 		{
@@ -284,7 +322,7 @@ public class Paragraph
 				rowHeight = Math.max(rowHeight, chunk.span.getStyle().getLineHeight());
 			}
 
-			row.mHeight = rowHeight;
+			row.height = rowHeight;
 			mHeight += rowHeight;
 		}
 	}
@@ -313,11 +351,7 @@ public class Paragraph
 
 			char c = aSpan.getText().charAt(aTextOffset + i);
 
-			if (c == '-' || c == '.' || c == ':' || c == ';' || c == '/')
-			{
-				len = i;
-			}
-			else if (c == ' ')
+			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
 			{
 				len = i + 1;
 			}
@@ -329,7 +363,7 @@ public class Paragraph
 
 	static class Row extends ArrayList<Chunk>
 	{
-		double mHeight;
+		double height;
 	}
 
 

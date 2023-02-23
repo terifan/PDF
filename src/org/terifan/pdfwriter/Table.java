@@ -21,6 +21,12 @@ public class Table
 	private boolean mDrawGrid;
 	private boolean mHeaderConsumed;
 	private double mRowPaddingBottom;
+	private Color mHorizontalGridColor;
+	private Color mVerticalGridColor;
+	private Color mHeaderGridColor;
+	private Double mHorizontalGridThickness;
+	private Double mVerticalGridThickness;
+	private Double mHeaderGridThickness;
 
 	int mRenderRow;
 
@@ -33,6 +39,87 @@ public class Table
 		mHeader = new ArrayList<>();
 		mMargins = new Margins();
 		mCellPadding = new Margins(0, 0, 0, 0);
+		mVerticalGridThickness = 0.5;
+		mHorizontalGridThickness = 0.5;
+		mHeaderGridThickness = 0.5;
+	}
+
+
+	public Color getHeaderGridColor()
+	{
+		return mHeaderGridColor;
+	}
+
+
+	public Table setHeaderGridColor(Color aHeaderGridColor)
+	{
+		this.mHeaderGridColor = aHeaderGridColor;
+		return this;
+	}
+
+
+	public Double getHeaderGridThickness()
+	{
+		return mHeaderGridThickness;
+	}
+
+
+	public Table setHeaderGridThickness(Double aHeaderGridThickness)
+	{
+		this.mHeaderGridThickness = aHeaderGridThickness;
+		return this;
+	}
+
+
+	public Color getHorizontalGridColor()
+	{
+		return mHorizontalGridColor;
+	}
+
+
+	public Table setHorizontalGridColor(Color aHorizontalGridColor)
+	{
+		this.mHorizontalGridColor = aHorizontalGridColor;
+		return this;
+	}
+
+
+	public Color getVerticalGridColor()
+	{
+		return mVerticalGridColor;
+	}
+
+
+	public Table setVerticalGridColor(Color aVerticalGridColor)
+	{
+		this.mVerticalGridColor = aVerticalGridColor;
+		return this;
+	}
+
+
+	public Double getHorizontalGridThickness()
+	{
+		return mHorizontalGridThickness;
+	}
+
+
+	public Table setHorizontalGridThickness(Double aHorizontalGridThickness)
+	{
+		this.mHorizontalGridThickness = aHorizontalGridThickness;
+		return this;
+	}
+
+
+	public Double getVerticalGridThickness()
+	{
+		return mVerticalGridThickness;
+	}
+
+
+	public Table setVerticalGridThickness(Double aVerticalGridThickness)
+	{
+		this.mVerticalGridThickness = aVerticalGridThickness;
+		return this;
 	}
 
 

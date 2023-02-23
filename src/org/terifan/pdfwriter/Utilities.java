@@ -3,7 +3,6 @@ package org.terifan.pdfwriter;
 import java.io.IOException;
 
 
-
 public class Utilities
 {
 	static String roundDouble(double aValue)
@@ -28,24 +27,60 @@ public class Utilities
 	}
 
 
-	static void fillRect(Output aContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Color aBorderColor) throws IOException
+	static void renderRectangle(Output aContent, double aX0, double aY0, double aX1, double aY1, Double aStrokeThickness, Double aRadius, Color aFillColor, Color aBorderColor) throws IOException
 	{
-		if (aFillColor != null)
+		aContent.println("%s rg", aFillColor);
+		aContent.println("%s RG", aBorderColor);
+		if (aStrokeThickness != null)
 		{
-			aContent.println("%s rg", aFillColor);
-			aContent.println("%f %f m", aX0, aY0);
-			aContent.println("%f %f l", aX1, aY0);
-			aContent.println("%f %f l", aX1, aY1);
-			aContent.println("%f %f l", aX0, aY1);
-			aContent.println("f");
+			aContent.println("%f w", aStrokeThickness);
 		}
-		if (aBorderColor != null)
+		for (int i = 0; i < 2; i++)
 		{
-			aContent.println("%s RG", aBorderColor);
+			if (i == 0 && aFillColor == null || i == 1 && aBorderColor == null)
+			{
+				continue;
+			}
+			if (aRadius == null)
+			{
+				aContent.println("%f %f m", aX0, aY0);
+				aContent.println("%f %f l", aX1, aY0);
+				aContent.println("%f %f l", aX1, aY1);
+				aContent.println("%f %f l", aX0, aY1);
+				aContent.println("%f %f l", aX0, aY0);
+			}
+			else
+			{
+				aContent.println("%f %f m", aX0 + aRadius, aY0);
+				aContent.println("%f %f l", aX1 - aRadius, aY0);
+				aContent.println("%f %f", aX1, aY0);
+				aContent.println("%f %f y", aX1, aY0 - aRadius);
+				aContent.println("%f %f l", aX1, aY1 + aRadius);
+				aContent.println("%f %f", aX1, aY1);
+				aContent.println("%f %f y", aX1 - aRadius, aY1);
+				aContent.println("%f %f l", aX0 + aRadius, aY1);
+				aContent.println("%f %f", aX0, aY1);
+				aContent.println("%f %f y", aX0, aY1 + aRadius);
+				aContent.println("%f %f l", aX0, aY0 - aRadius);
+				aContent.println("%f %f", aX0, aY0);
+				aContent.println("%f %f y", aX0 + aRadius, aY0);
+			}
+			aContent.println(i == 0 ? "f" : "s");
+		}
+	}
+
+
+	static void renderLine(Output aContent, double aX0, double aY0, double aX1, double aY1, Double aThickness, Color aColor) throws IOException
+	{
+		if (aColor != null)
+		{
+			aContent.println("%s RG", aColor);
+			if (aThickness != null)
+			{
+				aContent.println("%f w", aThickness);
+			}
 			aContent.println("%f %f m", aX0, aY0);
-			aContent.println("%f %f l", aX1, aY0);
 			aContent.println("%f %f l", aX1, aY1);
-			aContent.println("%f %f l", aX0, aY1);
 			aContent.println("s");
 		}
 	}
