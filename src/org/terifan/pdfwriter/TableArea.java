@@ -30,60 +30,67 @@ public class TableArea implements Producer
 
 		Output content = new Output(baos);
 
-		content.println("1 0 0 RG");
+		content.println("0.8 0.8 0.8 rg");
 		content.println(mBoundsLeft + " " + mBoundsTop + " m");
 		content.println(mBoundsRight + " " + mBoundsTop + " l");
 		content.println(mBoundsRight + " " + mBoundsBottom + " l");
 		content.println(mBoundsLeft + " " + mBoundsBottom + " l");
-		content.println("s");
+		content.println("f");
 
-		double width = mBoundsRight - mBoundsLeft;
+		double boundsWidth = mBoundsRight - mBoundsLeft;
 		double[] columnWidths = mTable.getColumnWidths();
-		double y = mBoundsTop;
+		double y0 = mBoundsTop;
 
 		for (; mTable.mRenderRow < mTable.getContents().size(); )
 		{
-			double x0 = mBoundsLeft;
-			double y0 = y;
-			double y1 = y0 - 10;
+			double rowHeight = 0;
 
-			if (y1 < mBoundsBottom)
+			double x0 = mBoundsLeft;
+			for (int column = 0; column < columnWidths.length; column++)
+			{
+				double cw = columnWidths[column] * boundsWidth;
+				double x1 = x0 + cw;
+
+				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
+				if (!paragraph.isReady())
+				{
+					paragraph.layout(y0, x0, mBoundsBottom, x1);
+				}
+
+				rowHeight = Math.max(rowHeight, paragraph.getHeight());
+				x0 = x1;
+			}
+
+			if (y0 - rowHeight < mBoundsBottom && !mTable.isBreakRows())
 			{
 				break;
 			}
 
-			double newY = y0;
-
-			for (int column = 0; column < columnWidths.length; column++)
-			{
-				double cw = columnWidths[column] * width;
-
-				double x1 = x0 + cw;
-
-				newY = Math.min(newY, mTable.getContents().get(mTable.mRenderRow).get(column).produce(aPDFWriter, content, aPage, y0, x0, mBoundsBottom, x1));
-
-				x0 = x1;
-			}
-
 			x0 = mBoundsLeft;
-
 			for (int column = 0; column < columnWidths.length; column++)
 			{
-				double cw = columnWidths[column] * width;
-
+				double cw = columnWidths[column] * boundsWidth;
 				double x1 = x0 + cw;
+				double y1 = y0 - rowHeight;
 
-				content.println("0 0 1 RG");
-				content.println(x0 + " " + y0 + " m");
-				content.println(x1 + " " + y0 + " l");
-				content.println(x1 + " " + newY + " l");
-				content.println(x0 + " " + newY + " l");
-				content.println("s");
+//				content.println("0 0 1 RG");
+//				content.println(x0 + " " + y0 + " m");
+//				content.println(x1 + " " + y0 + " l");
+//				content.println(x1 + " " + y1 + " l");
+//				content.println(x0 + " " + y1 + " l");
+//				content.println("s");
+
+				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
+
+				paragraph.produce(aPDFWriter, content, aPage, y0, x0, mBoundsBottom, x1);
 
 				x0 = x1;
 			}
 
-			y = newY;
+			if (y0 - rowHeight < mBoundsBottom) break;
+
+			y0 -= rowHeight;
+
 			mTable.mRenderRow++;
 		}
 

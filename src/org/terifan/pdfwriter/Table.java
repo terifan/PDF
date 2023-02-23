@@ -12,7 +12,8 @@ public class Table implements Producer
 	private List<List<Paragraph>> mContents;
 	private double[] mColumnWidths;
 	private double mLayoutHeight;
-	private boolean mRepeatFirstRow;
+	private boolean mRepeatHeader;
+	private boolean mBreakRows;
 	private Margins mMargins;
 	private Color mGridColor;
 	private boolean mDrawGrid;
@@ -21,15 +22,40 @@ public class Table implements Producer
 	int mRenderRow;
 
 
-	public Table(boolean aRepeatFirstRow, double... aColumnWidths)
+	public Table(double... aColumnWidths)
 	{
-		mRepeatFirstRow = aRepeatFirstRow;
 		mColumnWidths = aColumnWidths;
 
 		mContents = new ArrayList<>();
 		mHeader = new ArrayList<>();
 		mGridColor = Color.BLACK;
 		mMargins = new Margins();
+	}
+
+
+	public boolean isRepeatHeader()
+	{
+		return mRepeatHeader;
+	}
+
+
+	public Table setRepeatHeader(boolean aRepeatHeader)
+	{
+		this.mRepeatHeader = aRepeatHeader;
+		return this;
+	}
+
+
+	public boolean isBreakRows()
+	{
+		return mBreakRows;
+	}
+
+
+	public Table setBreakRows(boolean aBreakRows)
+	{
+		this.mBreakRows = aBreakRows;
+		return this;
 	}
 
 

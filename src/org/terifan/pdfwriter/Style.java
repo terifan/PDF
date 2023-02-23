@@ -7,23 +7,78 @@ public class Style
 {
 	private Font mFont;
 	private double mSize;
+	private Color mTextColor;
+	private Color mBoxStrokeColor;
+	private Color mBoxFillColor;
+	private Color mHighlightColor;
 	private FontFile mFontFile;
-	private double mLineHeight;
-	private double mAscent;
-	private double mDescent;
-	private double mLineGap;
+
+
+	public Style()
+	{
+		mSize = 10;
+		mTextColor = Color.BLACK;
+	}
 
 
 	public Style(Font aFont, double aSize)
 	{
-		mFont = aFont;
-		mSize = aSize;
+		this();
 
-		mFontFile = mFont.getFontFile();
-		mLineHeight = scale(mFontFile.getLineHeight());
-		mAscent = scale(mFontFile.getAscent());
-		mDescent = scale(mFontFile.getDescent());
-		mLineGap = scale(mFontFile.getLineGap());
+		mSize = aSize;
+		setFont(aFont);
+	}
+
+
+	public Color getTextColor()
+	{
+		return mTextColor;
+	}
+
+
+	public Style setTextColor(Color aTextColor)
+	{
+		mTextColor = aTextColor;
+		return this;
+	}
+
+
+	public Color getBoxStrokeColor()
+	{
+		return mBoxStrokeColor;
+	}
+
+
+	public Style setBoxStrokeColor(Color aBoxStrokeColor)
+	{
+		mBoxStrokeColor = aBoxStrokeColor;
+		return this;
+	}
+
+
+	public Color getBoxFillColor()
+	{
+		return mBoxFillColor;
+	}
+
+
+	public Style setBoxFillColor(Color aBoxFillColor)
+	{
+		mBoxFillColor = aBoxFillColor;
+		return this;
+	}
+
+
+	public Color getHighlightColor()
+	{
+		return mHighlightColor;
+	}
+
+
+	public Style setHighlightColor(Color aHighlightColor)
+	{
+		mHighlightColor = aHighlightColor;
+		return this;
 	}
 
 
@@ -39,39 +94,54 @@ public class Style
 	}
 
 
+	public Style setFont(Font aFont)
+	{
+		mFont = aFont;
+		mFontFile = mFont.getFontFile();
+		return this;
+	}
+
+
 	public double getSize()
 	{
 		return mSize;
 	}
 
 
+	public Style setSize(double aSize)
+	{
+		mSize = aSize;
+		return this;
+	}
+
+
 	public double getAscent()
 	{
-		return mAscent;
+		return scale(mFontFile.getAscent());
 	}
 
 
 	public double getDescent()
 	{
-		return mDescent;
+		return scale(mFontFile.getDescent());
 	}
 
 
 	public double getLineGap()
 	{
-		return mLineGap;
+		return scale(mFontFile.getLineGap());
 	}
 
 
 	public double getLineHeight()
 	{
-		return mLineHeight;
+		return scale(mFontFile.getLineHeight());
 	}
 
 
 	public int getGlyphIndex(int aCharacter)
 	{
-		int glyph = mFontFile.findGlyphIndexImpl(aCharacter);
+		int glyph = mFont.getFontFile().findGlyphIndexImpl(aCharacter);
 
 		mFont.registerGlyph(aCharacter, glyph);
 
@@ -81,19 +151,19 @@ public class Style
 
 	public double getAdvance(char aCharacter)
 	{
-		return mSize * mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFontFile.getUnitsPerEm();
+		return mSize * mFont.getFontFile().getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm();
 	}
 
 
 	public double getLeftBearing(char aCharacter)
 	{
-		return mSize * mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFontFile.getUnitsPerEm();
+		return mSize * mFont.getFontFile().getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm();
 	}
 
 
 	private double scale(double aValue)
 	{
-		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
+		return aValue * mSize / (mFont.getFontFile().getAscent() - mFont.getFontFile().getDescent());
 	}
 
 
