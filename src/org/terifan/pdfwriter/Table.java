@@ -19,6 +19,7 @@ public class Table
 	private Color mCellFillColor;
 	private Margins mCellPadding;
 	private boolean mDrawGrid;
+	private boolean mHeaderConsumed;
 	private double mRowPaddingBottom;
 
 	int mRenderRow;
@@ -32,6 +33,18 @@ public class Table
 		mHeader = new ArrayList<>();
 		mMargins = new Margins();
 		mCellPadding = new Margins(0, 0, 0, 0);
+	}
+
+
+	public boolean isHeaderConsumed()
+	{
+		return mHeaderConsumed;
+	}
+
+
+	public void setHeaderConsumed(boolean aHeaderConsumed)
+	{
+		this.mHeaderConsumed = aHeaderConsumed;
 	}
 
 

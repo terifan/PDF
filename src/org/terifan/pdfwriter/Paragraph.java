@@ -101,6 +101,12 @@ public class Paragraph
 	}
 
 
+	public void reset()
+	{
+		mReady = false;
+	}
+
+
 	public double produce(PDFWriter aPDFWriter, Output aContent, Page aPage, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight) throws IOException
 	{
 		boolean firstRow = true;

@@ -55,7 +55,7 @@ public class TestTable
 				table.setHeader(Arrays.asList(
 					new Paragraph(new Style(fonts[0], sizes[1]), "ID"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Description"),
-					new Paragraph(new Style(fonts[0], sizes[1]), "Price")
+					new Paragraph(new Style(fonts[0], sizes[1]), "Price").setAlignment(Alignment.RIGHT)
 				));
 				for (int i = 0; i < 100; i++)
 				{

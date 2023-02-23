@@ -2,6 +2,7 @@ package org.terifan.pdfwriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.List;
 import static org.terifan.pdfwriter.Utilities.fillRect;
 
 
@@ -47,78 +48,104 @@ public class TableArea implements Producer
 
 		fillRect(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackgroundColor, null);
 
-		double boundsWidth = mBoundsRight - mBoundsLeft;
-		double[] columnWidths = mTable.getColumnWidths();
-		double y0 = mBoundsTop;
+		double y = mBoundsTop;
 
-		for (; mTable.mRenderRow < mTable.getContents().size(); )
+		if (mTable.isRepeatHeader() || !mTable.isHeaderConsumed())
 		{
-			double rowHeight = 0;
-
-			double x0 = mBoundsLeft;
-			for (int column = 0; column < columnWidths.length; column++)
+			for (Paragraph p : mTable.getHeader())
 			{
-				double cw = columnWidths[column] * boundsWidth;
-				double x1 = x0 + cw;
+				p.reset();
+			}
+			y = renderRow(aPDFWriter, aPage, content, y, mTable.getHeader());
+			mTable.setHeaderConsumed(true);
+		}
 
-				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
-				if (!paragraph.isReady())
+		if (y > 0)
+		{
+			for (; mTable.mRenderRow < mTable.getContents().size(); )
+			{
+				y = renderRow(aPDFWriter, aPage, content, y, mTable.getContents().get(mTable.mRenderRow));
+
+				if (y < 0)
 				{
-					paragraph.layout(y0, x0, mBoundsBottom, x1);
+					break;
 				}
 
-				rowHeight = Math.max(rowHeight, paragraph.getHeight());
-				x0 = x1;
+				mTable.mRenderRow++;
 			}
-
-			if (y0 - rowHeight < mBoundsBottom && !mTable.isBreakRows())
-			{
-				break;
-			}
-
-			double y1 = y0 - rowHeight;
-
-			boolean visible = false;
-			for (int column = 0; column < columnWidths.length; column++)
-			{
-				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
-				if (!paragraph.getLayout().isEmpty())
-				{
-					visible |= y0 - paragraph.getLayout().get(0).mHeight > mBoundsBottom;
-				}
-			}
-			if(!visible)
-			{
-				break;
-			}
-
-			fillRect(content, mBoundsLeft, y0, mBoundsRight, y1, mTable.getFillColor(), mTable.getStrokeColor());
-
-			x0 = mBoundsLeft;
-			for (int column = 0; column < columnWidths.length; column++)
-			{
-				double cw = columnWidths[column] * boundsWidth;
-				double x1 = x0 + cw;
-
-				Paragraph paragraph = mTable.getContents().get(mTable.mRenderRow).get(column);
-
-				fillRect(content, x0, y0, x1, Math.max(y1, mBoundsBottom), mTable.getCellFillColor(), mTable.getCellBorderColor());
-
-				paragraph.produce(aPDFWriter, content, aPage, y0, x0, mBoundsBottom, x1);
-
-				x0 = x1;
-			}
-
-			y0 -= rowHeight;
-
-			if (y0 < mBoundsBottom)
-			{
-				break;
-			}
-
-			mTable.mRenderRow++;
 		}
 
 		return baos.toString();
+	}
+
+
+	private double renderRow(PDFWriter aPDFWriter, Page aPage, Output aContent, double aY0, List<Paragraph> aRow) throws IOException
+	{
+		double boundsWidth = mBoundsRight - mBoundsLeft;
+		double[] columnWidths = mTable.getColumnWidths();
+		double rowHeight = 0;
+
+		double x0 = mBoundsLeft;
+		for (int column = 0; column < columnWidths.length; column++)
+		{
+			double cw = columnWidths[column] * boundsWidth;
+			double x1 = x0 + cw;
+
+			Paragraph paragraph = aRow.get(column);
+			if (!paragraph.isReady())
+			{
+				paragraph.layout(aY0, x0, mBoundsBottom, x1);
+			}
+
+			rowHeight = Math.max(rowHeight, paragraph.getHeight());
+			x0 = x1;
+		}
+
+		if (aY0 - rowHeight < mBoundsBottom && !mTable.isBreakRows())
+		{
+			return -1;
+		}
+
+		double y1 = aY0 - rowHeight;
+
+		boolean visible = false;
+		for (int column = 0; column < columnWidths.length; column++)
+		{
+			Paragraph paragraph = aRow.get(column);
+			if (!paragraph.getLayout().isEmpty())
+			{
+				visible |= aY0 - paragraph.getLayout().get(0).mHeight > mBoundsBottom;
+			}
+		}
+		if(!visible)
+		{
+			return -1;
+		}
+
+		fillRect(aContent, mBoundsLeft, aY0, mBoundsRight, y1, mTable.getFillColor(), mTable.getStrokeColor());
+
+		x0 = mBoundsLeft;
+		for (int column = 0; column < columnWidths.length; column++)
+		{
+			double cw = columnWidths[column] * boundsWidth;
+			double x1 = x0 + cw;
+
+			Paragraph paragraph = aRow.get(column);
+
+			fillRect(aContent, x0, aY0, x1, Math.max(y1, mBoundsBottom), mTable.getCellFillColor(), mTable.getCellBorderColor());
+
+			paragraph.produce(aPDFWriter, aContent, aPage, aY0, x0, mBoundsBottom, x1);
+
+			x0 = x1;
+		}
+
+		aY0 -= rowHeight;
+
+		if (aY0 < mBoundsBottom)
+		{
+			return -1;
+		}
+
+		return aY0;
 	}
 }
