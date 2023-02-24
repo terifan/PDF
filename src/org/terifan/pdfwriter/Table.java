@@ -8,7 +8,6 @@ import java.util.List;
 public class Table
 {
 	private List<Paragraph> mHeader;
-	private List<Paragraph> mFooter;
 	private List<List<Paragraph>> mContents;
 	private double[] mColumnWidths;
 	private double mLayoutHeight;
@@ -39,7 +38,6 @@ public class Table
 
 		mContents = new ArrayList<>();
 		mHeader = new ArrayList<>();
-		mFooter = new ArrayList<>();
 		mMargins = new Margins();
 		mCellPadding = new Margins(0, 0, 0, 0);
 		mVerticalGridThickness = 0.5;
@@ -248,25 +246,6 @@ public class Table
 	}
 
 
-	public List<Paragraph> getFooter()
-	{
-		return mFooter;
-	}
-
-
-	public Table setFooter(Paragraph... aHeader)
-	{
-		return setFooter(Arrays.asList(aHeader));
-	}
-
-
-	public Table setFooter(List<Paragraph> aFooter)
-	{
-		this.mFooter = aFooter;
-		return this;
-	}
-
-
 	public double[] getColumnWidths()
 	{
 		return mColumnWidths;
@@ -332,5 +311,24 @@ public class Table
 	public boolean isConsumed()
 	{
 		return mRenderRow >= mContents.size();
+	}
+
+
+	public int getRenderRow()
+	{
+		return mRenderRow;
+	}
+
+
+	public void reuseContent()
+	{
+		mRenderRow = 0;
+		for (List<Paragraph> row : mContents)
+		{
+			for (Paragraph cell : row)
+			{
+				cell.reuseContent();
+			}
+		}
 	}
 }

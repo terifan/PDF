@@ -55,7 +55,7 @@ public class TableArea implements Producer
 		{
 			for (Paragraph p : mTable.getHeader())
 			{
-				p.reset();
+				p.reuseContent();
 			}
 			y = renderRow(aPDFWriter, aPage, content, y, mTable.getHeader(), -1);
 			mTable.setHeaderConsumed(true);
@@ -82,28 +82,12 @@ public class TableArea implements Producer
 		double x0 = mBoundsLeft;
 		for (int column = 0; column < columnWidths.length; column++)
 		{
-			renderLine(content, x0, mBoundsTop, x0, mBoundsBottom, mTable.getVerticalGridThickness(), mTable.getVerticalGridColor());
+			if (column > 0)
+			{
+				renderLine(content, x0, mBoundsTop, x0, mBoundsBottom, mTable.getVerticalGridThickness(), mTable.getVerticalGridColor());
+			}
 			x0 += columnWidths[column] * boundsWidth;
 		}
-
-//		if (mTable.isConsumed() && !mTable.getFooter().isEmpty())
-//		{
-//			int hh = 0;
-//			for (Paragraph p : mTable.getHeader())
-//			{
-//				p.layout(mBoundsTop, mBoundsLeft, mBoundsBottom, mBoundsRight);
-//
-//				int h = 0;
-//				for (Row row : p.getLayout())
-//				{
-//					h += row.height;
-//				}
-//				hh = Math.max(h, hh);
-//			}
-//			System.out.println(hh);
-//			y = mBoundsBottom - hh;
-//			renderRow(aPDFWriter, aPage, content, y, mTable.getFooter(), -1);
-//		}
 
 		return baos.toString();
 	}

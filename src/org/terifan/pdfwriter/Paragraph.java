@@ -19,7 +19,7 @@ public class Paragraph
 	private Color mFillColor;
 	private Margins mMargins;
 	private ArrayList<Row> mLayout;
-	private boolean mReady;
+	private boolean mLayedOut;
 	private double mWidth;
 
 
@@ -150,19 +150,19 @@ public class Paragraph
 
 	public boolean isConsumed()
 	{
-		return mLayout.isEmpty();
+		return mLayout != null && mLayout.isEmpty();
 	}
 
 
 	boolean isReady()
 	{
-		return mReady;
+		return mLayedOut;
 	}
 
 
-	void reset()
+	void reuseContent()
 	{
-		mReady = false;
+		mLayedOut = false;
 	}
 
 
@@ -175,7 +175,6 @@ public class Paragraph
 
 		boolean firstRow = true;
 		double nextOffsetY = aBoundsTop - mMargins.top;
-		double startX = mLayout.get(0).get(0).x0;
 
 		while (!mLayout.isEmpty())
 		{
@@ -194,9 +193,16 @@ public class Paragraph
 				firstRow = false;
 			}
 
+			double adjust = aBoundsLeft - row.get(0).x0 + mMargins.left;
+			for (Chunk chunk : row)
+			{
+				chunk.x0 += adjust;
+				chunk.x1 += adjust;
+				chunk.xt += adjust;
+			}
 			if (mAlignment != Alignment.LEFT)
 			{
-				double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+				adjust = aBoundsRight - row.get(row.size() - 1).xt;
 				if (mAlignment == Alignment.SPLIT)
 				{
 					adjust -= mMargins.right;
@@ -227,13 +233,6 @@ public class Paragraph
 				}
 			}
 
-			double adjust = aBoundsLeft - startX;
-			for (Chunk chunk : row)
-			{
-				chunk.x0 += adjust;
-				chunk.x1 += adjust;
-				chunk.xt += adjust;
-			}
 
 			for (Chunk chunk : row)
 			{
@@ -313,7 +312,12 @@ public class Paragraph
 
 	public void layout(double aBoundsLeft, double aBoundsRight) throws IOException
 	{
-		mReady = true;
+		if (mLayedOut)
+		{
+			return;
+		}
+
+		mLayedOut = true;
 
 		ArrayList<Row> rows = new ArrayList<>();
 		Row currentRow = new Row();

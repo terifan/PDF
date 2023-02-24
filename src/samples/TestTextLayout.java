@@ -1,6 +1,7 @@
 package samples;
 
 import java.io.FileOutputStream;
+import org.terifan.pdfwriter.Alignment;
 import org.terifan.pdfwriter.Anchor;
 import org.terifan.pdfwriter.Color;
 import org.terifan.pdfwriter.Style;
@@ -39,6 +40,20 @@ public class TestTextLayout
 					page.append(new TextArea( 70, 290, 215,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_WEST));
 					page.append(new TextArea(225, 290, 375,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH));
 					page.append(new TextArea(385, 290, 530,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_EAST));
+				}
+
+				try (Page page = pdf.addPage())
+				{
+					page.append(new TextArea( 70, 790, 530, 750, new Paragraph(style0, "TextArea Anchor + Paragraph alignment")).setAnchor(Anchor.NORTH));
+					page.append(new TextArea( 70, 750, 215, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH_WEST));
+					page.append(new TextArea(225, 750, 375, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH));
+					page.append(new TextArea(385, 750, 530, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH_EAST));
+					page.append(new TextArea( 70, 520, 215, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.WEST));
+					page.append(new TextArea(225, 520, 375, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.CENTER));
+					page.append(new TextArea(385, 520, 530, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.EAST));
+					page.append(new TextArea( 70, 290, 215,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_WEST));
+					page.append(new TextArea(225, 290, 375,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH));
+					page.append(new TextArea(385, 290, 530,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_EAST));
 				}
 			}
 		}
