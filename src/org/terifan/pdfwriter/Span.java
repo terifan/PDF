@@ -5,6 +5,7 @@ public class Span
 {
 	private Style mStyle;
 	private String mText;
+	private VerticalAlignment mVerticalAlignment;
 
 
 	public Span(Style aStyle, String aText)
@@ -23,5 +24,18 @@ public class Span
 	public Style getStyle()
 	{
 		return mStyle;
+	}
+
+
+	public VerticalAlignment getVerticalAlignment()
+	{
+		return mVerticalAlignment;
+	}
+
+
+	public Span setVerticalAlignment(VerticalAlignment aVerticalAlignment)
+	{
+		this.mVerticalAlignment = aVerticalAlignment;
+		return this;
 	}
 }

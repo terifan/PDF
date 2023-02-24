@@ -85,15 +85,15 @@ public class TestTable
 
 				try (Page page = pdf.addPage())
 				{
-					page.append(new TableArea(780, 70, 420, 530, table));
-					page.append(new TableArea(400, 70, 70, 530, table));
+					page.append(new TableArea(70, 780, 530, 420, table));
+					page.append(new TableArea(70, 400, 530, 70, table));
 				}
 
 				while (!table.isConsumed())
 				{
 					try (Page page = pdf.addPage())
 					{
-						page.append(new TableArea(780, 70, 70, 530, table).setBackgroundColor(Color.LIGHT_GRAY));
+						page.append(new TableArea(70, 780, 530, 70, table).setBackgroundColor(Color.LIGHT_GRAY));
 					}
 				}
 			}

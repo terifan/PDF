@@ -48,6 +48,7 @@ public class PDFWriter implements AutoCloseable
 
 		mOutput.println(mReferences.size() + " 0 obj");
 		aObject.write(mOutput);
+		mOutput.println("");
 		mOutput.println("endobj");
 
 		return new Ref(mReferences.size());

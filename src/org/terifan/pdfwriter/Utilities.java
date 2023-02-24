@@ -29,8 +29,19 @@ public class Utilities
 
 	static void renderRectangle(Output aContent, double aX0, double aY0, double aX1, double aY1, Double aStrokeThickness, Double aRadius, Color aFillColor, Color aBorderColor) throws IOException
 	{
-		aContent.println("%s rg", aFillColor);
-		aContent.println("%s RG", aBorderColor);
+		if (aFillColor == null && aBorderColor == null)
+		{
+			return;
+		}
+
+		if (aFillColor != null)
+		{
+			aContent.println("%s rg", aFillColor);
+		}
+		if (aBorderColor != null)
+		{
+			aContent.println("%s RG", aBorderColor);
+		}
 		if (aStrokeThickness != null)
 		{
 			aContent.println("%f w", aStrokeThickness);

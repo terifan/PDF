@@ -59,21 +59,20 @@ public class Dictionary
 
 	public void writeTo(Output aOutput) throws IOException
 	{
-		aOutput.print("<< ");
+		aOutput.print("<<");
 		boolean first = true;
 		for (Entry<String, Value> entry : mMap.entrySet())
 		{
 			if (!first)
 			{
-				aOutput.print(" ");
+				aOutput.println("");
 			}
 			aOutput.print(entry.getKey());
 			aOutput.print(" ");
 			entry.getValue().writeTo(aOutput);
-
 			first = false;
 		}
-		aOutput.println(" >>");
+		aOutput.print(">>");
 	}
 
 

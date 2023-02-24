@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
@@ -12,17 +13,26 @@ public class Paragraph
 {
 	private ArrayList<Span> mSpans;
 	private Alignment mAlignment;
+	private VerticalAlignment mVerticalAlignment;
 	private double mHeight;
-	private Color mStrokeColor;
+	private Color mBorderColor;
 	private Color mFillColor;
 	private Margins mMargins;
 	private ArrayList<Row> mLayout;
 	private boolean mReady;
+	private double mWidth;
 
 
-	public Paragraph(Style aStyle, String aText)
+	public Paragraph(Style aStyle, String... aText)
 	{
-		this(new Span(aStyle, aText));
+		mSpans = new ArrayList<>();
+		mAlignment = Alignment.LEFT;
+		mMargins = new Margins();
+
+		for (String s : aText)
+		{
+			mSpans.add(new Span(aStyle, s));
+		}
 	}
 
 
@@ -37,18 +47,27 @@ public class Paragraph
 		mSpans = new ArrayList<>(aSpans);
 		mAlignment = Alignment.LEFT;
 		mMargins = new Margins();
+
+//		setBorderColor(new Color(new Random().nextDouble(),new Random().nextDouble(),new Random().nextDouble()));
 	}
 
 
-	public Color getStrokeColor()
+	public Paragraph add(Span aSpan)
 	{
-		return mStrokeColor;
+		mSpans.add(aSpan);
+		return this;
 	}
 
 
-	public Paragraph setStrokeColor(Color aStrokeColor)
+	public Color getBorderColor()
 	{
-		this.mStrokeColor = aStrokeColor;
+		return mBorderColor;
+	}
+
+
+	public Paragraph setBorderColor(Color aBorderColor)
+	{
+		this.mBorderColor = aBorderColor;
 		return this;
 	}
 
@@ -79,6 +98,19 @@ public class Paragraph
 	}
 
 
+	public VerticalAlignment getVerticalAlignment()
+	{
+		return mVerticalAlignment;
+	}
+
+
+	public Paragraph setVerticalAlignment(VerticalAlignment aVerticalAlignment)
+	{
+		this.mVerticalAlignment = aVerticalAlignment;
+		return this;
+	}
+
+
 	public Alignment getAlignment()
 	{
 		return mAlignment;
@@ -101,6 +133,12 @@ public class Paragraph
 	public ArrayList<Span> getSpans()
 	{
 		return mSpans;
+	}
+
+
+	public double getWidth()
+	{
+		return mWidth;
 	}
 
 
@@ -132,11 +170,12 @@ public class Paragraph
 	{
 		if (mLayout == null)
 		{
-			layout(aBoundsTop, aBoundsLeft, aBoundsBottom, aBoundsRight);
+			throw new IllegalStateException("layout not called");
 		}
 
 		boolean firstRow = true;
 		double nextOffsetY = aBoundsTop - mMargins.top;
+		double startX = mLayout.get(0).get(0).x0;
 
 		while (!mLayout.isEmpty())
 		{
@@ -151,7 +190,7 @@ public class Paragraph
 
 			if (firstRow)
 			{
-				renderRectangle(aContent, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), null, null, mFillColor, mStrokeColor);
+				renderRectangle(aContent, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), null, null, mFillColor, mBorderColor);
 				firstRow = false;
 			}
 
@@ -188,6 +227,14 @@ public class Paragraph
 				}
 			}
 
+			double adjust = aBoundsLeft - startX;
+			for (Chunk chunk : row)
+			{
+				chunk.x0 += adjust;
+				chunk.x1 += adjust;
+				chunk.xt += adjust;
+			}
+
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
@@ -197,6 +244,23 @@ public class Paragraph
 				chunk.y0 = nextOffsetY;
 				chunk.y1 = nextOffsetY - row.height;
 				chunk.yt = chunk.y1 + style.getLineHeight() - mMargins.top;
+
+				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.BOTTOM)
+				{
+					if (chunk.verticalAlignment == VerticalAlignment.CENTER)
+					{
+					adjust = chunk.y0 - chunk.yt;
+						adjust /= 2;
+					}
+					else
+					{
+					adjust = chunk.y0 - chunk.yt;
+						adjust -= mMargins.top;
+					}
+					chunk.y0 += adjust;
+					chunk.y1 += adjust;
+					chunk.yt += adjust;
+				}
 
 				renderRectangle(aContent, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, null, null, style.getFillColor(), style.getBorderColor());
 
@@ -247,7 +311,7 @@ public class Paragraph
 	}
 
 
-	public void layout(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight) throws IOException
+	public void layout(double aBoundsLeft, double aBoundsRight) throws IOException
 	{
 		mReady = true;
 
@@ -283,7 +347,7 @@ public class Paragraph
 
 				if (chunkLen > 0)
 				{
-					Chunk chunk = new Chunk(x, span, offset, chunkLen);
+					Chunk chunk = new Chunk(x, span, offset, chunkLen, span.getVerticalAlignment() != null ? span.getVerticalAlignment() : mVerticalAlignment);
 					currentRow.add(chunk);
 
 					double bestX = x;
@@ -311,20 +375,26 @@ public class Paragraph
 		}
 
 		mLayout = rows;
+		mWidth = 0;
 		mHeight = mMargins.top + mMargins.bottom;
 
 		for (Row row : mLayout)
 		{
 			double rowHeight = 0;
+			double width = 0;
 
 			for (Chunk chunk : row)
 			{
 				rowHeight = Math.max(rowHeight, chunk.span.getStyle().getLineHeight());
+				width += chunk.x1 - chunk.x0;
 			}
 
 			row.height = rowHeight;
 			mHeight += rowHeight;
+			mWidth = Math.max(mWidth, width);
 		}
+
+		mWidth += mMargins.left + mMargins.right;
 	}
 
 
@@ -378,14 +448,16 @@ public class Paragraph
 		Span span;
 		int offset;
 		int length;
+		VerticalAlignment verticalAlignment;
 
 
-		public Chunk(double aX0, Span aSpan, int aOffset, int aLength)
+		public Chunk(double aX0, Span aSpan, int aOffset, int aLength, VerticalAlignment aVerticalAlignment)
 		{
-			this.x0 = aX0;
-			this.span = aSpan;
-			this.offset = aOffset;
-			this.length = aLength;
+			x0 = aX0;
+			span = aSpan;
+			offset = aOffset;
+			length = aLength;
+			verticalAlignment = aVerticalAlignment;
 		}
 	}
 }

@@ -36,34 +36,34 @@ public class TestReadingFontFiles
 				}
 				catch (Exception e)
 				{
-					System.out.println("Error reading font file: " + path);
+//					System.out.println("Error reading font file: " + path);
 					continue;
 				}
 				try
 				{
 					try (PDFWriter pdf = new PDFWriter(new ByteArrayOutputStream()); Page page = pdf.addPage())
 					{
-						page.append(new TextArea(780, 70, 70, 550, new Paragraph(style, english)));
+						page.append(new TextArea(70, 780, 550, 70, new Paragraph(style, english)));
 					}
 
-					System.out.println("English OK: " + path);
+//					System.out.println("English OK: " + path);
 				}
 				catch (Exception e)
 				{
-					System.out.println("Error render english font: " + path);
+//					System.out.println("Error render english font: " + path);
 				}
 				try
 				{
 					try (PDFWriter pdf = new PDFWriter(new ByteArrayOutputStream()); Page page = pdf.addPage())
 					{
-						page.append(new TextArea(780, 70, 70, 550, new Paragraph(style, russian), new Paragraph(style, greek), new Paragraph(style, polish), new Paragraph(style, latvian)));
+						page.append(new TextArea(70, 780, 550, 70, new Paragraph(style, russian), new Paragraph(style, greek), new Paragraph(style, polish), new Paragraph(style, latvian)));
 					}
 
 					System.out.println("Unicode OK: " + path);
 				}
 				catch (Exception e)
 				{
-					System.out.println("Error render uncode font: " + path);
+//					System.out.println("Error render uncode font: " + path);
 				}
 			}
 		}

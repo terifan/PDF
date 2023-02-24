@@ -23,7 +23,7 @@ public class Line implements Producer, Serializable
 	}
 
 
-	public Line(double aTop, double aLeft, double aBottom, double aRight, double aStrokeThickness, Color aStrokeColor)
+	public Line(double aLeft, double aTop, double aRight, double aBottom, double aStrokeThickness, Color aStrokeColor)
 	{
 		mLeft = aLeft;
 		mTop = aTop;

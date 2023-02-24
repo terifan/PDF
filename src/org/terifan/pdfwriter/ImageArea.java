@@ -13,7 +13,7 @@ public class ImageArea implements Producer
 	private Image mImage;
 
 
-	public ImageArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Image aImage)
+	public ImageArea(double aBoundsLeft, double aBoundsTop, double aBoundsRight, double aBoundsBottom, Image aImage)
 	{
 		mBoundsTop = aBoundsTop;
 		mBoundsLeft = aBoundsLeft;

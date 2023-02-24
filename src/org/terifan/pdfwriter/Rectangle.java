@@ -25,7 +25,7 @@ public class Rectangle implements Producer, Serializable
 	}
 
 
-	public Rectangle(double aTop, double aLeft, double aBottom, double aRight, double aStrokeThickness, double aCornerRadius, Color aStrokeColor, Color aFillColor)
+	public Rectangle(double aLeft, double aTop, double aRight, double aBottom, double aStrokeThickness, double aCornerRadius, Color aStrokeColor, Color aFillColor)
 	{
 		mLeft = aLeft;
 		mTop = aTop;

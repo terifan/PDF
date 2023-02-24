@@ -1,10 +1,9 @@
 package org.terifan.pdfwriter;
 
 
-public enum Alignment
+public enum VerticalAlignment
 {
-	LEFT,
+	TOP,
 	CENTER,
-	RIGHT,
-	SPLIT
+	BOTTOM
 }

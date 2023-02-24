@@ -3,6 +3,7 @@ package org.terifan.pdfwriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
+import org.terifan.pdfwriter.Paragraph.Row;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 import static org.terifan.pdfwriter.Utilities.renderLine;
 
@@ -17,7 +18,7 @@ public class TableArea implements Producer
 	private Color mBackgroundColor;
 
 
-	public TableArea(double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, Table aTable)
+	public TableArea(double aBoundsLeft, double aBoundsTop, double aBoundsRight, double aBoundsBottom, Table aTable)
 	{
 		mBoundsTop = aBoundsTop;
 		mBoundsLeft = aBoundsLeft;
@@ -75,6 +76,35 @@ public class TableArea implements Producer
 			}
 		}
 
+
+		double boundsWidth = mBoundsRight - mBoundsLeft;
+		double[] columnWidths = mTable.getColumnWidths();
+		double x0 = mBoundsLeft;
+		for (int column = 0; column < columnWidths.length; column++)
+		{
+			renderLine(content, x0, mBoundsTop, x0, mBoundsBottom, mTable.getVerticalGridThickness(), mTable.getVerticalGridColor());
+			x0 += columnWidths[column] * boundsWidth;
+		}
+
+//		if (mTable.isConsumed() && !mTable.getFooter().isEmpty())
+//		{
+//			int hh = 0;
+//			for (Paragraph p : mTable.getHeader())
+//			{
+//				p.layout(mBoundsTop, mBoundsLeft, mBoundsBottom, mBoundsRight);
+//
+//				int h = 0;
+//				for (Row row : p.getLayout())
+//				{
+//					h += row.height;
+//				}
+//				hh = Math.max(h, hh);
+//			}
+//			System.out.println(hh);
+//			y = mBoundsBottom - hh;
+//			renderRow(aPDFWriter, aPage, content, y, mTable.getFooter(), -1);
+//		}
+
 		return baos.toString();
 	}
 
@@ -94,7 +124,7 @@ public class TableArea implements Producer
 			Paragraph paragraph = aRow.get(column);
 			if (!paragraph.isReady())
 			{
-				paragraph.layout(aY0, x0, mBoundsBottom, x1);
+				paragraph.layout(x0, x1);
 			}
 
 			rowHeight = Math.max(rowHeight, paragraph.getHeight());
@@ -134,10 +164,10 @@ public class TableArea implements Producer
 
 			renderRectangle(aContent, x0, aY0, x1, Math.max(y1, mBoundsBottom), null, null, mTable.getCellFillColor(), mTable.getCellBorderColor());
 
-			if (column > 0)
-			{
-				renderLine(aContent, x0, aY0, x0, Math.max(y1, mBoundsBottom), mTable.getVerticalGridThickness(), mTable.getVerticalGridColor());
-			}
+//			if (column > 0)
+//			{
+//				renderLine(aContent, x0, aY0, x0, Math.max(y1, mBoundsBottom), mTable.getVerticalGridThickness(), mTable.getVerticalGridColor());
+//			}
 			if (aTableRowIndex == 0)
 			{
 				renderLine(aContent, x0, aY0, x1, aY0, mTable.getHeaderGridThickness(), mTable.getHeaderGridColor());

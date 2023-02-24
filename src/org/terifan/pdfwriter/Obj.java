@@ -30,7 +30,10 @@ public class Obj
 
 	public Obj(boolean aCompress, Value aContent, Dictionary aDictionary) throws IOException
 	{
-		setContent(aCompress, aContent);
+		if (aContent != null)
+		{
+			setContent(aCompress, aContent);
+		}
 		setDictionary(aDictionary);
 	}
 
@@ -54,7 +57,7 @@ public class Obj
 	}
 
 
-	public void setContent(boolean aCompress, Value aContent) throws IOException
+	private void setContent(boolean aCompress, Value aContent) throws IOException
 	{
 		if (mDictionary == null)
 		{
@@ -91,17 +94,16 @@ public class Obj
 
 	void write(Output aOutput) throws IOException
 	{
-		Dictionary dictionary = mDictionary;
-		if (dictionary != null)
+		if (mDictionary != null)
 		{
-			dictionary.writeTo(aOutput);
+			mDictionary.writeTo(aOutput);
 		}
 
 		if (mContent != null)
 		{
 			aOutput.println("stream");
 			mContent.writeTo(aOutput);
-			aOutput.println("endstream");
+			aOutput.print("endstream");
 		}
 	}
 

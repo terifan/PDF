@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 public class ExtendedFont extends Font implements Value
 {
+	private final static boolean ALWAYS_COMPRESS_FONT_DATA = true;
+
 	private FontFile mFontFile;
 	private TreeMap<Integer, Integer> mGlyphMap;
 	private byte[] mFontData;
@@ -175,12 +177,46 @@ public class ExtendedFont extends Font implements Value
 	{
 		if (mResourceRef == null)
 		{
-			Ref data = aWriter.print(new Obj(aWriter.mCompress, new ArrayValue(getFontData())));
+			Ref data = aWriter.print(new Obj(ALWAYS_COMPRESS_FONT_DATA | aWriter.mCompress, new ArrayValue(getFontData())));
 			Ref cmap = aWriter.print(new Obj(aWriter.mCompress, this));
 
 			Array box = new Array(mFontFile.getFontBBox());
 
-			mResourceRef = aWriter.print(new Obj(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type0").put("/BaseFont", "/" + mFontFile.getName()).put("/DescendantFonts", new Dictionary().put("/Type", "/Font").put("/Subtype", "/CIDFontType2").put("/BaseFont", "/" + mFontFile.getName()).put("/CIDSystemInfo", new Dictionary().put("/Ordering", "(Identity)").put("/Registry", "(Adobe)").put("/Supplement", 0)).put("/CIDToGIDMap", "/Identity").put("/FontDescriptor", new Dictionary().put("/Type", "/FontDescriptor").put("/Ascent", mFontFile.getAscent()).put("/CapHeight", 715).put("/Descent", mFontFile.getDescent()).put("/Flags", 0).put("/FontBBox", box).put("/FontFile2", data).put("/FontName", "/" + mFontFile.getName()).put("/ItalicAngle", 0).put("/StemV", 76))).put("/Encoding", "/Identity-H").put("/ToUnicode", cmap)));
+			String fontName = "/" + mFontFile.getName().replace(" ", "+");
+
+			Ref fontDescriptor = aWriter.print(new Obj(aWriter.mCompress, null, new Dictionary()
+				.put("/Type", "/FontDescriptor")
+				.put("/FontName", fontName)
+				.put("/Ascent", mFontFile.getAscent())
+				.put("/CapHeight", 715)
+				.put("/Descent", mFontFile.getDescent())
+				.put("/Flags", 0)
+				.put("/FontBBox", box)
+				.put("/FontFile2", data)
+				.put("/ItalicAngle", 0)
+				.put("/StemV", 76))
+			);
+
+			Ref descendantFont = aWriter.print(new Obj(aWriter.mCompress, null, new Dictionary()
+				.put("/Type", "/Font")
+				.put("/Subtype", "/CIDFontType2")
+				.put("/BaseFont", fontName)
+				.put("/CIDSystemInfo", new Dictionary()
+					.put("/Ordering", "(Identity)")
+					.put("/Registry", "(Adobe)")
+					.put("/Supplement", 0))
+				.put("/CIDToGIDMap", "/Identity")
+				.put("/FontDescriptor", fontDescriptor)
+			));
+
+			mResourceRef = aWriter.print(new Obj(new Dictionary()
+				.put("/Type", "/Font")
+				.put("/Subtype", "/Type0")
+				.put("/BaseFont", fontName)
+				.put("/DescendantFonts", new Array().add(descendantFont))
+				.put("/Encoding", "/Identity-H")
+				.put("/ToUnicode", cmap)
+			));
 
 			mFontData = null;
 		}

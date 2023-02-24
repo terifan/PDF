@@ -1,12 +1,14 @@
 package org.terifan.pdfwriter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
 public class Table
 {
 	private List<Paragraph> mHeader;
+	private List<Paragraph> mFooter;
 	private List<List<Paragraph>> mContents;
 	private double[] mColumnWidths;
 	private double mLayoutHeight;
@@ -37,6 +39,7 @@ public class Table
 
 		mContents = new ArrayList<>();
 		mHeader = new ArrayList<>();
+		mFooter = new ArrayList<>();
 		mMargins = new Margins();
 		mCellPadding = new Margins(0, 0, 0, 0);
 		mVerticalGridThickness = 0.5;
@@ -123,13 +126,13 @@ public class Table
 	}
 
 
-	public boolean isHeaderConsumed()
+	boolean isHeaderConsumed()
 	{
 		return mHeaderConsumed;
 	}
 
 
-	public void setHeaderConsumed(boolean aHeaderConsumed)
+	void setHeaderConsumed(boolean aHeaderConsumed)
 	{
 		this.mHeaderConsumed = aHeaderConsumed;
 	}
@@ -232,9 +235,35 @@ public class Table
 	}
 
 
-	public void setHeader(List<Paragraph> aHeader)
+	public Table setHeader(Paragraph... aHeader)
+	{
+		return setHeader(Arrays.asList(aHeader));
+	}
+
+
+	public Table setHeader(List<Paragraph> aHeader)
 	{
 		this.mHeader = aHeader;
+		return this;
+	}
+
+
+	public List<Paragraph> getFooter()
+	{
+		return mFooter;
+	}
+
+
+	public Table setFooter(Paragraph... aHeader)
+	{
+		return setFooter(Arrays.asList(aHeader));
+	}
+
+
+	public Table setFooter(List<Paragraph> aFooter)
+	{
+		this.mFooter = aFooter;
+		return this;
 	}
 
 
@@ -272,6 +301,12 @@ public class Table
 	{
 		mDrawGrid = aDrawGrid;
 		return this;
+	}
+
+
+	public Table addRow(Paragraph... aHeader)
+	{
+		return addRow(Arrays.asList(aHeader));
 	}
 
 
