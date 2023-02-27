@@ -24,14 +24,14 @@ import org.terifan.pdfwriter.TextArea;
 import org.terifan.pdfwriter.VerticalAlignment;
 
 
-public class TestWaybill
+public class TestShipmentDWB
 {
 	public static void main(String... args)
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(TestWaybill.class.getResourceAsStream("opensans.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(TestWaybill.class.getResourceAsStream("malgun.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestShipmentDWB.class.getResourceAsStream("opensans.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(TestShipmentDWB.class.getResourceAsStream("malgun.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(true))
 			{
@@ -125,29 +125,61 @@ public class TestWaybill
 							new Paragraph(style1, "Shipper:").setMargins(margins5),
 							new Paragraph(style2, "Meža Mājas ZS").setMargins(margins2),
 							new Paragraph(style2, "Līvānu nov. Rožupes pag.").setMargins(margins2),
-							new Paragraph(new Span(style2, "Rožupe, Meža māja"), new Span(style2, "50401 CZ")).setAlignment(Alignment.SPLIT).setMargins(margins2)
+							new Paragraph(style2, "Rožupe, Meža māja").setMargins(margins2)
 						));
+
+						page.append(new TextArea(40, 775, 300, 695,
+							new Paragraph(style1, " ").setMargins(margins5),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, "50401 CZ").setAlignment(Alignment.RIGHT).setMargins(margins2)
+						).setAnchor(Anchor.NORTH_EAST));
 
 						page.append(new TextArea(40, 695, 300, 620,
 							new Paragraph(style1, "Loading address:").setMargins(margins5),
 							new Paragraph(style2, "если вы имеете ").setMargins(margins2),
 							new Paragraph(style2, "о других, то также произойдет").setMargins(margins2),
-							new Paragraph(new Span(style2, "такое же мнение"), new Span(style2, "50401 CZ")).setAlignment(Alignment.SPLIT).setMargins(margins2)
+							new Paragraph(style2, "такое же мнение").setMargins(margins2)
 						));
+
+						page.append(new TextArea(40, 695, 300, 620,
+							new Paragraph(style1, " ").setMargins(margins5),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, "50401 CZ").setAlignment(Alignment.RIGHT).setMargins(margins2)
+						).setAnchor(Anchor.NORTH_EAST));
 
 						page.append(new TextArea(40, 620, 300, 545,
 							new Paragraph(style1, "Receiver:").setMargins(margins5),
 							new Paragraph(style2, "δικαστὰς περὶ").setMargins(margins2),
 							new Paragraph(style2, "τούτου τοῦ").setMargins(margins2),
-							new Paragraph(new Span(style2, "νώμην"), new Span(style2, "50401 CZ")).setAlignment(Alignment.SPLIT).setMargins(margins2)
+							new Paragraph(style2, "νώμην").setMargins(margins2)
 						));
+
+						page.append(new TextArea(40, 620, 300, 545,
+							new Paragraph(style1, " ").setMargins(margins5),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, "50401 CZ").setAlignment(Alignment.RIGHT).setMargins(margins2)
+						).setAnchor(Anchor.NORTH_EAST));
 
 						page.append(new TextArea(40, 545, 300, 465,
 							new Paragraph(style1, "Delivery address:").setMargins(margins5),
 							new Paragraph(style3, "내가 보았노라").setMargins(margins2),
 							new Paragraph(style3, "아 이 일을 심").setMargins(margins2),
-							new Paragraph(new Span(style3, "나리니 네가 "), new Span(style2, "50401 CZ")).setAlignment(Alignment.SPLIT).setMargins(margins2).setVerticalAlignment(VerticalAlignment.TOP)
+							new Paragraph(style3, "나리니 네가 ").setMargins(margins2).setVerticalAlignment(VerticalAlignment.TOP)
 						));
+
+						page.append(new TextArea(40, 545, 300, 465,
+							new Paragraph(style1, " ").setMargins(margins5),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, " ").setMargins(margins2),
+							new Paragraph(style2, "50401 CZ").setAlignment(Alignment.RIGHT).setMargins(margins2)
+						).setAnchor(Anchor.NORTH_EAST));
 
 						page.append(new TextArea(300, 775, 420, 755, new Paragraph(new Span(style1, "Date: "), new Span(style4, "20202002")).setMargins(margins3)).setAnchor(Anchor.WEST));
 						page.append(new TextArea(420, 775, 550, 755, new Paragraph(new Span(style1, "Order type: "), new Span(style4, "*CO")).setMargins(margins3)).setAnchor(Anchor.WEST));

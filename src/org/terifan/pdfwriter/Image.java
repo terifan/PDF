@@ -17,6 +17,7 @@ public class Image extends Resource
 	private int mBitsPerComponent;
 	private Ref mResourceRef;
 	private Format mFormat;
+	private Margins mMargins;
 
 
 	public enum Format
@@ -30,6 +31,7 @@ public class Image extends Resource
 	{
 		mImageData = aData;
 		mFormat = aFormat;
+		mMargins = new Margins();
 
 		if (mFormat == Format.PNG)
 		{
@@ -39,6 +41,19 @@ public class Image extends Resource
 		{
 			prepareJPEG();
 		}
+	}
+
+
+	public Margins getMargins()
+	{
+		return mMargins;
+	}
+
+
+	public Image setMargins(Margins aMargins)
+	{
+		this.mMargins = aMargins;
+		return this;
 	}
 
 

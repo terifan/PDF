@@ -1,14 +1,17 @@
 package org.terifan.pdfwriter;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import static org.terifan.pdfwriter.Utilities.renderLine;
+import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
-public class Table
+public class Table implements Content
 {
-	private List<Paragraph> mHeader;
-	private List<List<Paragraph>> mContents;
+	private List<Content> mHeader;
+	private List<List<Content>> mContents;
 	private double[] mColumnWidths;
 	private double mLayoutHeight;
 	private boolean mRepeatHeader;
@@ -21,20 +24,37 @@ public class Table
 	private Margins mCellPadding;
 	private boolean mDrawGrid;
 	private boolean mHeaderConsumed;
-	private double mRowPaddingBottom;
 	private Color mHorizontalGridColor;
 	private Color mVerticalGridColor;
 	private Color mHeaderGridColor;
 	private Double mHorizontalGridThickness;
 	private Double mVerticalGridThickness;
 	private Double mHeaderGridThickness;
+	private double mRowSpacing;
+	private double mColumnSpacing;
+	private double mHeaderSpacing;
+	private int mRenderRow;
+	private boolean mReady;
 
-	int mRenderRow;
 
-
-	public Table(double... aColumnWidths)
+	/**
+	 * @param aColumnWeights
+	 *    Weight of each column. Weights are normalized and column widths are computed from these weights.
+	 */
+	public Table(double... aColumnWeights)
 	{
-		mColumnWidths = aColumnWidths;
+		if (aColumnWeights.length == 0)
+		{
+			throw new IllegalArgumentException("No column widths defined!");
+		}
+
+		mColumnWidths = aColumnWeights;
+
+		double w = Arrays.stream(mColumnWidths).sum();
+		for (int i = 0; i < mColumnWidths.length; i++)
+		{
+			mColumnWidths[i] /= w;
+		}
 
 		mContents = new ArrayList<>();
 		mHeader = new ArrayList<>();
@@ -46,6 +66,19 @@ public class Table
 	}
 
 
+	public double getHeaderSpacing()
+	{
+		return mHeaderSpacing;
+	}
+
+
+	public Table setHeaderSpacing(double aHeaderSpacing)
+	{
+		mHeaderSpacing = aHeaderSpacing;
+		return this;
+	}
+
+
 	public Color getHeaderGridColor()
 	{
 		return mHeaderGridColor;
@@ -54,7 +87,7 @@ public class Table
 
 	public Table setHeaderGridColor(Color aHeaderGridColor)
 	{
-		this.mHeaderGridColor = aHeaderGridColor;
+		mHeaderGridColor = aHeaderGridColor;
 		return this;
 	}
 
@@ -67,7 +100,7 @@ public class Table
 
 	public Table setHeaderGridThickness(Double aHeaderGridThickness)
 	{
-		this.mHeaderGridThickness = aHeaderGridThickness;
+		mHeaderGridThickness = aHeaderGridThickness;
 		return this;
 	}
 
@@ -80,7 +113,7 @@ public class Table
 
 	public Table setHorizontalGridColor(Color aHorizontalGridColor)
 	{
-		this.mHorizontalGridColor = aHorizontalGridColor;
+		mHorizontalGridColor = aHorizontalGridColor;
 		return this;
 	}
 
@@ -93,7 +126,7 @@ public class Table
 
 	public Table setVerticalGridColor(Color aVerticalGridColor)
 	{
-		this.mVerticalGridColor = aVerticalGridColor;
+		mVerticalGridColor = aVerticalGridColor;
 		return this;
 	}
 
@@ -106,7 +139,7 @@ public class Table
 
 	public Table setHorizontalGridThickness(Double aHorizontalGridThickness)
 	{
-		this.mHorizontalGridThickness = aHorizontalGridThickness;
+		mHorizontalGridThickness = aHorizontalGridThickness;
 		return this;
 	}
 
@@ -119,7 +152,7 @@ public class Table
 
 	public Table setVerticalGridThickness(Double aVerticalGridThickness)
 	{
-		this.mVerticalGridThickness = aVerticalGridThickness;
+		mVerticalGridThickness = aVerticalGridThickness;
 		return this;
 	}
 
@@ -132,7 +165,7 @@ public class Table
 
 	void setHeaderConsumed(boolean aHeaderConsumed)
 	{
-		this.mHeaderConsumed = aHeaderConsumed;
+		mHeaderConsumed = aHeaderConsumed;
 	}
 
 
@@ -157,7 +190,7 @@ public class Table
 
 	public Table setCellBorderColor(Color aCellBorderColor)
 	{
-		this.mCellBorderColor = aCellBorderColor;
+		mCellBorderColor = aCellBorderColor;
 		return this;
 	}
 
@@ -170,7 +203,7 @@ public class Table
 
 	public Table setCellFillColor(Color aCellFillColor)
 	{
-		this.mCellFillColor = aCellFillColor;
+		mCellFillColor = aCellFillColor;
 		return this;
 	}
 
@@ -183,7 +216,7 @@ public class Table
 
 	public Table setStrokeColor(Color aStrokeColor)
 	{
-		this.mStrokeColor = aStrokeColor;
+		mStrokeColor = aStrokeColor;
 		return this;
 	}
 
@@ -196,7 +229,7 @@ public class Table
 
 	public Table setFillColor(Color aFillColor)
 	{
-		this.mFillColor = aFillColor;
+		mFillColor = aFillColor;
 		return this;
 	}
 
@@ -209,7 +242,7 @@ public class Table
 
 	public Table setRepeatHeader(boolean aRepeatHeader)
 	{
-		this.mRepeatHeader = aRepeatHeader;
+		mRepeatHeader = aRepeatHeader;
 		return this;
 	}
 
@@ -222,26 +255,26 @@ public class Table
 
 	public Table setBreakRows(boolean aBreakRows)
 	{
-		this.mBreakRows = aBreakRows;
+		mBreakRows = aBreakRows;
 		return this;
 	}
 
 
-	public List<Paragraph> getHeader()
+	public List<Content> getHeader()
 	{
 		return mHeader;
 	}
 
 
-	public Table setHeader(Paragraph... aHeader)
+	public Table setHeader(Content... aHeader)
 	{
 		return setHeader(Arrays.asList(aHeader));
 	}
 
 
-	public Table setHeader(List<Paragraph> aHeader)
+	public Table setHeader(List<Content> aHeader)
 	{
-		this.mHeader = aHeader;
+		mHeader = aHeader;
 		return this;
 	}
 
@@ -252,21 +285,35 @@ public class Table
 	}
 
 
-	public List<List<Paragraph>> getContents()
+	public List<List<Content>> getContents()
 	{
 		return mContents;
 	}
 
 
-	public double getRowPaddingBottom()
+	public double getRowSpacing()
 	{
-		return mRowPaddingBottom;
+		return mRowSpacing;
 	}
 
 
-	public void setRowPaddingBottom(double aRowPaddingBottom)
+	public Table setRowSpacing(double aRowSpacing)
 	{
-		mRowPaddingBottom = aRowPaddingBottom;
+		mRowSpacing = aRowSpacing;
+		return this;
+	}
+
+
+	public double getColumnSpacing()
+	{
+		return mColumnSpacing;
+	}
+
+
+	public Table setColumnSpacing(double aColumnSpacing)
+	{
+		this.mColumnSpacing = aColumnSpacing;
+		return this;
 	}
 
 
@@ -283,13 +330,13 @@ public class Table
 	}
 
 
-	public Table addRow(Paragraph... aHeader)
+	public Table addRow(Content... aHeader)
 	{
 		return addRow(Arrays.asList(aHeader));
 	}
 
 
-	public Table addRow(List<Paragraph> aContent)
+	public Table addRow(List<Content> aContent)
 	{
 		mContents.add(aContent);
 		return this;
@@ -320,15 +367,168 @@ public class Table
 	}
 
 
+	@Override
 	public void reuseContent()
 	{
 		mRenderRow = 0;
-		for (List<Paragraph> row : mContents)
+		for (List<Content> row : mContents)
 		{
-			for (Paragraph cell : row)
+			for (Content cell : row)
 			{
 				cell.reuseContent();
 			}
 		}
+	}
+
+
+	@Override
+	public boolean isReady()
+	{
+		return mReady;
+	}
+
+
+	@Override
+	public void layout(double aX0, double aX1)
+	{
+		mReady = true;
+	}
+
+
+	@Override
+	public double getHeight()
+	{
+//		throw new UnsupportedOperationException("Not supported yet.");
+		return 16;
+	}
+
+
+	@Override
+	public double produce(PDFWriter aPDFWriter, Output content, Page aPage, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight) throws IOException
+	{
+		double y = aBoundsTop;
+
+		if (!getHeader().isEmpty() && (isRepeatHeader() || !isHeaderConsumed()))
+		{
+			for (Content p : getHeader())
+			{
+				p.reuseContent();
+			}
+			y = renderRow(aPDFWriter, aPage, content, y, aBoundsLeft, aBoundsBottom, aBoundsRight, getHeader(), -1) - mHeaderSpacing;
+			setHeaderConsumed(true);
+		}
+
+		if (y > 0)
+		{
+			for (int tableRowIndex = 0; mRenderRow < getContents().size(); tableRowIndex++)
+			{
+				y = renderRow(aPDFWriter, aPage, content, y, aBoundsLeft, aBoundsBottom, aBoundsRight, getContents().get(mRenderRow), tableRowIndex);
+
+				if (y < 0)
+				{
+					break;
+				}
+
+				mRenderRow++;
+			}
+		}
+
+		double boundsWidth = aBoundsRight - aBoundsLeft;
+		double[] columnWidths = getColumnWidths();
+		double x0 = aBoundsLeft;
+		for (int column = 0; column < columnWidths.length; column++)
+		{
+			if (column > 0)
+			{
+				renderLine(content, x0, aBoundsTop, x0, aBoundsBottom, getVerticalGridThickness(), getVerticalGridColor());
+			}
+			x0 += columnWidths[column] * boundsWidth;
+		}
+
+		return y;
+	}
+
+
+	private double renderRow(PDFWriter aPDFWriter, Page aPage, Output aOutput, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, List<Content> aRow, int aTableRowIndex) throws IOException
+	{
+		double[] columnWidths = getColumnWidths();
+		double boundsWidth = aBoundsRight - aBoundsLeft - mColumnSpacing * (columnWidths.length - 1);
+		double rowHeight = 0;
+
+		double x0 = aBoundsLeft;
+		for (int column = 0; column < columnWidths.length; column++)
+		{
+			double cw = columnWidths[column] * boundsWidth;
+			double x1 = x0 + cw;
+
+			if (column < aRow.size())
+			{
+				Content content = aRow.get(column);
+//				if (!content.isReady())
+//				{
+					content.layout(x0, x1);
+//				}
+
+				rowHeight = Math.max(rowHeight, content.getHeight());
+				x0 = x1 + mColumnSpacing;
+			}
+		}
+
+		if (aBoundsTop - rowHeight < aBoundsBottom && !isBreakRows())
+		{
+			return -1;
+		}
+
+		double y1 = aBoundsTop - rowHeight;
+
+		boolean visible = false;
+		for (int column = 0, n = Math.min(columnWidths.length, aRow.size()); column < n; column++)
+		{
+			Content content = aRow.get(column);
+			visible |= aBoundsTop - content.getHeight() > aBoundsBottom;
+//			if (!content.getLayout().isEmpty())
+//			{
+//				visible |= mBoundsTop - content.getLayout().get(0).height > mBoundsBottom;
+//			}
+		}
+		if(!visible)
+		{
+			return -1;
+		}
+
+		renderRectangle(aOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y1, null, null, getFillColor(), getStrokeColor());
+
+		x0 = aBoundsLeft;
+		for (int column = 0, n = Math.min(columnWidths.length, aRow.size()); column < n; column++)
+		{
+			double cw = columnWidths[column] * boundsWidth;
+			double x1 = x0 + cw;
+
+			Content content = aRow.get(column);
+
+			renderRectangle(aOutput, x0, aBoundsTop, x1, Math.max(y1, aBoundsBottom), null, null, getCellFillColor(), getCellBorderColor());
+
+			if (aTableRowIndex == 0)
+			{
+				renderLine(aOutput, x0, aBoundsTop, x1, aBoundsTop, getHeaderGridThickness(), getHeaderGridColor());
+			}
+			else if (aTableRowIndex > 0)
+			{
+				renderLine(aOutput, x0, aBoundsTop, x1, aBoundsTop, getHorizontalGridThickness(), getHorizontalGridColor());
+			}
+
+			content.produce(aPDFWriter, aOutput, aPage, aBoundsTop, x0, aBoundsBottom, x1);
+
+			x0 = x1 + mColumnSpacing;
+		}
+
+		aBoundsTop -= rowHeight + mRowSpacing;
+
+		if (aBoundsTop < aBoundsBottom)
+		{
+			return -1;
+		}
+
+		return aBoundsTop;
 	}
 }

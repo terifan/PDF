@@ -38,4 +38,11 @@ public class Span
 		this.mVerticalAlignment = aVerticalAlignment;
 		return this;
 	}
+
+
+	@Override
+	public String toString()
+	{
+		return "Span{" + mText + '}';
+	}
 }

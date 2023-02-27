@@ -12,6 +12,8 @@ public class Style
 	private Color mFillColor;
 	private Color mHighlightColor;
 	private FontFile mFontFile;
+	private Double mCharacterSpacing;
+	private Margins mMargins;
 
 
 	public Style()
@@ -27,6 +29,32 @@ public class Style
 
 		mSize = aSize;
 		setFont(aFont);
+	}
+
+
+	public Margins getMargins()
+	{
+		return mMargins;
+	}
+
+
+	public Style setMargins(Margins aMargins)
+	{
+		this.mMargins = aMargins;
+		return this;
+	}
+
+
+	public Double getCharacterSpacing()
+	{
+		return mCharacterSpacing;
+	}
+
+
+	public Style setCharacterSpacing(Double aCharacterSpacing)
+	{
+		mCharacterSpacing = aCharacterSpacing;
+		return this;
 	}
 
 
@@ -151,13 +179,15 @@ public class Style
 
 	public double getAdvance(char aCharacter)
 	{
-		return mSize * mFont.getFontFile().getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm();
+		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
+		return mSize * mFont.getFontFile().getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm() * cs;
 	}
 
 
 	public double getLeftBearing(char aCharacter)
 	{
-		return mSize * mFont.getFontFile().getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm();
+		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
+		return mSize * mFont.getFontFile().getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm() * cs;
 	}
 
 
