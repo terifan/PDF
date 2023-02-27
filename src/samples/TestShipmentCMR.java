@@ -52,7 +52,7 @@ public class TestShipmentCMR
 	}
 
 
-	private static byte[] readAllBytes(InputStream aInputStream) throws IOException
+	static byte[] readAllBytes(InputStream aInputStream) throws IOException
 	{
 		try (aInputStream)
 		{
@@ -74,7 +74,6 @@ public class TestShipmentCMR
 				Style style0 = new Style(font1, 5);
 				Style style1 = new Style(font1, 6);
 				Style style2 = new Style(font1, 10);
-				Style style3 = new Style(font1, 10);
 				Style style5 = new Style(font2, 13);
 				Style style6 = new Style(font3, 10);
 				Style style7 = new Style(font2, 11).setCharacterSpacing(0.9);
@@ -83,6 +82,7 @@ public class TestShipmentCMR
 				Margins margins2 = new Margins(2, 4, 2, 4);
 				Margins margins3 = new Margins(0, 4, 2, 2);
 				Margins margins4 = new Margins(2, 2, 2, 2);
+				Margins margins5 = new Margins(6, 15, 6, 15);
 
 				Table productTable = new Table(1.3, 1.3, 1.1, 1.3, 1.2, 1.1, 1)
 					.setRepeatHeader(true)
@@ -152,7 +152,7 @@ public class TestShipmentCMR
 							.addRow(new Paragraph(style2, "RIX9619045").setMargins(margins3), new Paragraph(style2, "TLLA64314").setMargins(margins3), new Paragraph(style2, "0001313131").setMargins(margins3))
 						));
 
-						page.append(new ImageArea(300, 685, 555, 651, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(new Margins(6, 15, 6, 15))));
+						page.append(new ImageArea(300, 685, 555, 651, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(margins5)));
 
 						addHeading(page, style1, style5, 1, "Sender (name, addresse, country)", "Absender (name, anschrift, land)", 40, 775, 300, 712,
 							new Paragraph(style2, "Meža Mājas ZS").setMargins(margins2),
@@ -264,9 +264,9 @@ public class TestShipmentCMR
 								.setRowSpacing(2)
 							));
 
-							page.append(new ImageArea(40, 155, 210, 100, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(new Margins(6, 15, 6, 15))));
-							page.append(new ImageArea(210, 155, 380, 100, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(new Margins(6, 15, 6, 15))));
-							page.append(new ImageArea(380, 155, 555, 100, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(new Margins(6, 15, 6, 15))));
+							page.append(new ImageArea(40, 155, 210, 100, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(margins5)));
+							page.append(new ImageArea(210, 155, 380, 100, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(margins5)));
+							page.append(new ImageArea(380, 155, 555, 100, new Image(readAllBytes(TestShipmentCMR.class.getResourceAsStream("barcode.png")), Format.PNG).setMargins(margins5)));
 						}
 						else
 						{
