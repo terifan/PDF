@@ -10,7 +10,7 @@ import javax.imageio.ImageIO;
 
 public class Image extends Resource
 {
-	private byte[] mImageData;
+	private byte[] mData;
 	private int mWidth;
 	private int mHeight;
 	private int mComponentCount;
@@ -29,18 +29,33 @@ public class Image extends Resource
 
 	public Image(byte[] aData, Format aFormat) throws IOException
 	{
-		mImageData = aData;
 		mFormat = aFormat;
 		mMargins = new Margins();
 
-		if (mFormat == Format.PNG)
+		setData(aData);
+	}
+
+
+	public void setData(byte[] aData) throws IOException
+	{
+		mData = aData;
+		if (aData != null)
 		{
-			preparePNG();
+			if (mFormat == Format.PNG)
+			{
+				preparePNG();
+			}
+			else
+			{
+				prepareJPEG();
+			}
 		}
-		else
-		{
-			prepareJPEG();
-		}
+	}
+
+
+	public boolean isReady()
+	{
+		return mData != null;
 	}
 
 
@@ -69,7 +84,7 @@ public class Image extends Resource
 			dic.put("/Width", mWidth);
 			dic.put("/Height", mHeight);
 			dic.put("/BitsPerComponent", mBitsPerComponent);
-			dic.put("/Length", mImageData.length);
+			dic.put("/Length", mData.length);
 
  			switch (mComponentCount)
 			{
@@ -86,8 +101,8 @@ public class Image extends Resource
 					throw new IOException("Unsupported number of color channels in image: " + mComponentCount);
 			}
 
-			mResourceRef = aWriter.print(new Obj(false, new ArrayValue(mImageData), dic));
-			mImageData = null;
+			mResourceRef = aWriter.print(new Obj(false, new ArrayValue(mData), dic));
+			mData = null;
 		}
 
 		return mResourceRef;
@@ -96,7 +111,7 @@ public class Image extends Resource
 
 	private void prepareJPEG() throws IOException
 	{
-		try (ByteArrayInputStream in = new ByteArrayInputStream(mImageData))
+		try (ByteArrayInputStream in = new ByteArrayInputStream(mData))
 		{
 			in.skip(4);
 
@@ -125,7 +140,7 @@ public class Image extends Resource
 
 	private void preparePNG() throws IOException
 	{
-		BufferedImage image = ImageIO.read(new ByteArrayInputStream(mImageData));
+		BufferedImage image = ImageIO.read(new ByteArrayInputStream(mData));
 		mWidth = image.getWidth();
 		mHeight = image.getHeight();
 
@@ -185,6 +200,6 @@ public class Image extends Resource
 			}
 		}
 
-		mImageData = dstBuffer.toByteArray();
+		mData = dstBuffer.toByteArray();
 	}
 }

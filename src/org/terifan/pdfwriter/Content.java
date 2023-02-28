@@ -8,9 +8,6 @@ public interface Content
 	public void reuseContent();
 
 
-	public boolean isReady();
-
-
 	public void layout(double aX0, double aX1);
 
 
@@ -18,4 +15,10 @@ public interface Content
 
 
 	public double produce(PDFWriter aPDFWriter, Output aOutput, Page aPage, double aY0, double aX0, double aY1, double aX1) throws IOException;
+
+
+	public boolean isConsumed();
+
+
+	public double getWidth();
 }

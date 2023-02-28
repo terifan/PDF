@@ -26,23 +26,27 @@ public class ImageArea implements Producer
 	@Override
 	public String produce(PDFWriter aPDFWriter, Page aPage) throws IOException
 	{
-		aPage.registerImage(mImage);
-
-		Margins margins = mImage.getMargins();
-
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Output content = new Output(baos);
-		content.print("q ");
-		content.print(mBoundsRight - mBoundsLeft - margins.left() - margins.right());
-		content.print(" 0 ");
-		content.print(" 0 ");
-		content.print(mBoundsTop - mBoundsBottom - margins.top() - margins.bottom());
-		content.print(" ");
-		content.print(mBoundsLeft + margins.left());
-		content.print(" ");
-		content.print(mBoundsBottom + margins.bottom());
-		content.print(" cm " + mImage.getIdentity());
-		content.println(" Do Q");
+
+		if (mImage.isReady())
+		{
+			aPage.registerImage(mImage);
+
+			Margins margins = mImage.getMargins();
+
+			Output content = new Output(baos);
+			content.print("q ");
+			content.print(mBoundsRight - mBoundsLeft - margins.left() - margins.right());
+			content.print(" 0 ");
+			content.print(" 0 ");
+			content.print(mBoundsTop - mBoundsBottom - margins.top() - margins.bottom());
+			content.print(" ");
+			content.print(mBoundsLeft + margins.left());
+			content.print(" ");
+			content.print(mBoundsBottom + margins.bottom());
+			content.print(" cm " + mImage.getIdentity());
+			content.println(" Do Q");
+		}
 
 		return baos.toString();
 	}

@@ -17,16 +17,28 @@ public class Paragraph implements Content
 	private Color mBorderColor;
 	private Color mFillColor;
 	private Margins mMargins;
-	private ArrayList<Row> mLayout;
-	private boolean mLayedOut;
 	private double mWidth;
 
+	private ArrayList<Row> mLayout;
 
-	public Paragraph(Style aStyle, String... aText)
+
+	public Paragraph()
 	{
 		mSpans = new ArrayList<>();
 		mAlignment = Alignment.LEFT;
 		mMargins = new Margins();
+	}
+
+
+	public Paragraph(Style aStyle, String... aText)
+	{
+		this(aStyle, Arrays.asList(aText));
+	}
+
+
+	public Paragraph(Style aStyle, List<String> aText)
+	{
+		this();
 
 		for (String s : aText)
 		{
@@ -43,9 +55,8 @@ public class Paragraph implements Content
 
 	public Paragraph(List<Span> aSpans)
 	{
-		mSpans = new ArrayList<>(aSpans);
-		mAlignment = Alignment.LEFT;
-		mMargins = new Margins();
+		this();
+		mSpans.addAll(aSpans);
 	}
 
 
@@ -95,28 +106,28 @@ public class Paragraph implements Content
 	}
 
 
-	public Paragraph setMarginsRight(double aValue)
+	public Paragraph setMarginRight(double aValue)
 	{
 		mMargins.setRight(aValue);
 		return this;
 	}
 
 
-	public Paragraph setMarginsLeft(double aValue)
+	public Paragraph setMarginLeft(double aValue)
 	{
 		mMargins.setLeft(aValue);
 		return this;
 	}
 
 
-	public Paragraph setMarginsTop(double aValue)
+	public Paragraph setMarginTop(double aValue)
 	{
 		mMargins.setTop(aValue);
 		return this;
 	}
 
 
-	public Paragraph setMarginsBottom(double aValue)
+	public Paragraph setMarginBottom(double aValue)
 	{
 		mMargins.setBottom(aValue);
 		return this;
@@ -149,12 +160,6 @@ public class Paragraph implements Content
 	}
 
 
-	ArrayList<Row> getLayout()
-	{
-		return mLayout;
-	}
-
-
 	public ArrayList<Span> getSpans()
 	{
 		return mSpans;
@@ -181,16 +186,9 @@ public class Paragraph implements Content
 
 
 	@Override
-	public boolean isReady()
-	{
-		return mLayedOut;
-	}
-
-
-	@Override
 	public void reuseContent()
 	{
-		mLayedOut = false;
+		mLayout = null;
 	}
 
 
@@ -345,18 +343,26 @@ public class Paragraph implements Content
 	@Override
 	public void layout(double aBoundsLeft, double aBoundsRight)
 	{
-//		if (mLayedOut)
-//		{
-//			return;
-//		}
-
-		mLayedOut = true;
-
 		ArrayList<Row> rows = new ArrayList<>();
 		Row currentRow = new Row();
 		rows.add(currentRow);
 
-		ArrayList<Span> spans = getSpans();
+		ArrayList<Span> spans = new ArrayList<>();
+
+		if (mLayout == null)
+		{
+			spans.addAll(mSpans);
+		}
+		else
+		{
+			for (Row row : mLayout)
+			{
+				for (Chunk chunk : row)
+				{
+					spans.add(new Span(chunk.span.getStyle(), chunk.span.getText().substring(chunk.offset, chunk.offset + chunk.length)));
+				}
+			}
+		}
 
 		if (spans.isEmpty())
 		{
@@ -371,6 +377,11 @@ public class Paragraph implements Content
 		{
 			Span span = spans.get(spanIndex);
 			Style style = span.getStyle();
+
+			if (span.getText() == null)
+			{
+				continue;
+			}
 
 			for (int offset = 0; offset < span.getText().length();)
 			{
@@ -463,6 +474,12 @@ public class Paragraph implements Content
 
 			char c = aSpan.getText().charAt(aTextOffset + i);
 
+			if (c == '\n')
+			{
+				len = i + 1;
+				aBreakLine.set(true);
+				break;
+			}
 			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
 			{
 				len = i + 1;

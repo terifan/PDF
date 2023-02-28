@@ -16,11 +16,11 @@ class CMap4 implements CMap
 
 		int length = aBuffer.getUint16();
 		int language = aBuffer.getUint16();
-		int segCount = aBuffer.getUint16() / 2; // 2 * segCount
-		int searchRange = aBuffer.getUint16(); // 2 * (2**FLOOR(log2(segCount)))
-		int entrySelector = aBuffer.getUint16(); // log2(searchRange/2)
-		int rangeShift = aBuffer.getUint16(); // (2 * segCount) - searchRange
-		endCode = aBuffer.getUint16Array(segCount);
+		int segCount = aBuffer.getUint16();
+		int searchRange = aBuffer.getUint16();
+		int entrySelector = aBuffer.getUint16();
+		int rangeShift = aBuffer.getUint16();
+		endCode = aBuffer.getUint16Array(segCount / 2);
 		int reservedPad = aBuffer.getUint16();
 
 		if (reservedPad != 0)
@@ -28,10 +28,15 @@ class CMap4 implements CMap
 			throw new IllegalStateException("Expected reservedPad to be zero: " + reservedPad);
 		}
 
-		startCode = aBuffer.getUint16Array(segCount);
-		idDelta = aBuffer.getInt16Array(segCount);
-		idRangeOffset = aBuffer.getUint16Array(segCount);
-		glyphIndexArray = aBuffer.getUint16Array((aBuffer.position() - startOffset) / 2);
+		startCode = aBuffer.getUint16Array(segCount / 2);
+		idDelta = aBuffer.getInt16Array(segCount / 2);
+		idRangeOffset = aBuffer.getUint16Array(segCount / 2);
+		glyphIndexArray = aBuffer.getUint16Array(aBuffer.position() - startOffset);
+
+//		for (int i = 0; i < startCode.length; i++)
+//		{
+//			System.out.printf("%8d %8d %8d %8d\n", startCode[i], endCode[i], idDelta[i], idRangeOffset[i]);
+//		}
 	}
 
 
@@ -48,17 +53,19 @@ class CMap4 implements CMap
 
 				if (idRangeOffset[i] != 0)
 				{
-					int magic = idRangeOffset[i] / 2 + (aCharacter - startCode[i]) + i - startCode.length;
+					int address = (idRangeOffset[i] / 2 + (aCharacter - startCode[i]) + i - startCode.length) & 0xffff;
 
-					if (magic < 0 || magic > glyphIndexArray.length)
+					if (address < 0 || address > glyphIndexArray.length)
 					{
+//						System.out.println("Bad offset: " + address + ", range: " + glyphIndexArray.length);
 						return -1;
 					}
 
-					glyphIndex = glyphIndexArray[magic];
+					glyphIndex = glyphIndexArray[address];
 
 					if (glyphIndex == 0)
 					{
+//						System.out.println("Bad glyph: " + address);
 						return -1;
 					}
 				}

@@ -50,7 +50,7 @@ public class TestReadingFontFiles
 				}
 				catch (Exception e)
 				{
-//					System.out.println("Error render english font: " + path);
+					System.out.println("Error render english font: " + path);
 				}
 				try
 				{
@@ -59,11 +59,12 @@ public class TestReadingFontFiles
 						page.append(new TextArea(70, 780, 550, 70, new Paragraph(style, russian), new Paragraph(style, greek), new Paragraph(style, polish), new Paragraph(style, latvian)));
 					}
 
-					System.out.println("Unicode OK: " + path);
+//					System.out.println("Unicode OK: " + path);
 				}
 				catch (Exception e)
 				{
-//					System.out.println("Error render uncode font: " + path);
+					System.out.println("Error render unicode font: " + path);
+//					e.printStackTrace();
 				}
 			}
 		}

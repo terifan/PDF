@@ -34,7 +34,7 @@ public class Table implements Content
 	private double mColumnSpacing;
 	private double mHeaderSpacing;
 	private int mRenderRow;
-	private boolean mReady;
+	private double mWidth;
 
 
 	/**
@@ -355,6 +355,7 @@ public class Table implements Content
 	}
 
 
+	@Override
 	public boolean isConsumed()
 	{
 		return mRenderRow >= mContents.size();
@@ -382,16 +383,16 @@ public class Table implements Content
 
 
 	@Override
-	public boolean isReady()
+	public void layout(double aX0, double aX1)
 	{
-		return mReady;
+		mWidth = aX1 - aX0;
 	}
 
 
 	@Override
-	public void layout(double aX0, double aX1)
+	public double getWidth()
 	{
-		mReady = true;
+		return mWidth;
 	}
 
 

@@ -66,10 +66,15 @@ class ByteBufferReader
 	public int getInt16()
 	{
 		int result = getUint16();
+		int s = result;
+
 		if ((result & 0x8000) != 0)
 		{
 			result -= (1 << 16);
 		}
+
+		assert result == (short)s;
+
 		return result;
 	}
 

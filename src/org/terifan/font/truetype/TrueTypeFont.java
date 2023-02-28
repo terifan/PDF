@@ -18,6 +18,7 @@ public class TrueTypeFont implements FontFile
 //	private final static int REPEAT          =  8;
 //	private final static int X_DELTA         = 16;
 //	private final static int Y_DELTA         = 32;
+
 	private HEAD mHEAD;
 	private HHEA mHHEA;
 	private HMTX mHMTX;
@@ -152,9 +153,10 @@ public class TrueTypeFont implements FontFile
 	}
 
 
+	// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6.html
 	private void readOffsetTables()
 	{
-		long scalarType = mBuffer.getUint32();
+		long scalerType = mBuffer.getUint32();
 		int numTables = mBuffer.getUint16();
 		int searchRange = mBuffer.getUint16();
 		int entrySelector = mBuffer.getUint16();
@@ -165,7 +167,7 @@ public class TrueTypeFont implements FontFile
 			String tag = mBuffer.getString(4);
 			Table table = new Table(mBuffer.getInt32(), mBuffer.getInt32(), mBuffer.getInt32());
 
-			if (!tag.equals("head"))
+			if (!"head".equals(tag))
 			{
 				if (table.mOffset + table.mLength > mBuffer.length() || calculateTableChecksum(table.mOffset, table.mLength) != table.mChecksum)
 				{
@@ -243,8 +245,8 @@ public class TrueTypeFont implements FontFile
 				case 4:
 					mCmap[i] = new CMap4(mBuffer);
 					break;
-//				default:
-//					throw new IllegalStateException("Cmap not implemented: " + cmapFormat);
+				default:
+					throw new IllegalStateException("Cmap not implemented: " + cmapFormat);
 			}
 		}
 	}
