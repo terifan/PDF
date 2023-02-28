@@ -322,6 +322,7 @@ public class Paragraph implements Content
 				for (int i = 0; i < chunk.length; i++)
 				{
 					char ch = text.charAt(chunk.offset + i);
+					if (ch < ' ') ch = ' ';
 
 					aOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
 
@@ -402,6 +403,7 @@ public class Paragraph implements Content
 					for (int i = 0; i < chunkLen; i++, offset++)
 					{
 						char c = span.getText().charAt(offset);
+						if (c < ' ') c = ' ';
 						x += style.getAdvance(c);
 						if (c != ' ')
 						{

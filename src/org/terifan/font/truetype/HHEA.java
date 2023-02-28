@@ -24,27 +24,27 @@ class HHEA
 	int mNumOfLongHorMetrics;
 
 
-	public HHEA(ByteBufferReader mBuffer, HashMap<String, Table> mTables)
+	public HHEA(ByteBufferReader aBuffer, HashMap<String, Table> aTables)
 	{
-		mBuffer.position(mTables.get("hhea").mOffset);
+		aBuffer.position(aTables.get("hhea").mOffset);
 
-		mVersion = mBuffer.getFixed();
-		mAscent = mBuffer.getFword();
-		mDescent = mBuffer.getFword();
-		mLineGap = mBuffer.getFword();
-		mAdvanceWidthMax = mBuffer.getFword();
-		mMinLeftSideBearing = mBuffer.getFword();
-		mMinRightSideBearing = mBuffer.getFword();
-		mXMaxExtent = mBuffer.getFword();
-		mCaretSlopeRise = mBuffer.getInt16();
-		mCaretSlopeRun = mBuffer.getInt16();
-		mCaretOffset = mBuffer.getFword();
-		mReserved1 = mBuffer.getInt16();
-		mReserved2 = mBuffer.getInt16();
-		mReserved3 = mBuffer.getInt16();
-		mReserved4 = mBuffer.getInt16();
-		mMetricDataFormat = mBuffer.getInt16();
-		mNumOfLongHorMetrics = mBuffer.getUint16();
+		mVersion = aBuffer.getFixed();
+		mAscent = aBuffer.getFword();
+		mDescent = aBuffer.getFword();
+		mLineGap = aBuffer.getFword();
+		mAdvanceWidthMax = aBuffer.getFword();
+		mMinLeftSideBearing = aBuffer.getFword();
+		mMinRightSideBearing = aBuffer.getFword();
+		mXMaxExtent = aBuffer.getFword();
+		mCaretSlopeRise = aBuffer.getInt16();
+		mCaretSlopeRun = aBuffer.getInt16();
+		mCaretOffset = aBuffer.getFword();
+		mReserved1 = aBuffer.getInt16();
+		mReserved2 = aBuffer.getInt16();
+		mReserved3 = aBuffer.getInt16();
+		mReserved4 = aBuffer.getInt16();
+		mMetricDataFormat = aBuffer.getInt16();
+		mNumOfLongHorMetrics = aBuffer.getUint16();
 	}
 
 

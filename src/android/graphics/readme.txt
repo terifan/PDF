@@ -1,1 +1,0 @@
-This package contain code the emulate features found in Android. When deploying the generator on Android delete this package and use Android implementations instead.

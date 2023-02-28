@@ -1,7 +1,6 @@
 package samples;
 
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import samples.CMRDocument.InstructionHeader;
@@ -15,7 +14,7 @@ public class TestGenerateDWB
 		try
 		{
 			DWBDocument document = new DWBDocument();
-			document.setCompanyLogo(Streams.readAll("C:\\netbeans\\mds\\mdsserver\\src\\com\\surikat\\dips\\message_queue_consumer\\pdf_template\\schenker_logo.png"));
+			document.setCompanyLogo(TestGenerateCMR.class.getResourceAsStream("surikat_logo.png").readAllBytes());
 
 			document.setShipperAddress("Meža Mājas ZS");
 			document.setShipperStreet("Līvānu nov. Rožupes pag");
@@ -93,11 +92,10 @@ public class TestGenerateDWB
 			document.setConsigneeRemark("ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq");
 			document.setConsigneeRemarkReason("FM");
 
-			byte[] sig = Streams.readAll(new URL("https://dips.surikat.net/ImageLoader/3f1f4635-10b7-4068-8052-15d39b073e6b"));
-			document.setSenderSignature(sig);
-			document.setRecevierSignature(sig);
+			document.setSenderSignature(TestGenerateDWB.class.getResourceAsStream("siugnature.png").readAllBytes());
+			document.setRecevierSignature(TestGenerateDWB.class.getResourceAsStream("siugnature.png").readAllBytes());
 
-			document.setBarcode(BarcodeGenerator.generate("144017595972", 1, 1));
+			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
 
 			try (FileOutputStream out = new FileOutputStream("d:/output.pdf"))
 			{

@@ -3,7 +3,6 @@ package org.terifan.pdfwriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
-import org.terifan.bundle.Bundle;
 
 
 public class Dictionary
@@ -73,42 +72,5 @@ public class Dictionary
 			first = false;
 		}
 		aOutput.print(">>");
-	}
-
-
-	public Bundle asJSON() throws IOException
-	{
-		Bundle bundle = new Bundle();
-		for (Entry<String,Value> entry : mMap.entrySet())
-		{
-			if (entry.getValue() instanceof Array)
-			{
-				bundle.putArray(entry.getKey(), ((Array)entry.getValue()).asJSON());
-			}
-			else if (entry.getValue() instanceof Dictionary)
-			{
-				bundle.putBundle(entry.getKey(), ((Dictionary)entry.getValue()).asJSON());
-			}
-			else if (entry.getValue() instanceof NumberValue)
-			{
-				if (((NumberValue)entry.getValue()).getDouble() == null)
-				{
-					bundle.putNumber(entry.getKey(), ((NumberValue)entry.getValue()).getDouble());
-				}
-				else
-				{
-					bundle.putNumber(entry.getKey(), ((NumberValue)entry.getValue()).getInteger());
-				}
-			}
-			else if (entry.getValue() instanceof TextValue)
-			{
-				bundle.putString(entry.getKey(), ((TextValue)entry.getValue()).getValue());
-			}
-			else
-			{
-				throw new IllegalStateException("unsupported: " + entry);
-			}
-		}
-		return bundle;
 	}
 }

@@ -226,7 +226,7 @@ public class TrueTypeFont implements FontFile
 			Platform platform = Platform.values()[platformId];
 			PlatformSpecific platformSpecific = platform == Platform.Microsoft ? PlatformSpecific.values()[PlatformSpecific.Symbol.ordinal() + platformSpecificId] : PlatformSpecific.values()[platformSpecificId];
 
-			cmap[i] = new CMapTable(platform, platformSpecific, (int)offset);
+			cmap[i] = new CMapTable(platform, platformSpecific, offset);
 		}
 
 		mCmap = new CMap[numberSubtables];

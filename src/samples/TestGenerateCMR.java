@@ -2,8 +2,6 @@ package samples;
 
 import java.io.FileOutputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 
@@ -14,7 +12,7 @@ public class TestGenerateCMR
 		try
 		{
 			CMRDocument document = new CMRDocument();
-			document.setCompanyLogo(Files.readAllBytes(Paths.get("C:\\netbeans\\mds\\mdsserver\\src\\com\\surikat\\dips\\message_queue_consumer\\pdf_template\\schenker_logo.png")));
+			document.setCompanyLogo(TestGenerateCMR.class.getResourceAsStream("surikat_logo.png").readAllBytes());
 
 			document.setShipperAddress("Meža Mājas ZS");
 			document.setShipperStreet("Līvānu nov. Rožupes pag");
@@ -71,7 +69,7 @@ public class TestGenerateCMR
 			document.setSenderSignature(sig);
 			document.setRecevierSignature(sig);
 
-			document.setBarcode(BarcodeGenerator.generate("144017595972", 1, 1));
+			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
 
 			try (FileOutputStream out = new FileOutputStream("d:/output.pdf"))
 			{

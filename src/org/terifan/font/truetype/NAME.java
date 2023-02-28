@@ -9,11 +9,11 @@ class NAME
 	private ArrayList<NameRecord> mNameRecords;
 
 
-	public NAME(ByteBufferReader aBuffer, HashMap<String, Table> mTables)
+	public NAME(ByteBufferReader aBuffer, HashMap<String, Table> aTables)
 	{
 		mNameRecords = new ArrayList<>();
 
-		int offset = mTables.get("name").mOffset;
+		int offset = aTables.get("name").mOffset;
 
 		aBuffer.position(offset);
 

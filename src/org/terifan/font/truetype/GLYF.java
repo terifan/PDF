@@ -19,38 +19,38 @@ class GLYF
 	int[] yCoordinates;
 
 
-	public GLYF(ByteBufferReader mBuffer, HashMap<String, Table> mTables, HEAD mHEAD, int aSymbol)
+	public GLYF(ByteBufferReader aBuffer, HashMap<String, Table> aTables, HEAD aHEAD, int aSymbol)
 	{
-		mBuffer.position(getGlyphOffset(mBuffer, mTables, mHEAD, aSymbol));
+		aBuffer.position(getGlyphOffset(aBuffer, aTables, aHEAD, aSymbol));
 
-		numberOfContours = mBuffer.getInt16();
-		xMin = mBuffer.getFword();
-		yMin = mBuffer.getFword();
-		xMax = mBuffer.getFword();
-		yMax = mBuffer.getFword();
+		numberOfContours = aBuffer.getInt16();
+		xMin = aBuffer.getFword();
+		yMin = aBuffer.getFword();
+		xMax = aBuffer.getFword();
+		yMax = aBuffer.getFword();
 	}
 
 
-	private int getGlyphOffset(ByteBufferReader mBuffer, HashMap<String, Table> mTables, HEAD mHEAD, int aIndex)
+	private int getGlyphOffset(ByteBufferReader aBuffer, HashMap<String, Table> aTables, HEAD aHEAD, int aIndex)
 	{
-		int o = mTables.get("loca").mOffset;
+		int o = aTables.get("loca").mOffset;
 
-		int old = mBuffer.position();
+		int old = aBuffer.position();
 		int offset;
 
-		if (mHEAD.mIndexToLocFormat == 1)
+		if (aHEAD.mIndexToLocFormat == 1)
 		{
-			mBuffer.position(o + aIndex * 4);
-			offset = mBuffer.getInt32();
+			aBuffer.position(o + aIndex * 4);
+			offset = aBuffer.getInt32();
 		}
 		else
 		{
-			mBuffer.position(o + aIndex * 2);
-			offset = mBuffer.getUint16() * 2;
+			aBuffer.position(o + aIndex * 2);
+			offset = aBuffer.getUint16() * 2;
 		}
 
-		mBuffer.position(old);
+		aBuffer.position(old);
 
-		return mTables.get("glyf").mOffset + offset;
+		return aTables.get("glyf").mOffset + offset;
 	}
 }

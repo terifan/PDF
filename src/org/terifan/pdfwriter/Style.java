@@ -170,9 +170,7 @@ public class Style
 	public int getGlyphIndex(int aCharacter)
 	{
 		int glyph = mFont.getFontFile().findGlyphIndexImpl(aCharacter);
-
 		mFont.registerGlyph(aCharacter, glyph);
-
 		return glyph;
 	}
 
@@ -180,14 +178,14 @@ public class Style
 	public double getAdvance(char aCharacter)
 	{
 		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
-		return mSize * mFont.getFontFile().getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm() * cs;
+		return mSize * mFont.getFontFile().getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) * cs / mFont.getFontFile().getUnitsPerEm();
 	}
 
 
 	public double getLeftBearing(char aCharacter)
 	{
 		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
-		return mSize * mFont.getFontFile().getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) / mFont.getFontFile().getUnitsPerEm() * cs;
+		return mSize * mFont.getFontFile().getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) * cs / mFont.getFontFile().getUnitsPerEm();
 	}
 
 

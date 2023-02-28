@@ -857,21 +857,6 @@ public class CMRDocument implements Document
 	public void setConsignmentId(String aConsignmentId)
 	{
 		consignmentId = aConsignmentId;
-
-		if (consignmentId == null || consignmentId.isEmpty() || consignmentId.contains(">"))
-		{
-			barcode = null;
-			return;
-		}
-
-		try
-		{
-			barcode = BarcodeGenerator.generate(consignmentId, 1, 1);
-		}
-		catch (Exception e)
-		{
-			throw new IllegalArgumentException("Cannot generate barcode: " + aConsignmentId, e);
-		}
 	}
 
 
