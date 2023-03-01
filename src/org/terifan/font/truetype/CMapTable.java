@@ -3,16 +3,27 @@ package org.terifan.font.truetype;
 
 class CMapTable
 {
-	Platform mPlatform;
-	PlatformSpecific mPlatformSpecific;
-	int mOffset;
+	private Platform mPlatform;
+	private PlatformSpecific mPlatformSpecific;
+	private int mOffset;
 
 
-	public CMapTable(Platform aPlatform, PlatformSpecific aPlatformSpecific, int aOffset)
+	public CMapTable(int aPlatformId, int aPlatformSpecificId, int aOffset)
 	{
-		mPlatform = aPlatform;
-		mPlatformSpecific = aPlatformSpecific;
+		if (aOffset < 0)
+		{
+			throw new IllegalArgumentException();
+		}
+
+		mPlatform = Platform.values()[aPlatformId];
+		mPlatformSpecific = mPlatform == Platform.Microsoft ? PlatformSpecific.values()[PlatformSpecific.Symbol.ordinal() + aPlatformSpecificId] : PlatformSpecific.values()[aPlatformSpecificId];
 		mOffset = aOffset;
+	}
+
+
+	public int getOffset()
+	{
+		return mOffset;
 	}
 
 

@@ -3,11 +3,11 @@ package org.terifan.font.truetype;
 
 class CMap4 implements CMap
 {
-	private int[] startCode; // Starting character code for each segment
-	private int[] idDelta; // Delta for all character codes in segment
-	private int[] idRangeOffset; // Offset in bytes to glyph indexArray, or 0
-	private int[] glyphIndexArray; // Glyph index array
-	private int[] endCode; // Ending character code for each segment, last = 0xFFFF.
+	private int[] mStartCode; // Starting character code for each segment
+	private int[] mIdDelta; // Delta for all character codes in segment
+	private int[] mIdRangeOffset; // Offset in bytes to glyph indexArray, or 0
+	private int[] mGlyphIndexArray; // Glyph index array
+	private int[] mEndCode; // Ending character code for each segment, last = 0xFFFF.
 
 
 	public CMap4(ByteBufferReader aBuffer)
@@ -20,7 +20,7 @@ class CMap4 implements CMap
 		int searchRange = aBuffer.getUint16();
 		int entrySelector = aBuffer.getUint16();
 		int rangeShift = aBuffer.getUint16();
-		endCode = aBuffer.getUint16Array(segCount / 2);
+		mEndCode = aBuffer.getUint16Array(segCount / 2);
 		int reservedPad = aBuffer.getUint16();
 
 		if (reservedPad != 0)
@@ -28,10 +28,10 @@ class CMap4 implements CMap
 			throw new IllegalStateException("Expected reservedPad to be zero: " + reservedPad);
 		}
 
-		startCode = aBuffer.getUint16Array(segCount / 2);
-		idDelta = aBuffer.getInt16Array(segCount / 2);
-		idRangeOffset = aBuffer.getUint16Array(segCount / 2);
-		glyphIndexArray = aBuffer.getUint16Array(aBuffer.position() - startOffset);
+		mStartCode = aBuffer.getUint16Array(segCount / 2);
+		mIdDelta = aBuffer.getInt16Array(segCount / 2);
+		mIdRangeOffset = aBuffer.getUint16Array(segCount / 2);
+		mGlyphIndexArray = aBuffer.getUint16Array(aBuffer.position() - startOffset);
 
 //		for (int i = 0; i < startCode.length; i++)
 //		{
@@ -43,25 +43,25 @@ class CMap4 implements CMap
 	@Override
 	public int findGlyphIndex(int aCharacter)
 	{
-		for (int i = 0; i < startCode.length; i++)
+		for (int i = 0; i < mStartCode.length; i++)
 		{
-//			System.out.printf("%8d %8d %8d %8d\n", startCode[i], endCode[i], idDelta[i], idRangeOffset[i]);
+//			System.out.printf("%8d %8d %8d %8d\n", mStartCode[i], mEndCode[i], mIdDelta[i], mIdRangeOffset[i]);
 
-			if (endCode[i] >= aCharacter)
+			if (mEndCode[i] >= aCharacter)
 			{
 				int glyphIndex;
 
-				if (idRangeOffset[i] != 0)
+				if (mIdRangeOffset[i] != 0)
 				{
-					int address = (idRangeOffset[i] / 2 + (aCharacter - startCode[i]) + i - startCode.length) & 0xffff;
+					int address = (mIdRangeOffset[i] / 2 + (aCharacter - mStartCode[i]) + i - mStartCode.length) & 0xffff;
 
-					if (address < 0 || address > glyphIndexArray.length)
+					if (address < 0 || address > mGlyphIndexArray.length)
 					{
 //						System.out.println("Bad offset: " + address + ", range: " + glyphIndexArray.length);
 						return -1;
 					}
 
-					glyphIndex = glyphIndexArray[address];
+					glyphIndex = mGlyphIndexArray[address];
 
 					if (glyphIndex == 0)
 					{
@@ -74,7 +74,7 @@ class CMap4 implements CMap
 					glyphIndex = aCharacter;
 				}
 
-				return (idDelta[i] + glyphIndex) & 0xFFFF;
+				return (glyphIndex + mIdDelta[i]) & 0xFFFF;
 			}
 		}
 

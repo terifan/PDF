@@ -169,7 +169,7 @@ public class Style
 
 	public int getGlyphIndex(int aCharacter)
 	{
-		int glyph = mFont.getFontFile().findGlyphIndexImpl(aCharacter);
+		int glyph = mFont.getFontFile().findGlyphIndex(aCharacter);
 		mFont.registerGlyph(aCharacter, glyph);
 		return glyph;
 	}

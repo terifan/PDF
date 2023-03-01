@@ -1,6 +1,7 @@
 package org.terifan.font.truetype;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.terifan.font.FontFile;
 
@@ -24,7 +25,7 @@ public class TrueTypeFont implements FontFile
 	private HHEA mHHEA;
 	private HMTX mHMTX;
 	private NAME mNAME;
-	private CMap[] mCmap;
+	private ArrayList<CMap> mCmaps;
 	private HashMap<String, Table> mTables;
 
 
@@ -32,6 +33,7 @@ public class TrueTypeFont implements FontFile
 	{
 		mBuffer = new ByteBufferReader(aData);
 		mTables = new HashMap<>();
+		mCmaps = new ArrayList<>();
 
 		readOffsetTables();
 		mHEAD = new HEAD(mBuffer, mTables);
@@ -135,36 +137,32 @@ public class TrueTypeFont implements FontFile
 
 
 	@Override
-	public int findGlyphIndexImpl(int aCharacter)
+	public int findGlyphIndex(int aCharacter)
 	{
-		for (int i = 0; i < 2; i++)
+		for (int attempt = 0, c = aCharacter; attempt <= 2; attempt++)
 		{
-			for (CMap cmap : mCmap)
+			for (CMap cmap : mCmaps)
 			{
-				if (cmap != null)
+				int glyph = cmap.findGlyphIndex(c);
+				if (glyph != -1)
 				{
-					int glyph = cmap.findGlyphIndex(aCharacter);
-
-					if (glyph != -1)
-					{
-						return glyph;
-					}
+					return glyph;
 				}
 			}
 
-			if (i == 0)
+			if (attempt == 0)
 			{
 				// attempt to normalize the character to a simpler type
-				aCharacter = Normalizer.normalize(Character.toString(aCharacter), Normalizer.Form.NFD).charAt(0);
+				c = Normalizer.normalize(Character.toString(c), Normalizer.Form.NFD).charAt(0);
 			}
 			else
 			{
 				// attempt to return a space for missing glyphs
-				aCharacter = ' ';
+				c = ' ';
 			}
 		}
 
-		throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", " + (char)aCharacter);
+		throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", char: " + (char)aCharacter);
 	}
 
 
@@ -215,8 +213,9 @@ public class TrueTypeFont implements FontFile
 	// https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6cmap.html
 	private void readCharacterMap()
 	{
-		mBuffer.position(mTables.get("cmap").mOffset);
+		int startPosition = mTables.get("cmap").mOffset;
 
+		mBuffer.position(startPosition);
 		int version = mBuffer.getUint16();
 		int numberSubtables = mBuffer.getUint16();
 
@@ -225,7 +224,7 @@ public class TrueTypeFont implements FontFile
 			throw new IllegalStateException("Unexpected cmap version: " + version);
 		}
 
-		CMapTable[] cmap = new CMapTable[numberSubtables];
+		ArrayList<CMapTable> list = new ArrayList<>();
 
 		for (int i = 0; i < numberSubtables; i++)
 		{
@@ -233,35 +232,26 @@ public class TrueTypeFont implements FontFile
 			int platformSpecificId = mBuffer.getUint16();
 			int offset = mBuffer.getInt32();
 
-			if (offset < 0)
-			{
-				throw new IllegalArgumentException();
-			}
-
-			Platform platform = Platform.values()[platformId];
-			PlatformSpecific platformSpecific = platform == Platform.Microsoft ? PlatformSpecific.values()[PlatformSpecific.Symbol.ordinal() + platformSpecificId] : PlatformSpecific.values()[platformSpecificId];
-
-			cmap[i] = new CMapTable(platform, platformSpecific, offset);
+			list.add(new CMapTable(platformId, platformSpecificId, offset));
 		}
 
-		mCmap = new CMap[numberSubtables];
-
-		for (int i = 0; i < numberSubtables; i++)
+		for (CMapTable cmapTable : list)
 		{
-			mBuffer.position(mTables.get("cmap").mOffset + cmap[i].mOffset);
+			mBuffer.position(startPosition + cmapTable.getOffset());
 
 			int cmapFormat = mBuffer.getUint16();
 
 			switch (cmapFormat)
 			{
 				case 0:
-					mCmap[i] = new CMap0(mBuffer);
+					mCmaps.add(new CMap0(mBuffer));
 					break;
 				case 4:
-					mCmap[i] = new CMap4(mBuffer);
+					mCmaps.add(new CMap4(mBuffer));
 					break;
 				default:
-					throw new IllegalStateException("Cmap not implemented: " + cmapFormat);
+					System.out.println("Cmap format not implemented: " + cmapFormat);
+					break;
 			}
 		}
 	}
