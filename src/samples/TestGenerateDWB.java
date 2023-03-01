@@ -92,8 +92,8 @@ public class TestGenerateDWB
 			document.setConsigneeRemark("ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq");
 			document.setConsigneeRemarkReason("FM");
 
-			document.setSenderSignature(TestGenerateDWB.class.getResourceAsStream("siugnature.png").readAllBytes());
-			document.setRecevierSignature(TestGenerateDWB.class.getResourceAsStream("siugnature.png").readAllBytes());
+			document.setSenderSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
+			document.setRecevierSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
 
 			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
 

@@ -1,7 +1,6 @@
 package samples;
 
 import java.io.FileOutputStream;
-import java.net.URL;
 import java.util.Arrays;
 
 
@@ -65,9 +64,8 @@ public class TestGenerateCMR
 			document.setConsigneeName("Sven");
 			document.setConsigneeRemark("ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq");
 
-			byte[] sig = Streams.readAll(new URL("https://dips.surikat.net/ImageLoader/3f1f4635-10b7-4068-8052-15d39b073e6b"));
-			document.setSenderSignature(sig);
-			document.setRecevierSignature(sig);
+			document.setSenderSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
+			document.setRecevierSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
 
 			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
 

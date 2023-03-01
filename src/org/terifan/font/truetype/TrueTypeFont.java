@@ -1,5 +1,6 @@
 package org.terifan.font.truetype;
 
+import java.text.Normalizer;
 import java.util.HashMap;
 import org.terifan.font.FontFile;
 
@@ -136,16 +137,30 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public int findGlyphIndexImpl(int aCharacter)
 	{
-		for (CMap cmap : mCmap)
+		for (int i = 0; i < 2; i++)
 		{
-			if (cmap != null)
+			for (CMap cmap : mCmap)
 			{
-				int glyph = cmap.findGlyphIndex(aCharacter);
-
-				if (glyph != -1)
+				if (cmap != null)
 				{
-					return glyph;
+					int glyph = cmap.findGlyphIndex(aCharacter);
+
+					if (glyph != -1)
+					{
+						return glyph;
+					}
 				}
+			}
+
+			if (i == 0)
+			{
+				// attempt to normalize the character to a simpler type
+				aCharacter = Normalizer.normalize(Character.toString(aCharacter), Normalizer.Form.NFD).charAt(0);
+			}
+			else
+			{
+				// attempt to return a space for missing glyphs
+				aCharacter = ' ';
 			}
 		}
 
