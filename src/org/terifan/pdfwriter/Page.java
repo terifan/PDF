@@ -74,6 +74,17 @@ public class Page implements AutoCloseable
 	}
 
 
+	public Ref registerEmbeddedFile(EmbeddedFile aEmbeddedFile) throws IOException
+	{
+		String identity = "/EF" + mImageCount++;
+		mIdentityMap.put(aEmbeddedFile.getUUID(), identity);
+		aEmbeddedFile.setIdentity(identity);
+		Ref ref = aEmbeddedFile.print(mWriter);
+		mXObjectResourceDictionary.put(identity, ref);
+		return ref;
+	}
+
+
 	@Override
 	public void close() throws IOException
 	{

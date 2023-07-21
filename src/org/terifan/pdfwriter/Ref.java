@@ -31,4 +31,11 @@ public class Ref implements Value
 	{
 		aOutput.print(mReference + " 0 R");
 	}
+
+
+	@Override
+	public String toString()
+	{
+		return "Ref{" + "mReference=" + mReference + '}';
+	}
 }

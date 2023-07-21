@@ -166,6 +166,7 @@ public class Paragraph implements Content
 	}
 
 
+	@Override
 	public double getWidth()
 	{
 		return mWidth;
@@ -179,6 +180,7 @@ public class Paragraph implements Content
 	}
 
 
+	@Override
 	public boolean isConsumed()
 	{
 		return mLayout != null && mLayout.isEmpty();

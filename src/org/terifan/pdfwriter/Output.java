@@ -52,12 +52,17 @@ class Output implements AutoCloseable
 	}
 
 
-	public void println(String aText, Object... aParams) throws IOException
+	public void print(String aText, Object... aParams) throws IOException
 	{
 		byte[] buf = new Formatter(Locale.US).format(aText, aParams).toString().getBytes();
 		mOutput.write(buf);
-		mOutput.write('\n');
-		mSize += buf.length + 1;
+		mSize += buf.length;
+	}
+
+
+	public void println(String aText, Object... aParams) throws IOException
+	{
+		print(aText + "\n", aParams);
 	}
 
 

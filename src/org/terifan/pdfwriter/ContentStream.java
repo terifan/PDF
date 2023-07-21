@@ -56,7 +56,7 @@ public class ContentStream implements Content
 	}
 
 
-//	@Override
+	@Override
 	public double getWidth()
 	{
 		double width = 0;
