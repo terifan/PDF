@@ -38,9 +38,9 @@ public class Image extends Resource
 
 	public void setData(byte[] aData) throws IOException
 	{
-		mData = aData;
-		if (aData != null)
+		if (aData != null && aData.length > 0)
 		{
+			mData = aData;
 			if (mFormat == Format.PNG)
 			{
 				preparePNG();
@@ -49,6 +49,10 @@ public class Image extends Resource
 			{
 				prepareJPEG();
 			}
+		}
+		else
+		{
+			mData = null;
 		}
 	}
 

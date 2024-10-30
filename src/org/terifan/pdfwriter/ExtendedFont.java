@@ -21,9 +21,29 @@ public class ExtendedFont extends Font implements Value
 
 	public ExtendedFont(byte[] aFontData)
 	{
-		mFontData = aFontData;
-		mFontFile = new TrueTypeFont(aFontData);
-		mGlyphMap = new TreeMap<>();
+		this(()->aFontData);
+	}
+
+
+	public ExtendedFont(Provider aProvider)
+	{
+		try
+		{
+			mFontData = aProvider.get();
+			mFontFile = new TrueTypeFont(mFontData);
+			mGlyphMap = new TreeMap<>();
+		}
+		catch (Exception e)
+		{
+			throw new IllegalStateException();
+		}
+	}
+
+
+	@FunctionalInterface
+	public interface Provider
+	{
+		byte[] get() throws Exception;
 	}
 
 

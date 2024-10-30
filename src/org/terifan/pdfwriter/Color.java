@@ -36,6 +36,12 @@ public class Color implements Serializable
 	}
 
 
+	public Color(int aRGB)
+	{
+		this((0xff & (aRGB >>> 16)) / 255.0, (0xff & (aRGB >>> 8)) / 255.0, (0xff & aRGB) / 255.0);
+	}
+
+
 	@Override
 	public String toString()
 	{

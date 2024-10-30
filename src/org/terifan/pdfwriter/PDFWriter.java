@@ -23,7 +23,7 @@ public class PDFWriter implements AutoCloseable
 		mCompress = true;
 
 		mOutput = new Output(aOutput);
-		mOutput.println("%PDF-1.3");
+		mOutput.println("%PDF-1.6");
 	}
 
 

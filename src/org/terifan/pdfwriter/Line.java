@@ -23,6 +23,12 @@ public class Line implements Producer, Serializable
 	}
 
 
+	public Line(double aLeft, double aTop, double aRight, double aBottom)
+	{
+		this(aLeft, aTop, aRight, aBottom, 1, Color.BLACK);
+	}
+
+
 	public Line(double aLeft, double aTop, double aRight, double aBottom, double aStrokeThickness, Color aStrokeColor)
 	{
 		mLeft = aLeft;

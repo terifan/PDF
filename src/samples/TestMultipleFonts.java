@@ -20,7 +20,7 @@ public class TestMultipleFonts
 		try
 		{
 			Font font0 = new StandardFont("Helvetica");
-			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("segoepr.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("segoeui.ttf").readAllBytes());
 			Font font2 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("verdana.ttf").readAllBytes());
 			Font font3 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("impact.ttf").readAllBytes());
 			Font font4 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("opensans.ttf").readAllBytes());
