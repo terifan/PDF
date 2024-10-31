@@ -3,7 +3,7 @@ package org.terifan.pdfwriter;
 import org.terifan.font.FontFile;
 
 
-public class Style
+public class Style implements Cloneable
 {
 	private Font mFont;
 	private double mSize;
@@ -205,5 +205,29 @@ public class Style
 		}
 
 		return len;
+	}
+
+
+	@Override
+	public Style clone()
+	{
+		try
+		{
+			return (Style)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new IllegalStateException(e);
+//			Style style = new Style();
+//			style.mFont;
+//			style.mSize;
+//			style.mTextColor;
+//			style.mBorderColor;
+//			style.mFillColor;
+//			style.mHighlightColor;
+//			style.mFontFile;
+//			style.mCharacterSpacing;
+//			style.mMargins;
+		}
 	}
 }

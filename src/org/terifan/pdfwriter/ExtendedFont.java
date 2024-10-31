@@ -9,7 +9,7 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 
-public class ExtendedFont extends Font implements Value
+public class ExtendedFont extends Font implements Value, Cloneable
 {
 	private final static boolean ALWAYS_COMPRESS_FONT_DATA = true;
 
@@ -17,6 +17,11 @@ public class ExtendedFont extends Font implements Value
 	private TreeMap<Integer, Integer> mGlyphMap;
 	private byte[] mFontData;
 	private Ref mResourceRef;
+
+
+	private ExtendedFont()
+	{
+	}
 
 
 	public ExtendedFont(byte[] aFontData)
@@ -242,5 +247,24 @@ public class ExtendedFont extends Font implements Value
 		}
 
 		return mResourceRef;
+	}
+
+
+	@Override
+	public ExtendedFont clone() throws CloneNotSupportedException
+	{
+		try
+		{
+			return (ExtendedFont)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			ExtendedFont font = new ExtendedFont();
+			font.mFontFile = mFontFile;
+			font.mGlyphMap = mGlyphMap;
+			font.mFontData = mFontData;
+			font.mResourceRef = mResourceRef;
+			return font;
+		}
 	}
 }

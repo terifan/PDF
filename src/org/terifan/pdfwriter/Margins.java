@@ -1,7 +1,7 @@
 package org.terifan.pdfwriter;
 
 
-public class Margins
+public class Margins implements Cloneable
 {
 	private Double top, left, bottom, right;
 
@@ -93,5 +93,19 @@ public class Margins
 	public double bottom(Margins aOther)
 	{
 		return bottom == null ? aOther == null ? 0 : aOther.bottom(null) : bottom;
+	}
+
+
+	@Override
+	public Margins clone()
+	{
+		try
+		{
+			return (Margins)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			return new Margins(top, left, bottom, right);
+		}
 	}
 }
