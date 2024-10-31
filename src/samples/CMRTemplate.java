@@ -31,8 +31,8 @@ public class CMRTemplate implements Template<CMRDocument>
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(CMRTemplate.class.getResourceAsStream("segoeui.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(CMRTemplate.class.getResourceAsStream("segoeuib.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeui.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeuib.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 			{

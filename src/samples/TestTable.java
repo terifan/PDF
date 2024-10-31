@@ -33,13 +33,14 @@ public class TestTable
 			Color[] highlightColors = {new Color(0.5,0,0), new Color(0,0.5,0), new Color(0,0,0.5)};
 
 			ArrayList<String> words = new ArrayList<>();
-			try (LineNumberReader in = new LineNumberReader(new FileReader("D:\\Documents\\words.txt")))
-			{
-				for (String s; (s = in.readLine()) != null;)
-				{
-					words.add(s);
-				}
-			}
+//			try (LineNumberReader in = new LineNumberReader(new FileReader("D:\\Documents\\words.txt")))
+//			{
+//				for (String s; (s = in.readLine()) != null;)
+//				{
+//					words.add(s);
+//				}
+//			}
+			words.addAll(Arrays.asList("apple","banan","dog","cat","table","chair"));
 
 			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(!true))
 			{
