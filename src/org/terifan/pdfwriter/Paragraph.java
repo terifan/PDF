@@ -3,7 +3,7 @@ package org.terifan.pdfwriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
@@ -36,10 +36,9 @@ public class Paragraph implements Content
 	}
 
 
-	public Paragraph(Style aStyle, List<String> aText)
+	public Paragraph(Style aStyle, Collection<String> aText)
 	{
 		this();
-
 		for (String s : aText)
 		{
 			mSpans.add(new Span(aStyle, s));
@@ -53,7 +52,7 @@ public class Paragraph implements Content
 	}
 
 
-	public Paragraph(List<Span> aSpans)
+	public Paragraph(Collection<Span> aSpans)
 	{
 		this();
 		mSpans.addAll(aSpans);
@@ -324,7 +323,10 @@ public class Paragraph implements Content
 				for (int i = 0; i < chunk.length; i++)
 				{
 					char ch = text.charAt(chunk.offset + i);
-					if (ch < ' ') ch = ' ';
+					if (ch < ' ')
+					{
+						ch = ' ';
+					}
 
 					aOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
 
@@ -405,7 +407,10 @@ public class Paragraph implements Content
 					for (int i = 0; i < chunkLen; i++, offset++)
 					{
 						char c = span.getText().charAt(offset);
-						if (c < ' ') c = ' ';
+						if (c < ' ')
+						{
+							c = ' ';
+						}
 						x += style.getAdvance(c);
 						if (c != ' ')
 						{

@@ -53,11 +53,11 @@ public class TestTable
 					.setCellBorderColor(Color.RED)
 					;
 
-				table.setHeader(Arrays.asList(
+				table.setHeader(
 					new Paragraph(new Style(fonts[0], sizes[1]), "ID"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Description"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Price").setAlignment(Alignment.RIGHT)
-				));
+				);
 				for (int i = 0; i < 100; i++)
 				{
 					ArrayList<Span> name = new ArrayList<>();
@@ -77,11 +77,11 @@ public class TestTable
 						name.add(new Span(style, i+words.get(rnd.nextInt(words.size())) + "s "));
 					}
 
-					table.addRow(Arrays.asList(
+					table.addRow(
 						new Paragraph(new Style(fonts[0], sizes[1]), "product-" + i),
 						new Paragraph(name),
 						new Paragraph(new Style(fonts[0], sizes[1]), String.format("%.2f", rnd.nextDouble()*100)).setAlignment(Alignment.RIGHT)
-					));
+					);
 				}
 
 				try (Page page = pdf.addPage())
