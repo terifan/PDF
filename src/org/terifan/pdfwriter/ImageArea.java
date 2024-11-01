@@ -13,12 +13,17 @@ public class ImageArea implements Producer
 	private Image mImage;
 
 
-	public ImageArea(double aBoundsLeft, double aBoundsTop, double aBoundsRight, double aBoundsBottom, Image aImage)
+	public ImageArea(double aLeft, double aTop, double aRight, double aBottom, Image aImage)
 	{
-		mBoundsTop = aBoundsTop;
-		mBoundsLeft = aBoundsLeft;
-		mBoundsBottom = aBoundsBottom;
-		mBoundsRight = aBoundsRight;
+		if (aRight < aLeft || aBottom > aTop)
+		{
+			throw new IllegalArgumentException();
+		}
+
+		mBoundsTop = aTop;
+		mBoundsLeft = aLeft;
+		mBoundsBottom = aBottom;
+		mBoundsRight = aRight;
 		mImage = aImage;
 	}
 

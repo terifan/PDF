@@ -15,12 +15,17 @@ public class TableArea implements Producer
 	private Color mBackgroundColor;
 
 
-	public TableArea(double aBoundsLeft, double aBoundsTop, double aBoundsRight, double aBoundsBottom, Table aTable)
+	public TableArea(double aLeft, double aTop, double aRight, double aBottom, Table aTable)
 	{
-		mBoundsTop = aBoundsTop;
-		mBoundsLeft = aBoundsLeft;
-		mBoundsBottom = aBoundsBottom;
-		mBoundsRight = aBoundsRight;
+		if (aRight < aLeft || aBottom > aTop)
+		{
+			throw new IllegalArgumentException();
+		}
+
+		mBoundsTop = aTop;
+		mBoundsLeft = aLeft;
+		mBoundsBottom = aBottom;
+		mBoundsRight = aRight;
 		mTable = aTable;
 	}
 

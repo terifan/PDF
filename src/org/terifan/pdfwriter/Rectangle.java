@@ -33,6 +33,11 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle(double aLeft, double aTop, double aRight, double aBottom, double aStrokeThickness, double aCornerRadius, Color aStrokeColor, Color aFillColor)
 	{
+		if (aRight < aLeft || aBottom > aTop)
+		{
+			throw new IllegalArgumentException();
+		}
+
 		mLeft = aLeft;
 		mTop = aTop;
 		mRight = aRight;

@@ -477,8 +477,11 @@ public class Table implements Content
 
 		if (aBoundsTop - rowHeight < aBoundsBottom && !isBreakRows())
 		{
+//			renderRectangle(aOutput, aBoundsLeft, aBoundsTop, aBoundsRight, aBoundsBottom, null, null, new Color(1,1,0.7), new Color(1,1,0));
+
 			return -1;
 		}
+//			renderRectangle(aOutput, aBoundsLeft, aBoundsTop, aBoundsRight, aBoundsBottom, null, null, new Color(1,1,0.7), new Color(1,1,0));
 
 		double y1 = aBoundsTop - rowHeight;
 
