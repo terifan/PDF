@@ -487,14 +487,31 @@ public class Table implements Content
 			double x0 = xstart;
 			for (int dataColumn = 0, layoutColumn = 0, n = Math.min(columnWidths.length, aRow.size()); dataColumn < n; dataColumn++, layoutColumn++)
 			{
+				Content content = aRow.get(dataColumn);
+				double x1 = x0 + columnWidths[layoutColumn] * boundsWidth;
+
+				Insets in;
+				if (content instanceof TableCell v)
+				{
+					in = Insets.add(Insets.first(v.getPadding(), aRow.getPadding(), mCellPadding, ZERO), v.getBorderThickness());
+
+					for (int i = 1; i < v.getColSpan(); i++)
+					{
+						layoutColumn++;
+						x1 += mColumnSpacing + columnWidths[layoutColumn] * boundsWidth;
+					}
+				}
+				else
+				{
+					in = Insets.first(aRow.getPadding(), mCellPadding, ZERO);
+				}
+
+				content.layout(x0 + in.left(), x1 - in.left() - in.right());
+
+				est  = Math.max(est, content.getHeight());
+
+				x0 = x1 + mColumnSpacing;
 			}
-
-			content.layout(x0, x1);
-
-			outputs[dataColumn] = new Output(new ByteArrayOutputStream());
-			rowHeight = Math.max(rowHeight, aBoundsTop - content.produce(aPDFWriter, outputs[dataColumn], aPage, aBoundsTop, x0, aBoundsBottom, x1));
-
-			x0 = x1 + mColumnSpacing;
 		}
 
 		if (aBoundsTop - est < aBoundsBottom)
@@ -557,31 +574,13 @@ public class Table implements Content
 			return -1;
 		}
 
-				Content content = aRow.get(dataColumn);
-				double x1 = x0 + columnWidths[layoutColumn] * boundsWidth;
-
-				Insets in;
-				if (content instanceof TableCell v)
-				{
-					in = Insets.add(Insets.first(v.getPadding(), aRow.getPadding(), mCellPadding, ZERO), v.getBorderThickness());
-
-					for (int i = 1; i < v.getColSpan(); i++)
-					{
-						layoutColumn++;
-						x1 += mColumnSpacing + columnWidths[layoutColumn] * boundsWidth;
-					}
-				}
-				else
-				{
-					in = Insets.first(aRow.getPadding(), mCellPadding, ZERO);
-				}
-
-				content.layout(x0 + in.left(), x1 - in.left() - in.right());
-
-				est  = Math.max(est, content.getHeight());
-
-				x0 = x1 + mColumnSpacing;
+		if (aRow.getBorderColor() != null || aRow.getFillColor() != null || mFillColor != null)
 		{
+			renderRectangle(aOutput, aBoundsLeft, aBoundsTop, xend, y1, aRow.getFillColor() == null ? mFillColor : aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderColor());
+		}
+		if (getBorderColor() != null)
+		{
+			if (aFirstRow)
 			{
 				renderRectangle(aOutput, aBoundsLeft, aBoundsTop, xend, y1, null, new Insets(mBorderThickness.top(), mBorderThickness.left(), 0, mBorderThickness.right()), getBorderColor());
 			}
@@ -636,7 +635,6 @@ public class Table implements Content
 			}
 
 			aOutput.print(((ByteArrayOutputStream)outputs[dataColumn].getOutput()).toString());
-		if (aRow.getBorderColor() != null || aRow.getFillColor() != null || mFillColor != null)
 
 			x0 = x1 + mColumnSpacing;
 		}
@@ -651,8 +649,3 @@ public class Table implements Content
 		return aBoundsTop;
 	}
 }
-			renderRectangle(aOutput, aBoundsLeft, aBoundsTop, xend, y1, aRow.getFillColor() == null ? mFillColor : aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderColor());
-		}
-		if (getBorderColor() != null)
-		{
-			if (aFirstRow)
