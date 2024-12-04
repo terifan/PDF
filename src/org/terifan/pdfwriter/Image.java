@@ -17,7 +17,7 @@ public class Image extends Resource
 	private int mBitsPerComponent;
 	private Ref mResourceRef;
 	private Format mFormat;
-	private Margins mMargins;
+	private Insets mMargins;
 
 
 	public enum Format
@@ -30,7 +30,7 @@ public class Image extends Resource
 	public Image(byte[] aData, Format aFormat) throws IOException
 	{
 		mFormat = aFormat;
-		mMargins = new Margins();
+		mMargins = new Insets();
 
 		setData(aData);
 	}
@@ -63,13 +63,13 @@ public class Image extends Resource
 	}
 
 
-	public Margins getMargins()
+	public Insets getMargins()
 	{
 		return mMargins;
 	}
 
 
-	public Image setMargins(Margins aMargins)
+	public Image setMargins(Insets aMargins)
 	{
 		this.mMargins = aMargins;
 		return this;

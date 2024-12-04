@@ -22,7 +22,7 @@ public class TestTextLayout
 		{
 			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("opensans.ttf").readAllBytes());
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(!true))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:\\temp\\output.pdf")).setCompress(!true))
 			{
 				Style style0 = new Style(font1, 15);
 				Style style1 = new Style(font1, 15).setFillColor(Color.YELLOW);

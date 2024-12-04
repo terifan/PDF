@@ -82,6 +82,11 @@ public class PDFWriter implements AutoCloseable
 	@Override
 	public void close() throws IOException
 	{
+		if (mOutput == null)
+		{
+			return;
+		}
+
 		for (Page page : mPages)
 		{
 			page.close();
@@ -121,5 +126,6 @@ public class PDFWriter implements AutoCloseable
 		mOutput.println("%%EOF");
 
 		mOutput.close();
+		mOutput = null;
 	}
 }

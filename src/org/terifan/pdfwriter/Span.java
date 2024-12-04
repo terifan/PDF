@@ -1,11 +1,17 @@
 package org.terifan.pdfwriter;
 
 
-public class Span
+
+public class Span implements Cloneable
 {
 	private Style mStyle;
 	private String mText;
 	private VerticalAlignment mVerticalAlignment;
+
+
+	private Span()
+	{
+	}
 
 
 	public Span(Style aStyle, String aText)
@@ -44,5 +50,24 @@ public class Span
 	public String toString()
 	{
 		return "Span{" + mText + '}';
+	}
+
+
+	@Override
+	public Span clone()
+	{
+		Span span;
+		try
+		{
+			span = (Span)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			span = new Span();
+		}
+		span.mVerticalAlignment = mVerticalAlignment;
+		span.mStyle = mStyle.clone();
+		span.mText = mText;
+		return span;
 	}
 }

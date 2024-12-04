@@ -7,13 +7,13 @@ public class EmbeddedFile extends Resource
 {
 	private byte[] mData;
 	private Ref mResourceRef;
-	private Margins mMargins;
+	private Insets mMargins;
 	private String mType;
 
 
 	public EmbeddedFile(byte[] aData, String aType) throws IOException
 	{
-		mMargins = new Margins();
+		mMargins = new Insets();
 		mType = aType;
 		mData = aData;
 	}
@@ -25,13 +25,13 @@ public class EmbeddedFile extends Resource
 	}
 
 
-	public Margins getMargins()
+	public Insets getMargins()
 	{
 		return mMargins;
 	}
 
 
-	public EmbeddedFile setMargins(Margins aMargins)
+	public EmbeddedFile setMargins(Insets aMargins)
 	{
 		mMargins = aMargins;
 		return this;

@@ -14,7 +14,7 @@ import org.terifan.pdfwriter.Image;
 import org.terifan.pdfwriter.Image.Format;
 import org.terifan.pdfwriter.ImageArea;
 import org.terifan.pdfwriter.Line;
-import org.terifan.pdfwriter.Margins;
+import org.terifan.pdfwriter.Insets;
 import org.terifan.pdfwriter.Paragraph;
 import org.terifan.pdfwriter.PDFWriter;
 import org.terifan.pdfwriter.Page;
@@ -22,6 +22,7 @@ import org.terifan.pdfwriter.Rectangle;
 import org.terifan.pdfwriter.Span;
 import org.terifan.pdfwriter.Table;
 import org.terifan.pdfwriter.TableArea;
+import org.terifan.pdfwriter.TableRow;
 import org.terifan.pdfwriter.TextArea;
 import org.terifan.pdfwriter.VerticalAlignment;
 import samples.CMRDocument.InstructionElement;
@@ -33,7 +34,7 @@ public class DWBTemplate implements Template<DWBDocument>
 	@Override
 	public void generate(OutputStream aOutputStream, String aLanguage, DWBDocument aDocument) throws IOException
 	{
-		Font font1 = new ExtendedFont(DWBTemplate.class.getResourceAsStream("segoeui.ttf").readAllBytes());
+		Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeui.ttf").readAllBytes());
 
 		try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 		{
@@ -42,14 +43,14 @@ public class DWBTemplate implements Template<DWBDocument>
 			Style style2 = new Style(font1, 13);
 			Style style4 = new Style(font1, 11);
 
-			Margins margins1 = new Margins(0, 4, 0, 4);
-			Margins margins2 = new Margins(2, 2, 2, 2);
-			Margins margins3 = new Margins(1, 2, 1, 2);
-			Margins margins4 = new Margins(2, 4, 2, 4);
-			Margins margins5 = new Margins(6, 6, 6, 6);
-			Margins margins6 = new Margins(6, 15, 6, 15);
-			Margins margins7 = new Margins(0, 4, 0, 4);
-			Margins margins8 = new Margins(4, 8, 0, 4);
+			Insets margins1 = new Insets(0, 4, 0, 4);
+			Insets margins2 = new Insets(2, 2, 2, 2);
+			Insets margins3 = new Insets(1, 2, 1, 2);
+			Insets margins4 = new Insets(2, 4, 2, 4);
+			Insets margins5 = new Insets(6, 6, 6, 6);
+			Insets margins6 = new Insets(6, 15, 6, 15);
+			Insets margins7 = new Insets(0, 4, 0, 4);
+			Insets margins8 = new Insets(4, 8, 0, 4);
 
 			ContentStream transportInfo = new ContentStream();
 			for (InstructionElement s : aDocument.getInstructions())
@@ -70,14 +71,14 @@ public class DWBTemplate implements Template<DWBDocument>
 				.setVerticalGridThickness(1.0)
 				.setHeaderGridThickness(1.0)
 				.setHeaderGridColor(Color.BLACK)
-				.setHeader(
+				.setHeader(new TableRow(
 					new Paragraph(style0, "Marks and numbers").setMargins(margins2),
 					new Paragraph(style0, "Goods description / reference").setMargins(margins2),
 					new Paragraph(new Span(style0, "Qty."), new Span(style0, "Pkg.")).setAlignment(Alignment.SPLIT).setMargins(margins2),
 					new Paragraph(style0, "Gross weight, kg").setAlignment(Alignment.RIGHT).setMargins(margins2),
 					new Paragraph(style0, "Volume, m³").setAlignment(Alignment.RIGHT).setMargins(margins2),
 					new Paragraph(style0, "LDM").setAlignment(Alignment.RIGHT).setMargins(margins2)
-				);
+				));
 
 			for (int i = 0; i < aDocument.getGoodsGrossWeight().size(); i++)
 			{
@@ -126,7 +127,7 @@ public class DWBTemplate implements Template<DWBDocument>
 				.setRepeatHeader(true)
 				.setVerticalGridColor(Color.BLACK)
 				.setVerticalGridThickness(1.0)
-				.setHeader(
+				.setHeader(new TableRow(
 					new Paragraph(style0, "Delivery terms").setMargins(margins3),
 					new Paragraph(style0, "Calculated weight, kg").setAlignment(Alignment.RIGHT).setMargins(margins3),
 					new Paragraph(style0, "Total").setAlignment(Alignment.RIGHT).setMargins(margins3),
@@ -134,7 +135,7 @@ public class DWBTemplate implements Template<DWBDocument>
 					new Paragraph(style0, "Gross weight, kg").setAlignment(Alignment.RIGHT).setMargins(margins3),
 					new Paragraph(style0, "Volume, m³").setAlignment(Alignment.RIGHT).setMargins(margins3),
 					new Paragraph(style0, "LDM").setAlignment(Alignment.RIGHT).setMargins(margins3)
-				)
+				))
 				.addRow(
 					new Paragraph(style1, aDocument.getConditionsOfDelivery()).setMargins(margins3),
 					new Paragraph(style1, aDocument.getTaxWeight()).setAlignment(Alignment.RIGHT).setMargins(margins3),

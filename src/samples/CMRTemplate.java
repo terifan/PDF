@@ -13,7 +13,7 @@ import org.terifan.pdfwriter.Image;
 import org.terifan.pdfwriter.Image.Format;
 import org.terifan.pdfwriter.ImageArea;
 import org.terifan.pdfwriter.Line;
-import org.terifan.pdfwriter.Margins;
+import org.terifan.pdfwriter.Insets;
 import org.terifan.pdfwriter.Paragraph;
 import org.terifan.pdfwriter.PDFWriter;
 import org.terifan.pdfwriter.Page;
@@ -21,6 +21,7 @@ import org.terifan.pdfwriter.Rectangle;
 import org.terifan.pdfwriter.Span;
 import org.terifan.pdfwriter.Table;
 import org.terifan.pdfwriter.TableArea;
+import org.terifan.pdfwriter.TableRow;
 import org.terifan.pdfwriter.TextArea;
 
 
@@ -31,8 +32,8 @@ public class CMRTemplate implements Template<CMRDocument>
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(CMRTemplate.class.getResourceAsStream("segoeui.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(CMRTemplate.class.getResourceAsStream("segoeuib.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeui.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeuib.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 			{
@@ -42,16 +43,16 @@ public class CMRTemplate implements Template<CMRDocument>
 				Style style5 = new Style(font2, 13);
 				Style style7 = new Style(font2, 11).setCharacterSpacing(0.9);
 
-				Margins margins1 = new Margins(1, 4, 1, 4);
-				Margins margins2 = new Margins(2, 2, 2, 2);
-				Margins margins3 = new Margins(6, 15, 6, 15);
+				Insets margins1 = new Insets(1, 4, 1, 4);
+				Insets margins2 = new Insets(2, 2, 2, 2);
+				Insets margins3 = new Insets(6, 15, 6, 15);
 
 				Table productTable = new Table(1.3, 1.3, 1.1, 1.3, 1.2, 1.1, 1)
 					.setRepeatHeader(true)
 					.setVerticalGridColor(Color.BLACK)
 					.setVerticalGridThickness(1.0)
 					.setHeaderSpacing(5)
-					.setHeader(
+					.setHeader(new TableRow(
 						createHeading(style1, style5, 6, "Marks and number", "Kennzeichen nummern", false, 6),
 						createHeading(style1, style5, 7, "Number of packages", "Anzahl der packstücke", false, 6),
 						createHeading(style1, style5, 8, "Method of packing", "Art der verpackung", false, 6),
@@ -59,7 +60,7 @@ public class CMRTemplate implements Template<CMRDocument>
 						createHeading(style1, style5, 10, "Statistical number", "Statistiknumer", false, 3),
 						createHeading(style1, style5, 11, "Gross weight kg.", "Bruttogew. in kg", false, 3),
 						createHeading(style1, style5, 12, "Volume in m³", "Umfang in m³", false, 3)
-					);
+					));
 
 				if (aDocument.getGoodsMarksAndNos() != null)
 				{

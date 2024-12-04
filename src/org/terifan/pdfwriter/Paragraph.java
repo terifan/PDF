@@ -3,12 +3,12 @@ package org.terifan.pdfwriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
-public class Paragraph implements Content
+public class Paragraph implements Content, Cloneable
 {
 	private ArrayList<Span> mSpans;
 	private Alignment mAlignment;
@@ -16,9 +16,8 @@ public class Paragraph implements Content
 	private double mHeight;
 	private Color mBorderColor;
 	private Color mFillColor;
-	private Margins mMargins;
+	private Insets mMargins;
 	private double mWidth;
-
 	private ArrayList<Row> mLayout;
 
 
@@ -26,7 +25,7 @@ public class Paragraph implements Content
 	{
 		mSpans = new ArrayList<>();
 		mAlignment = Alignment.LEFT;
-		mMargins = new Margins();
+		mMargins = new Insets();
 	}
 
 
@@ -36,10 +35,9 @@ public class Paragraph implements Content
 	}
 
 
-	public Paragraph(Style aStyle, List<String> aText)
+	public Paragraph(Style aStyle, Collection<String> aText)
 	{
 		this();
-
 		for (String s : aText)
 		{
 			mSpans.add(new Span(aStyle, s));
@@ -53,7 +51,7 @@ public class Paragraph implements Content
 	}
 
 
-	public Paragraph(List<Span> aSpans)
+	public Paragraph(Collection<Span> aSpans)
 	{
 		this();
 		mSpans.addAll(aSpans);
@@ -93,13 +91,13 @@ public class Paragraph implements Content
 	}
 
 
-	public Margins getMargins()
+	public Insets getMargins()
 	{
 		return mMargins;
 	}
 
 
-	public Paragraph setMargins(Margins aMargins)
+	public Paragraph setMargins(Insets aMargins)
 	{
 		mMargins = aMargins;
 		return this;
@@ -324,7 +322,10 @@ public class Paragraph implements Content
 				for (int i = 0; i < chunk.length; i++)
 				{
 					char ch = text.charAt(chunk.offset + i);
-					if (ch < ' ') ch = ' ';
+					if (ch < ' ')
+					{
+						ch = ' ';
+					}
 
 					aOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
 
@@ -405,7 +406,10 @@ public class Paragraph implements Content
 					for (int i = 0; i < chunkLen; i++, offset++)
 					{
 						char c = span.getText().charAt(offset);
-						if (c < ' ') c = ' ';
+						if (c < ' ')
+						{
+							c = ' ';
+						}
 						x += style.getAdvance(c);
 						if (c != ' ')
 						{
@@ -457,6 +461,12 @@ public class Paragraph implements Content
 
 	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean aBreakLine, double aLimitX, boolean aFirstWord)
 	{
+		if (aSpan.getText().charAt(aTextOffset) == '\n')
+		{
+			aBreakLine.set(true);
+			return 1;
+		}
+
 		int len = -1;
 
 		for (int i = 1, limit = aSpan.getText().length() - aTextOffset; i <= limit; i++)
@@ -484,6 +494,7 @@ public class Paragraph implements Content
 				aBreakLine.set(true);
 				break;
 			}
+
 			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
 			{
 				len = i + 1;
@@ -529,5 +540,36 @@ public class Paragraph implements Content
 	public String toString()
 	{
 		return "Paragraph" + mSpans;
+	}
+
+
+	public Paragraph clear()
+	{
+		mSpans.clear();
+		return this;
+	}
+
+
+	@Override
+	public Paragraph clone()
+	{
+		Paragraph para;
+		try
+		{
+			para = (Paragraph)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			para = new Paragraph();
+		}
+		para.mSpans = (ArrayList<Span>)mSpans.clone();
+		para.mAlignment = mAlignment;
+		para.mVerticalAlignment = mVerticalAlignment;
+		para.mBorderColor = mBorderColor == null ? null : mBorderColor.clone();
+		para.mFillColor = mFillColor == null ? null : mFillColor.clone();
+		para.mMargins = mMargins.clone();
+		para.mWidth = mWidth;
+		para.mHeight = mHeight;
+		return para;
 	}
 }

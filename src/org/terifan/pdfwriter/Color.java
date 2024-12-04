@@ -3,7 +3,7 @@ package org.terifan.pdfwriter;
 import java.io.Serializable;
 
 
-public class Color implements Serializable
+public class Color implements Serializable, Cloneable
 {
 	private final static long serialVersionUID = 1L;
 
@@ -52,6 +52,13 @@ public class Color implements Serializable
 	@Override
 	public Color clone()
 	{
-		return new Color(r, g, b);
+		try
+		{
+			return (Color)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			return new Color(r, g, b);
+		}
 	}
 }

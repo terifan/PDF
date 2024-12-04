@@ -1,7 +1,7 @@
 package org.terifan.font;
 
 
-public interface FontFile
+public interface FontFile extends Cloneable
 {
 	String getName();
 

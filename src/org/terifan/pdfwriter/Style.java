@@ -3,7 +3,7 @@ package org.terifan.pdfwriter;
 import org.terifan.font.FontFile;
 
 
-public class Style
+public class Style implements Cloneable
 {
 	private Font mFont;
 	private double mSize;
@@ -13,7 +13,7 @@ public class Style
 	private Color mHighlightColor;
 	private FontFile mFontFile;
 	private Double mCharacterSpacing;
-	private Margins mMargins;
+	private Insets mMargins;
 
 
 	public Style()
@@ -32,13 +32,13 @@ public class Style
 	}
 
 
-	public Margins getMargins()
+	public Insets getMargins()
 	{
 		return mMargins;
 	}
 
 
-	public Style setMargins(Margins aMargins)
+	public Style setMargins(Insets aMargins)
 	{
 		this.mMargins = aMargins;
 		return this;
@@ -201,9 +201,37 @@ public class Style
 
 		for (int i = 0; i < aLength; i++)
 		{
-			len += getAdvance(aText.charAt(aOffset + i));
+			char c = aText.charAt(aOffset + i);
+			if (c != 10 && c != 13)
+			{
+				len += getAdvance(c);
+			}
 		}
 
 		return len;
+	}
+
+
+	@Override
+	public Style clone()
+	{
+		try
+		{
+			return (Style)super.clone();
+		}
+		catch (CloneNotSupportedException e)
+		{
+			throw new IllegalStateException(e);
+//			Style style = new Style();
+//			style.mFont;
+//			style.mSize;
+//			style.mTextColor;
+//			style.mBorderColor;
+//			style.mFillColor;
+//			style.mHighlightColor;
+//			style.mFontFile;
+//			style.mCharacterSpacing;
+//			style.mMargins;
+		}
 	}
 }

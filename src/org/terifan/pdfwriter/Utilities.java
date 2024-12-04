@@ -16,11 +16,11 @@ public class Utilities
 			return s;
 		}
 
-		s = s.substring(0, o+1) + s.substring(o+1, o+Math.min(s.length()-o,4));
+		s = s.substring(0, o + 1) + s.substring(o + 1, o + Math.min(s.length() - o, 4));
 
 		if (s.endsWith(".0"))
 		{
-			return s.substring(0, s.length()-2);
+			return s.substring(0, s.length() - 2);
 		}
 
 		return s;
@@ -77,6 +77,61 @@ public class Utilities
 				aContent.println("%f %f y", aX0 + aRadius, aY0);
 			}
 			aContent.println(i == 0 ? "f" : "s");
+		}
+	}
+
+
+	static void renderRectangle(Output aContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, Color... aBorderColor) throws IOException
+	{
+		if (aFillColor != null)
+		{
+			aContent.println("%s rg", aFillColor);
+			aContent.println("%f w", 1.0);
+			aContent.println("%f %f m", aX0, aY0);
+			aContent.println("%f %f l", aX1, aY0);
+			aContent.println("%f %f l", aX1, aY1);
+			aContent.println("%f %f l", aX0, aY1);
+			aContent.println("%f %f l", aX0, aY0);
+			aContent.println("f");
+		}
+
+		if (aThickness != null && aBorderColor != null && aBorderColor.length > 0)
+		{
+			if (aThickness.top() > 0)
+			{
+				aContent.println("%s RG", aBorderColor[0]);
+				aContent.println("%f w", aThickness.top());
+				aContent.println("%f %f m", aX0, aY0 - aThickness.top() / 2);
+				aContent.println("%f %f l", aX1, aY0 - aThickness.top() / 2);
+				aContent.println("s");
+			}
+
+			if (aThickness.right() > 0)
+			{
+				aContent.println("%s RG", aBorderColor[1 % aBorderColor.length]);
+				aContent.println("%f w", aThickness.right());
+				aContent.println("%f %f m", aX1 - aThickness.right() / 2, aY0);
+				aContent.println("%f %f l", aX1 - aThickness.right() / 2, aY1);
+				aContent.println("s");
+			}
+
+			if (aThickness.bottom() > 0)
+			{
+				aContent.println("%s RG", aBorderColor[2 % aBorderColor.length]);
+				aContent.println("%f w", aThickness.bottom());
+				aContent.println("%f %f m", aX0, aY1 + aThickness.bottom() / 2);
+				aContent.println("%f %f l", aX1, aY1 + aThickness.bottom() / 2);
+				aContent.println("s");
+			}
+
+			if (aThickness.left() > 0)
+			{
+				aContent.println("%s RG", aBorderColor[3 % aBorderColor.length]);
+				aContent.println("%f w", aThickness.left());
+				aContent.println("%f %f m", aX0 + aThickness.left() / 2, aY0);
+				aContent.println("%f %f l", aX0 + aThickness.left() / 2, aY1);
+				aContent.println("s");
+			}
 		}
 	}
 

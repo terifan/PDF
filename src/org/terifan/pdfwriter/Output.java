@@ -18,6 +18,12 @@ class Output implements AutoCloseable
 	}
 
 
+	public OutputStream getOutput()
+	{
+		return mOutput;
+	}
+
+
 	public void print(byte[] aBuffer) throws IOException
 	{
 		mOutput.write(aBuffer);

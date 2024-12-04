@@ -17,6 +17,7 @@ import org.terifan.pdfwriter.Page;
 import org.terifan.pdfwriter.Span;
 import org.terifan.pdfwriter.Table;
 import org.terifan.pdfwriter.TableArea;
+import org.terifan.pdfwriter.TableRow;
 
 
 public class TestTable
@@ -33,13 +34,14 @@ public class TestTable
 			Color[] highlightColors = {new Color(0.5,0,0), new Color(0,0.5,0), new Color(0,0,0.5)};
 
 			ArrayList<String> words = new ArrayList<>();
-			try (LineNumberReader in = new LineNumberReader(new FileReader("D:\\Documents\\words.txt")))
-			{
-				for (String s; (s = in.readLine()) != null;)
-				{
-					words.add(s);
-				}
-			}
+//			try (LineNumberReader in = new LineNumberReader(new FileReader("D:\\Documents\\words.txt")))
+//			{
+//				for (String s; (s = in.readLine()) != null;)
+//				{
+//					words.add(s);
+//				}
+//			}
+			words.addAll(Arrays.asList("apple","banan","dog","cat","table","chair"));
 
 			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(!true))
 			{
@@ -52,7 +54,7 @@ public class TestTable
 					.setCellBorderColor(Color.RED)
 					;
 
-				table.setHeader(Arrays.asList(
+				table.setHeader(new TableRow(
 					new Paragraph(new Style(fonts[0], sizes[1]), "ID"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Description"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Price").setAlignment(Alignment.RIGHT)
@@ -76,11 +78,11 @@ public class TestTable
 						name.add(new Span(style, i+words.get(rnd.nextInt(words.size())) + "s "));
 					}
 
-					table.addRow(Arrays.asList(
+					table.addRow(
 						new Paragraph(new Style(fonts[0], sizes[1]), "product-" + i),
 						new Paragraph(name),
 						new Paragraph(new Style(fonts[0], sizes[1]), String.format("%.2f", rnd.nextDouble()*100)).setAlignment(Alignment.RIGHT)
-					));
+					);
 				}
 
 				try (Page page = pdf.addPage())
