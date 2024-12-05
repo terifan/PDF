@@ -209,7 +209,7 @@ public class CMRTemplate implements Template<CMRDocument>
 								.addRow(new Paragraph(style0, "Carrier / Spediteur").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderHaulierName()))
 								.addRow(new Paragraph(style0, "Driver / Fahrer").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderDriverName()))
 								.addRow(new Paragraph(style0, "Remark / Bemerkung").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderRemark()))
-								.setColumnSpacing(10)
+								.setCellPadding(new Insets(0,5,0,5))
 								.setRowSpacing(2)
 							));
 
@@ -222,7 +222,7 @@ public class CMRTemplate implements Template<CMRDocument>
 								.addRow(new Paragraph(style0, "Carrier / Spediteur").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierHaulierName()))
 								.addRow(new Paragraph(style0, "Driver / Fahrer").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierDriverName()))
 								.addRow(new Paragraph(style0, "Remark / Bemerkung").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierRemark()))
-								.setColumnSpacing(10)
+								.setCellPadding(new Insets(0,5,0,5))
 								.setRowSpacing(2)
 							));
 
@@ -235,7 +235,7 @@ public class CMRTemplate implements Template<CMRDocument>
 								.addRow(new Paragraph(style0, "Carrier / Spediteur").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeHaulierName()))
 								.addRow(new Paragraph(style0, "Driver / Fahrer").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeDriverName()))
 								.addRow(new Paragraph(style0, "Remark / Bemerkung").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeRemark()))
-								.setColumnSpacing(10)
+								.setCellPadding(new Insets(0,5,0,5))
 								.setRowSpacing(2)
 							));
 
@@ -273,7 +273,7 @@ public class CMRTemplate implements Template<CMRDocument>
 	private static Table createHeading(Style style1, Style style5, int aNumber, String aLine1, String aLine2, boolean aWide, int aNumberScale) throws IOException
 	{
 		return new Table(1, aNumberScale)
-			.setColumnSpacing(3)
+			.setCellPadding(new Insets(0,2,0,2))
 			.addRow(
 				new Paragraph(style5, "" + aNumber)
 					.setMarginLeft(2)

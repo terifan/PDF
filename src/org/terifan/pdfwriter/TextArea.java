@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Random;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
@@ -83,8 +82,8 @@ public class TextArea implements Producer
 		for (Paragraph paragraph : mParagraphs)
 		{
 			paragraph.layout(mBoundsLeft, mBoundsRight);
-			width = Math.max(width, paragraph.getWidth());
-			height += paragraph.getHeight();
+			width = Math.max(width, paragraph.getLayoutWidth());
+			height += paragraph.getLayoutHeight();
 		}
 
 		double boundsTop;

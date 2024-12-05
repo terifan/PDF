@@ -206,14 +206,14 @@ public class SVG implements Content
 
 
 	@Override
-	public double getWidth()
+	public double getLayoutWidth()
 	{
 		return 100;
 	}
 
 
 	@Override
-	public double getHeight()
+	public double getLayoutHeight()
 	{
 		return 100;
 	}

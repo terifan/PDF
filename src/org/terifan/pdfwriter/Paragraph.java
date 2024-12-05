@@ -19,6 +19,8 @@ public class Paragraph implements Content, Cloneable
 	private Insets mMargins;
 	private double mWidth;
 	private ArrayList<Row> mLayout;
+	private double mLineExtra;
+	private double mLineEndSpacing;
 
 
 	public Paragraph()
@@ -26,6 +28,8 @@ public class Paragraph implements Content, Cloneable
 		mSpans = new ArrayList<>();
 		mAlignment = Alignment.LEFT;
 		mMargins = new Insets();
+
+//		mLineEndSpacing = 10;
 	}
 
 
@@ -40,7 +44,10 @@ public class Paragraph implements Content, Cloneable
 		this();
 		for (String s : aText)
 		{
-			mSpans.add(new Span(aStyle, s));
+			if (s != null)
+			{
+				mSpans.add(new Span(aStyle, s));
+			}
 		}
 	}
 
@@ -158,21 +165,47 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
+	public double getLineEndSpacing()
+	{
+		return mLineEndSpacing;
+	}
+
+
+	public Paragraph setLineEndSpacing(double aLineEndSpacing)
+	{
+		mLineEndSpacing = aLineEndSpacing;
+		return this;
+	}
+
+
 	public ArrayList<Span> getSpans()
 	{
 		return mSpans;
 	}
 
 
+	public double getLineExtra()
+	{
+		return mLineExtra;
+	}
+
+
+	public Paragraph setLineExtra(double aLineExtra)
+	{
+		mLineExtra = aLineExtra;
+		return this;
+	}
+
+
 	@Override
-	public double getWidth()
+	public double getLayoutWidth()
 	{
 		return mWidth;
 	}
 
 
 	@Override
-	public double getHeight()
+	public double getLayoutHeight()
 	{
 		return mHeight;
 	}
@@ -270,7 +303,7 @@ public class Paragraph implements Content, Cloneable
 				aOutput.println("BT");
 
 				chunk.y0 = nextOffsetY;
-				chunk.y1 = nextOffsetY - row.height;
+				chunk.y1 = nextOffsetY - row.height + mLineExtra/2;
 				chunk.yt = chunk.y1 + style.getLineHeight() - mMargins.top();
 
 				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.BOTTOM)
@@ -336,6 +369,15 @@ public class Paragraph implements Content, Cloneable
 				aOutput.println("ET");
 			}
 
+			for (Chunk chunk : row)
+			{
+				if (chunk.lineEnd)
+				{
+					row.height += mLineEndSpacing;
+					break;
+				}
+			}
+
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
 		}
@@ -390,8 +432,9 @@ public class Paragraph implements Content, Cloneable
 			for (int offset = 0; offset < span.getText().length();)
 			{
 				AtomicBoolean oBreakLine = new AtomicBoolean(false);
+				AtomicBoolean oLineEnd = new AtomicBoolean(false);
 
-				int chunkLen = findSpanCutoff(span, offset, x, oBreakLine, aBoundsRight - mMargins.right(), currentRow.isEmpty());
+				int chunkLen = findSpanCutoff(span, offset, x, oBreakLine, oLineEnd, aBoundsRight - mMargins.right(), currentRow.isEmpty());
 				if (chunkLen == 0)
 				{
 					break;
@@ -419,6 +462,7 @@ public class Paragraph implements Content, Cloneable
 
 					chunk.x1 = x;
 					chunk.xt = bestX;
+					chunk.lineEnd = oLineEnd.get();
 				}
 
 				if (oBreakLine.get())
@@ -446,9 +490,12 @@ public class Paragraph implements Content, Cloneable
 
 			for (Chunk chunk : row)
 			{
-				rowHeight = Math.max(rowHeight, chunk.span.getStyle().getLineHeight());
+				double chunkHeight = chunk.span.getStyle().getLineHeight();
+				rowHeight = Math.max(rowHeight, chunkHeight);
 				width += chunk.x1 - chunk.x0;
 			}
+
+			rowHeight += mLineExtra;
 
 			row.height = rowHeight;
 			mHeight += rowHeight;
@@ -459,11 +506,12 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
-	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean aBreakLine, double aLimitX, boolean aFirstWord)
+	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean oBreakLine, AtomicBoolean oLineEnd, double aLimitX, boolean aFirstWord)
 	{
 		if (aSpan.getText().charAt(aTextOffset) == '\n')
 		{
-			aBreakLine.set(true);
+			oBreakLine.set(true);
+			oLineEnd.set(true);
 			return 1;
 		}
 
@@ -482,7 +530,7 @@ public class Paragraph implements Content, Cloneable
 				{
 					len = i - 1;
 				}
-				aBreakLine.set(true);
+				oBreakLine.set(true);
 				break;
 			}
 
@@ -491,7 +539,7 @@ public class Paragraph implements Content, Cloneable
 			if (c == '\n')
 			{
 				len = i + 1;
-				aBreakLine.set(true);
+				oBreakLine.set(true);
 				break;
 			}
 
@@ -523,6 +571,7 @@ public class Paragraph implements Content, Cloneable
 		int offset;
 		int length;
 		VerticalAlignment verticalAlignment;
+		boolean lineEnd;
 
 
 		public Chunk(double aX0, Span aSpan, int aOffset, int aLength, VerticalAlignment aVerticalAlignment)
@@ -532,6 +581,13 @@ public class Paragraph implements Content, Cloneable
 			offset = aOffset;
 			length = aLength;
 			verticalAlignment = aVerticalAlignment;
+		}
+
+
+		@Override
+		public String toString()
+		{
+			return "Chunk{" + "x0=" + x0 + ", x1=" + x1 + ", y0=" + y0 + ", y1=" + y1 + ", xt=" + xt + ", yt=" + yt + ", offset=" + offset + ", length=" + length + ", verticalAlignment=" + verticalAlignment + ", lineEnd=" + lineEnd + '}';
 		}
 	}
 

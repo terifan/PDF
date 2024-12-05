@@ -70,7 +70,6 @@ public class DWBTemplate implements Template<DWBDocument>
 				.setVerticalGridColor(Color.BLACK)
 				.setVerticalGridThickness(1.0)
 				.setHeaderGridThickness(1.0)
-				.setHeaderGridColor(Color.BLACK)
 				.setHeader(new TableRow(
 					new Paragraph(style0, "Marks and numbers").setMargins(margins2),
 					new Paragraph(style0, "Goods description / reference").setMargins(margins2),

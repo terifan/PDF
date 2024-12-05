@@ -57,24 +57,24 @@ public class ContentStream implements Content
 
 
 	@Override
-	public double getWidth()
+	public double getLayoutWidth()
 	{
 		double width = 0;
 		for (Content content : mContents)
 		{
-			width = Math.max(width, content.getWidth());
+			width = Math.max(width, content.getLayoutWidth());
 		}
 		return width;
 	}
 
 
 	@Override
-	public double getHeight()
+	public double getLayoutHeight()
 	{
 		double height = 0;
 		for (Content content : mContents)
 		{
-			height += content.getHeight();
+			height += content.getLayoutHeight();
 		}
 		return height;
 	}

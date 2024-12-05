@@ -15,8 +15,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 	private FontFile mFontFile;
 	private TreeMap<Integer, Integer> mGlyphMap;
-	private byte[] mFontData;
 	private Ref mResourceRef;
+	private byte[] mFontData;
 
 
 	private ExtendedFont()
@@ -26,7 +26,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 	public ExtendedFont(byte[] aFontData)
 	{
-		this(()->aFontData);
+		this(() -> aFontData);
 	}
 
 
@@ -42,6 +42,14 @@ public class ExtendedFont extends Font implements Value, Cloneable
 		{
 			throw new IllegalStateException();
 		}
+	}
+
+
+	@Override
+	public void reuse()
+	{
+		mResourceRef = null;
+		mGlyphMap.clear();
 	}
 
 
@@ -72,7 +80,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 	{
 		Array array = new Array();
 
-		List<Integer> symbols = mGlyphMap.keySet().stream().map(e->mGlyphMap.get(e)).sorted().collect(Collectors.toList());
+		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
 
 		for (int i = 0; i < symbols.size(); i++)
 		{

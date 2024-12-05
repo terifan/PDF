@@ -16,20 +16,26 @@ public class StandardFont extends Font
 
 
 	@Override
-	void registerGlyph(int aGlyph, int aCharacter)
+	public void reuse()
 	{
 	}
 
 
 	@Override
-	FontFile getFontFile()
+	public void registerGlyph(int aGlyph, int aCharacter)
+	{
+	}
+
+
+	@Override
+	public FontFile getFontFile()
 	{
 		return null;
 	}
 
 
 	@Override
-	Ref print(PDFWriter aWriter) throws IOException
+	public Ref print(PDFWriter aWriter) throws IOException
 	{
 		return aWriter.print(new Obj(new Dictionary().put("/Type", "/Font").put("/Subtype", "/Type1").put("/BaseFont", "/" + mTypeFace)));
 	}

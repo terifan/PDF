@@ -77,8 +77,8 @@ public class ContentArea implements Producer
 //			width = Math.max(width, paragraph.getWidth());
 //			height += paragraph.getHeight();
 //		}
-		width = mContentStream.getWidth();
-		height = mContentStream.getHeight();
+		width = mContentStream.getLayoutWidth();
+		height = mContentStream.getLayoutHeight();
 
 		double boundsTop;
 		switch (mAnchor)

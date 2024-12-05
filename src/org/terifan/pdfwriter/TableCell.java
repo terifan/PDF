@@ -5,16 +5,17 @@ import java.io.IOException;
 
 public class TableCell implements Content
 {
-	private Content mContent;
-	private int mColSpan;
-	private Color mFillColor;
-	private Color[] mBorderColor;
-	private Insets mBorder;
-	private Insets mPadding;
+	protected Content mContent;
+	protected int mColSpan;
+	protected Color mFillColor;
+	protected Color[] mBorderColor;
+	protected Insets mBorderThickness;
+	protected Insets mPadding;
 
 
 	public TableCell(Content aContent)
 	{
+		mColSpan = 1;
 		mContent = aContent;
 	}
 
@@ -34,9 +35,9 @@ public class TableCell implements Content
 
 
 	@Override
-	public double getHeight()
+	public double getLayoutHeight()
 	{
-		return mContent.getHeight();
+		return mContent.getLayoutHeight();
 	}
 
 
@@ -55,9 +56,9 @@ public class TableCell implements Content
 
 
 	@Override
-	public double getWidth()
+	public double getLayoutWidth()
 	{
-		return mContent.getWidth();
+		return mContent.getLayoutWidth();
 	}
 
 
@@ -102,13 +103,13 @@ public class TableCell implements Content
 
 	public Insets getBorderThickness()
 	{
-		return mBorder;
+		return mBorderThickness;
 	}
 
 
 	public TableCell setBorderThickness(Insets aThickness)
 	{
-		mBorder = aThickness;
+		mBorderThickness = aThickness;
 		return this;
 	}
 
