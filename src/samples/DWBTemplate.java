@@ -33,7 +33,7 @@ public class DWBTemplate
 {
 	public void generate(OutputStream aOutputStream, String aLanguage, DWBDocument aDocument) throws IOException
 	{
-		Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
+		Font font1 = new ExtendedFont(DWBTemplate.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
 
 		try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 		{

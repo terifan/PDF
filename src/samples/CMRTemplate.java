@@ -31,8 +31,8 @@ public class CMRTemplate
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(PDFWriter.class.getResourceAsStream("resources/Segoeui-Bold.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestGenerateCMR.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(TestGenerateCMR.class.getResourceAsStream("resources/Segoeui-Bold.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 			{
@@ -279,17 +279,15 @@ public class CMRTemplate
 	{
 		return new Table(1, aNumberScale)
 			.setDrawExtendedLines(true)
-			.setCellPadding(new Insets(0,2,0,2))
+			.setCellPadding(new Insets(0,0,0,2))
 			.addRow(
 				new Paragraph(style5, "" + aNumber)
 					.setMarginLeft(2)
-					.setMarginTop(3)
 					.setAlignment(Alignment.RIGHT),
 				new Table(1)
 					.setDrawExtendedLines(true)
 					.addRow(new Paragraph(style1, aLine1).setMarginTop(2))
 					.addRow(new Paragraph(style1, aLine2).setMarginTop(2))
-//				.setCellFillColor(Color.YELLOW)
 			);
 	}
 }

@@ -14,7 +14,7 @@ public class TestGenerateDWB
 		try
 		{
 			DWBDocument document = new DWBDocument();
-			document.setCompanyLogo(TestGenerateCMR.class.getResourceAsStream("surikat_logo.png").readAllBytes());
+			document.setCompanyLogo(TestGenerateCMR.class.getResourceAsStream("logo.png").readAllBytes());
 
 			document.setShipperAddress("Meža Mājas ZS");
 			document.setShipperStreet("Līvānu nov. Rožupes pag");
