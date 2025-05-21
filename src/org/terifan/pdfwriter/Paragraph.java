@@ -311,7 +311,7 @@ public class Paragraph implements Content, Cloneable
 				textOutput.println("BT");
 
 				chunk.y0 = nextOffsetY;
-				chunk.y1 = nextOffsetY - row.height + mLineExtra/2;
+				chunk.y1 = nextOffsetY - row.height + mLineExtra / 2;
 				chunk.yt = chunk.y1 + style.getLineHeight() - mMargins.top();
 
 				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.BOTTOM)
