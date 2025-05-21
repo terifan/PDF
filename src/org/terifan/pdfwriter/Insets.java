@@ -8,34 +8,6 @@ public class Insets implements Cloneable
 	public final static Insets ZERO = new Insets()
 	{
 		@Override
-		public Insets setRight(Double aRight)
-		{
-			return this;
-		}
-
-
-		@Override
-		public Insets setBottom(Double aBottom)
-		{
-			return this;
-		}
-
-
-		@Override
-		public Insets setLeft(Double aLeft)
-		{
-			return this;
-		}
-
-
-		@Override
-		public Insets setTop(Double aTop)
-		{
-			return this;
-		}
-
-
-		@Override
 		public double bottom()
 		{
 			return 0;
@@ -63,9 +35,45 @@ public class Insets implements Cloneable
 		}
 	};
 
+	public final static Insets ONE = new Insets()
+	{
+		@Override
+		public double bottom()
+		{
+			return 1;
+		}
+
+
+		@Override
+		public double top()
+		{
+			return 1;
+		}
+
+
+		@Override
+		public double right()
+		{
+			return 1;
+		}
+
+
+		@Override
+		public double left()
+		{
+			return 1;
+		}
+	};
+
 
 	public Insets()
 	{
+	}
+
+
+	public Insets(Insets aOther)
+	{
+		set(aOther);
 	}
 
 
@@ -84,6 +92,23 @@ public class Insets implements Cloneable
 		this.left = aLeft;
 		this.bottom = aBottom;
 		this.right = aRight;
+	}
+
+
+	/**
+	 * Null safe method to update this Insets with values in the provided Insets.
+	 *
+	 * @param aOther source Insets or null.
+	 */
+	public void set(Insets aOther)
+	{
+		if (aOther!=null)
+		{
+			left = aOther.left;
+			right = aOther.right;
+			top = aOther.top;
+			bottom = aOther.bottom;
+		}
 	}
 
 

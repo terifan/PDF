@@ -49,7 +49,7 @@ public class TableArea implements Producer
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		renderRectangle(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, null, null, mBackgroundColor, null);
+		renderRectangle(content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, null, mBackgroundColor, null, null);
 
 		mTable.produce(aPDFWriter, content, aPage, mBoundsTop, mBoundsLeft, mBoundsBottom, mBoundsRight);
 

@@ -4,14 +4,14 @@ import java.io.FileOutputStream;
 import java.util.Arrays;
 
 
-public class TestGenerateCMR
+public class CMRTest
 {
 	public static void main(String ... args)
 	{
 		try
 		{
 			CMRDocument document = new CMRDocument();
-			document.setCompanyLogo(TestGenerateCMR.class.getResourceAsStream("logo.png").readAllBytes());
+			document.setCompanyLogo(CMRTest.class.getResourceAsStream("logo.png").readAllBytes());
 
 			document.setShipperAddress("Meža Mājas ZS");
 			document.setShipperStreet("Līvānu nov. Rožupes pag");
@@ -64,10 +64,10 @@ public class TestGenerateCMR
 			document.setConsigneeName("Sven");
 			document.setConsigneeRemark("ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq");
 
-			document.setSenderSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
-			document.setRecevierSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
+			document.setSenderSignature(CMRTest.class.getResourceAsStream("signature.png").readAllBytes());
+			document.setRecevierSignature(CMRTest.class.getResourceAsStream("signature.png").readAllBytes());
 
-			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
+			document.setBarcode(CMRTest.class.getResourceAsStream("barcode.png").readAllBytes());
 
 			try (FileOutputStream out = new FileOutputStream("c:/temp/output.pdf"))
 			{

@@ -31,8 +31,6 @@ public class TextArea implements Producer
 		mBoundsRight = aRight;
 		mParagraphs = new ArrayList<>(Arrays.asList(aParagraph));
 		mAnchor = Anchor.NORTH_WEST;
-
-//		setBackground(new Color(new Random().nextDouble(),new Random().nextDouble(),new Random().nextDouble()));
 	}
 
 
@@ -75,7 +73,7 @@ public class TextArea implements Producer
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		renderRectangle(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, null, null, mBackground, null);
+		renderRectangle(content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackground, null);
 
 		double width = 0;
 		double height = 0;

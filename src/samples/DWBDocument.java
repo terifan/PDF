@@ -37,6 +37,7 @@ public class DWBDocument
 	private String successiveCarriers;
 	private String shipmentRemarks;
 	private String conditionsOfDelivery;
+
 	private ArrayList<String> goodsMarksAndNos = new ArrayList<String>();
 	private ArrayList<String> goodsNumberOfPackages = new ArrayList<String>();
 	private ArrayList<String> goodsMethodOfPacking = new ArrayList<String>();
@@ -49,6 +50,7 @@ public class DWBDocument
 	private ArrayList<String> loadPackageNumbers = new ArrayList<String>();
 	private ArrayList<String> unloadPackageNumbers = new ArrayList<String>();
 	private ArrayList<String> extraMarksAndNos = new ArrayList<String>();
+
 	private String paymentInstructions;
 	private String liability;
 	private String specialAgreement;
@@ -78,7 +80,6 @@ public class DWBDocument
 	private String consigneeDeviceNo;
 
 	private String delivererName;
-
 	private String consignmentId;
 	private String tripNo;
 	private String waybill;
@@ -92,6 +93,35 @@ public class DWBDocument
 	private byte [] barcode;
 	private byte [] companyLogo;
 	private byte [] cmrLogo;
+
+	private String crossDockCountryCode;
+	private String crossDockPostalCode;
+	private String crossDockAddress;
+	private String crossDockStreet;
+	private String crossDockCity;
+	private String carrierRemarkReason;
+	private String senderRemarkReason;
+	private String consigneeRemarkReason;
+	private String orderType;
+	private String documentDate;
+	private String unit;
+	private String phone;
+	private String taxWeight;
+	private String total;
+	private String totalQuantity;
+	private String totalGrossWeight;
+	private String totalVolume;
+	private String totalLoadSpace;
+	private ArrayList<String[]> equipments;
+
+
+	public DWBDocument() throws IOException
+	{
+		try (InputStream in = CMRDocument.class.getResourceAsStream("dwb_labels.properties"))
+		{
+			labels.load(in);
+		}
+	}
 
 
 	public String getWaybill()
@@ -1010,37 +1040,6 @@ public class DWBDocument
 		public InstructionText(String aText)
 		{
 			text = aText;
-		}
-	}
-
-	private String crossDockCountryCode;
-	private String crossDockPostalCode;
-	private String crossDockAddress;
-	private String crossDockStreet;
-	private String crossDockCity;
-	private String carrierRemarkReason;
-	private String senderRemarkReason;
-	private String consigneeRemarkReason;
-	private String orderType;
-	private String documentDate;
-	private String unit;
-	private String phone;
-	private String taxWeight;
-	private String total;
-	private String totalQuantity;
-	private String totalGrossWeight;
-	private String totalVolume;
-	private String totalLoadSpace;
-	private ArrayList<String[]> equipments;
-
-
-	public DWBDocument() throws IOException
-	{
-		super();
-
-		try (InputStream in = CMRDocument.class.getResourceAsStream("dwb_labels.properties"))
-		{
-			labels.load(in);
 		}
 	}
 

@@ -66,7 +66,7 @@ public class ContentArea implements Producer
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		renderRectangle(content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, null, null, mBackground, null);
+		renderRectangle(content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, null, mBackground, null, null);
 
 		double width = 0;
 		double height = 0;

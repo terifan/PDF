@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static org.terifan.pdfwriter.Insets.ZERO;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
@@ -14,13 +15,15 @@ public class Paragraph implements Content, Cloneable
 	private Alignment mAlignment;
 	private VerticalAlignment mVerticalAlignment;
 	private double mHeight;
-	private Color mBorderColor;
-	private Color mFillColor;
 	private Insets mMargins;
 	private double mWidth;
 	private ArrayList<Row> mLayout;
 	private double mLineExtra;
 	private double mLineEndSpacing;
+
+	private Insets mBorderThickness;
+	private Color mBorderColor;
+	private Color mFillColor;
 
 
 	public Paragraph()
@@ -28,6 +31,7 @@ public class Paragraph implements Content, Cloneable
 		mSpans = new ArrayList<>();
 		mAlignment = Alignment.LEFT;
 		mMargins = new Insets();
+		mBorderThickness = ZERO;
 
 //		mLineEndSpacing = 10;
 	}
@@ -233,6 +237,10 @@ public class Paragraph implements Content, Cloneable
 			throw new IllegalStateException("layout not called");
 		}
 
+		Output textOutput = new Output();
+		Output fillOutput = new Output();
+		Output lineOutput = new Output();
+
 		boolean firstRow = true;
 		double nextOffsetY = aBoundsTop - mMargins.top();
 
@@ -249,7 +257,7 @@ public class Paragraph implements Content, Cloneable
 
 			if (firstRow)
 			{
-				renderRectangle(aOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), null, null, mFillColor, mBorderColor);
+				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderColor);
 				firstRow = false;
 			}
 
@@ -300,7 +308,7 @@ public class Paragraph implements Content, Cloneable
 			{
 				Style style = chunk.span.getStyle();
 
-				aOutput.println("BT");
+				textOutput.println("BT");
 
 				chunk.y0 = nextOffsetY;
 				chunk.y1 = nextOffsetY - row.height + mLineExtra/2;
@@ -324,18 +332,18 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-				renderRectangle(aOutput, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, null, null, style.getFillColor(), style.getBorderColor());
+				renderRectangle(fillOutput, lineOutput, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, style.getFillColor(), style.getBorderThickness(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
 					double x1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
 
-					aOutput.println("%s rg", style.getHighlightColor());
-					aOutput.println("%f %f m", chunk.x0, chunk.yt);
-					aOutput.println("%f %f l", x1, chunk.yt);
-					aOutput.println("%f %f l", x1, chunk.y1);
-					aOutput.println("%f %f l", chunk.x0, chunk.y1);
-					aOutput.println("f");
+					textOutput.println("%s rg", style.getHighlightColor());
+					textOutput.println("%f %f m", chunk.x0, chunk.yt);
+					textOutput.println("%f %f l", x1, chunk.yt);
+					textOutput.println("%f %f l", x1, chunk.y1);
+					textOutput.println("%f %f l", chunk.x0, chunk.y1);
+					textOutput.println("f");
 				}
 
 				String text = chunk.span.getText();
@@ -344,10 +352,10 @@ public class Paragraph implements Content, Cloneable
 
 				if (style.getTextColor() != null)
 				{
-					aOutput.println("%s rg", style.getTextColor());
+					textOutput.println("%s rg", style.getTextColor());
 				}
 
-				aOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
 
 				double x = chunk.x0;
 				double y = chunk.y1 - style.getDescent();
@@ -360,13 +368,13 @@ public class Paragraph implements Content, Cloneable
 						ch = ' ';
 					}
 
-					aOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
+					textOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
 
 					x = style.getAdvance(ch);
 					y = 0;
 				}
 
-				aOutput.println("ET");
+				textOutput.println("ET");
 			}
 
 			for (Chunk chunk : row)
@@ -381,6 +389,10 @@ public class Paragraph implements Content, Cloneable
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
 		}
+
+		aOutput.append(fillOutput);
+		aOutput.append(lineOutput);
+		aOutput.append(textOutput);
 
 		return nextOffsetY;
 	}

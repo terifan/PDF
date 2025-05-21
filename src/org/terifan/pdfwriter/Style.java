@@ -1,6 +1,7 @@
 package org.terifan.pdfwriter;
 
 import org.terifan.font.FontFile;
+import static org.terifan.pdfwriter.Insets.ZERO;
 
 
 public class Style implements Cloneable
@@ -14,12 +15,14 @@ public class Style implements Cloneable
 	private FontFile mFontFile;
 	private Double mCharacterSpacing;
 	private Insets mMargins;
+	private Insets mBorderThickness;
 
 
 	public Style()
 	{
 		mSize = 10;
 		mTextColor = Color.BLACK;
+		mBorderThickness = ZERO;
 	}
 
 
@@ -29,6 +32,19 @@ public class Style implements Cloneable
 
 		mSize = aSize;
 		setFont(aFont);
+	}
+
+
+	public Insets getBorderThickness()
+	{
+		return mBorderThickness;
+	}
+
+
+	public Style setBorderThickness(Insets aBorderThickness)
+	{
+		this.mBorderThickness = aBorderThickness;
+		return this;
 	}
 
 

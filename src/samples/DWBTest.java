@@ -7,14 +7,14 @@ import samples.DWBDocument.InstructionHeader;
 import samples.DWBDocument.InstructionText;
 
 
-public class TestGenerateDWB
+public class DWBTest
 {
 	public static void main(String ... args)
 	{
 		try
 		{
 			DWBDocument document = new DWBDocument();
-			document.setCompanyLogo(TestGenerateCMR.class.getResourceAsStream("logo.png").readAllBytes());
+			document.setCompanyLogo(CMRTest.class.getResourceAsStream("logo.png").readAllBytes());
 
 			document.setShipperAddress("Meža Mājas ZS");
 			document.setShipperStreet("Līvānu nov. Rožupes pag");
@@ -92,10 +92,10 @@ public class TestGenerateDWB
 			document.setConsigneeRemark("ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq ytrewq");
 			document.setConsigneeRemarkReason("FM");
 
-			document.setSenderSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
-			document.setRecevierSignature(TestGenerateDWB.class.getResourceAsStream("signature.png").readAllBytes());
+			document.setSenderSignature(DWBTest.class.getResourceAsStream("signature.png").readAllBytes());
+			document.setRecevierSignature(DWBTest.class.getResourceAsStream("signature.png").readAllBytes());
 
-			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
+			document.setBarcode(CMRTest.class.getResourceAsStream("barcode.png").readAllBytes());
 
 			try (FileOutputStream out = new FileOutputStream("c:/temp/output.pdf"))
 			{

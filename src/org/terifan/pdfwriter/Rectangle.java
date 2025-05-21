@@ -159,7 +159,7 @@ public class Rectangle implements Producer, Serializable
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		renderRectangle(content, mLeft, mTop, mRight, mBottom, mStrokeThickness, mCornerRadius, mFillColor, mStrokeColor);
+		renderRectangle(content, content, mLeft, mTop, mRight, mBottom, mCornerRadius, mFillColor, mStrokeThickness, mStrokeColor);
 
 		return baos.toString();
 	}
