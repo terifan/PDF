@@ -38,7 +38,12 @@ public class NumberValue implements Value
 	{
 		if (mDouble != null)
 		{
-			aOutput.print(mDouble.toString());
+			String s = mDouble.toString();
+			if (s.endsWith(".0"))
+			{
+				s = s.substring(0, s.length() - 2);
+			}
+			aOutput.print(s);
 		}
 		else
 		{

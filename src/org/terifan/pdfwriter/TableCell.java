@@ -5,12 +5,12 @@ import java.io.IOException;
 
 public class TableCell implements Content
 {
-	protected Content mContent;
-	protected int mColSpan;
-	protected Color mFillColor;
-	protected Color[] mBorderColor;
-	protected Insets mBorderThickness;
-	protected Insets mPadding;
+	private Content mContent;
+	private int mColSpan;
+	private Color mFillColor;
+	private Color[] mBorderColor;
+	private Insets mBorderThickness;
+	private Insets mPadding;
 
 
 	public TableCell(Content aContent)

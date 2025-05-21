@@ -25,15 +25,14 @@ import org.terifan.pdfwriter.TableRow;
 import org.terifan.pdfwriter.TextArea;
 
 
-public class CMRTemplate implements Template<CMRDocument>
+public class CMRTemplate
 {
-	@Override
 	public void generate(OutputStream aOutputStream, String aLanguage, CMRDocument aDocument)
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeui.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeuib.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(PDFWriter.class.getResourceAsStream("resources/Segoeui-Bold.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 			{
@@ -48,6 +47,7 @@ public class CMRTemplate implements Template<CMRDocument>
 				Insets margins3 = new Insets(6, 15, 6, 15);
 
 				Table productTable = new Table(1.3, 1.3, 1.1, 1.3, 1.2, 1.1, 1)
+					.setDrawExtendedLines(true)
 					.setRepeatHeader(true)
 					.setVerticalGridColor(Color.BLACK)
 					.setVerticalGridThickness(1.0)
@@ -115,6 +115,7 @@ public class CMRTemplate implements Template<CMRDocument>
 						));
 
 						page.append(new TableArea(300+5, 775-5, 555-10, 712-10, new Table(0.4, 1)
+							.setDrawExtendedLines(true)
 							.setRowSpacing(3)
 							.addRow(new Paragraph(style0, "INTERNATIONALER FRACHTBRIEF"), new Paragraph(style0, "Diese Beförderung unterliegt trotz einer gegenteiligen Abmachung den Bestimmungen des Übereinkommens über den Beförderungsvertrag im internat. Straßengüterverkehr (CMR)"))
 							.addRow(new Paragraph(style0, "LETTRE DE VOITURE INTERNATIONAL"), new Paragraph(style0, "Ce transport est soumis, nonobstant toute clause contraire, á la Convention relative au contrat de transport international de marchandises par route (CMR)"))
@@ -122,6 +123,7 @@ public class CMRTemplate implements Template<CMRDocument>
 						));
 
 						page.append(new TableArea(300, 712, 555, 651, new Table(1, 1, 1)
+							.setDrawExtendedLines(true)
 							.addRow(new Paragraph(style1, "Consignment ID / Sendungs ID").setMargins(margins1), new Paragraph(style1, "Trip No / Reise No").setMargins(margins1), new Paragraph(style1, "Domestic Waybill No / Frachtbrief Nr").setMargins(margins1))
 							.addRow(new Paragraph(style2, aDocument.getConsignmentId()).setMargins(margins1), new Paragraph(style2, aDocument.getTripNo()).setMargins(margins1), new Paragraph(style2, aDocument.getWaybill()).setMargins(margins1))
 						));
@@ -201,6 +203,7 @@ public class CMRTemplate implements Template<CMRDocument>
 							appendSectionHeader(page, style1, style5, 24, "Signature and stamp of the consignee", "Unterschrift und stempel des empfängers", 380+7, 175, 555, 35);
 
 							page.append(new TableArea(40, 95, 210, 35, new Table(2, 3)
+								.setDrawExtendedLines(true)
 								.addRow(new Paragraph(style0, "Name").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderName()))
 								.addRow(new Paragraph(style0, "Date/Datum").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderDateTime()))
 								.addRow(new Paragraph(style0, " ").setAlignment(Alignment.RIGHT), new Paragraph(style0, " "))
@@ -214,6 +217,7 @@ public class CMRTemplate implements Template<CMRDocument>
 							));
 
 							page.append(new TableArea(210, 95, 380, 35, new Table(2, 3)
+								.setDrawExtendedLines(true)
 								.addRow(new Paragraph(style0, "Name").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierName()))
 								.addRow(new Paragraph(style0, "Date/Datum").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierDateTime()))
 								.addRow(new Paragraph(style0, " ").setAlignment(Alignment.RIGHT), new Paragraph(style0, " "))
@@ -227,6 +231,7 @@ public class CMRTemplate implements Template<CMRDocument>
 							));
 
 							page.append(new TableArea(380, 95, 555, 35, new Table(2, 3)
+								.setDrawExtendedLines(true)
 								.addRow(new Paragraph(style0, "Name").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeName()))
 								.addRow(new Paragraph(style0, "Date/Datum").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeDateTime()))
 								.addRow(new Paragraph(style0, " ").setAlignment(Alignment.RIGHT), new Paragraph(style0, " "))
@@ -273,6 +278,7 @@ public class CMRTemplate implements Template<CMRDocument>
 	private static Table createHeading(Style style1, Style style5, int aNumber, String aLine1, String aLine2, boolean aWide, int aNumberScale) throws IOException
 	{
 		return new Table(1, aNumberScale)
+			.setDrawExtendedLines(true)
 			.setCellPadding(new Insets(0,2,0,2))
 			.addRow(
 				new Paragraph(style5, "" + aNumber)
@@ -280,6 +286,7 @@ public class CMRTemplate implements Template<CMRDocument>
 					.setMarginTop(3)
 					.setAlignment(Alignment.RIGHT),
 				new Table(1)
+					.setDrawExtendedLines(true)
 					.addRow(new Paragraph(style1, aLine1).setMarginTop(2))
 					.addRow(new Paragraph(style1, aLine2).setMarginTop(2))
 //				.setCellFillColor(Color.YELLOW)

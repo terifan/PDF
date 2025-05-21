@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-//import javax.xml.bind.annotation.XmlRootElement;
 
 
-//@XmlRootElement(name = "CMRDocument")
-public class CMRDocument implements Document
+public class CMRDocument
 {
 	private String shipperCountryCode;
 	private String shipperPostalCode;
@@ -98,14 +96,9 @@ public class CMRDocument implements Document
 
 	public CMRDocument() throws IOException
 	{
-		InputStream in = CMRDocument.class.getResourceAsStream("cmr_labels.properties");
-		try
+		try (InputStream in = CMRDocument.class.getResourceAsStream("cmr_labels.properties"))
 		{
 			labels.load(in);
-		}
-		finally
-		{
-			in.close();
 		}
 	}
 

@@ -1,5 +1,6 @@
 package org.terifan.pdfwriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Formatter;
@@ -10,6 +11,12 @@ class Output implements AutoCloseable
 {
 	private OutputStream mOutput;
 	private int mSize;
+
+
+	public Output()
+	{
+		this(new ByteArrayOutputStream());
+	}
 
 
 	public Output(OutputStream aOutput)
@@ -69,6 +76,16 @@ class Output implements AutoCloseable
 	public void println(String aText, Object... aParams) throws IOException
 	{
 		print(aText + "\n", aParams);
+	}
+
+
+	public void append(Output aOutput) throws IOException
+	{
+		if (aOutput.mOutput instanceof ByteArrayOutputStream v)
+		{
+			v.writeTo(mOutput);
+			mSize += v.size();
+		}
 	}
 
 

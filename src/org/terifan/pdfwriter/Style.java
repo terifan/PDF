@@ -169,7 +169,7 @@ public class Style implements Cloneable
 
 	public int getGlyphIndex(int aCharacter)
 	{
-		int glyph = mFont.getFontFile().findGlyphIndex(aCharacter);
+		int glyph = mFontFile.findGlyphIndex(aCharacter);
 		mFont.registerGlyph(aCharacter, glyph);
 		return glyph;
 	}
@@ -178,20 +178,20 @@ public class Style implements Cloneable
 	public double getAdvance(char aCharacter)
 	{
 		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
-		return mSize * mFont.getFontFile().getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) * cs / mFont.getFontFile().getUnitsPerEm();
+		return mSize * mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) * cs / mFontFile.getUnitsPerEm();
 	}
 
 
 	public double getLeftBearing(char aCharacter)
 	{
 		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
-		return mSize * mFont.getFontFile().getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) * cs / mFont.getFontFile().getUnitsPerEm();
+		return mSize * mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) * cs / mFontFile.getUnitsPerEm();
 	}
 
 
 	private double scale(double aValue)
 	{
-		return aValue * mSize / (mFont.getFontFile().getAscent() - mFont.getFontFile().getDescent());
+		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
 	}
 
 

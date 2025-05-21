@@ -81,56 +81,56 @@ public class Utilities
 	}
 
 
-	static void renderRectangle(Output aContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, Color... aBorderColor) throws IOException
+	static void renderRectangle(Output aFillContent, Output aBorderContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, Color... aBorderColor) throws IOException
 	{
 		if (aFillColor != null)
 		{
-			aContent.println("%s rg", aFillColor);
-			aContent.println("%f w", 1.0);
-			aContent.println("%f %f m", aX0, aY0);
-			aContent.println("%f %f l", aX1, aY0);
-			aContent.println("%f %f l", aX1, aY1);
-			aContent.println("%f %f l", aX0, aY1);
-			aContent.println("%f %f l", aX0, aY0);
-			aContent.println("f");
+			aFillContent.println("%s rg", aFillColor);
+			aFillContent.println("%f w", 1.0);
+			aFillContent.println("%f %f m", aX0 + aThickness.left(), aY0 - aThickness.top());
+			aFillContent.println("%f %f l", aX1 - aThickness.right(), aY0 - aThickness.top());
+			aFillContent.println("%f %f l", aX1 - aThickness.right(), aY1 + aThickness.bottom());
+			aFillContent.println("%f %f l", aX0 + aThickness.left(), aY1 + aThickness.bottom());
+			aFillContent.println("%f %f l", aX0 + aThickness.left(), aY0 - aThickness.top());
+			aFillContent.println("f");
 		}
 
 		if (aThickness != null && aBorderColor != null && aBorderColor.length > 0)
 		{
 			if (aThickness.top() > 0)
 			{
-				aContent.println("%s RG", aBorderColor[0]);
-				aContent.println("%f w", aThickness.top());
-				aContent.println("%f %f m", aX0, aY0 - aThickness.top() / 2);
-				aContent.println("%f %f l", aX1, aY0 - aThickness.top() / 2);
-				aContent.println("s");
+				aBorderContent.println("%s RG", aBorderColor[0]);
+				aBorderContent.println("%f w", aThickness.top());
+				aBorderContent.println("%f %f m", aX0, aY0 - aThickness.top() / 2);
+				aBorderContent.println("%f %f l", aX1, aY0 - aThickness.top() / 2);
+				aBorderContent.println("s");
 			}
 
 			if (aThickness.right() > 0)
 			{
-				aContent.println("%s RG", aBorderColor[1 % aBorderColor.length]);
-				aContent.println("%f w", aThickness.right());
-				aContent.println("%f %f m", aX1 - aThickness.right() / 2, aY0);
-				aContent.println("%f %f l", aX1 - aThickness.right() / 2, aY1);
-				aContent.println("s");
+				aBorderContent.println("%s RG", aBorderColor[1 % aBorderColor.length]);
+				aBorderContent.println("%f w", aThickness.right());
+				aBorderContent.println("%f %f m", aX1 - aThickness.right() / 2, aY0);
+				aBorderContent.println("%f %f l", aX1 - aThickness.right() / 2, aY1);
+				aBorderContent.println("s");
 			}
 
 			if (aThickness.bottom() > 0)
 			{
-				aContent.println("%s RG", aBorderColor[2 % aBorderColor.length]);
-				aContent.println("%f w", aThickness.bottom());
-				aContent.println("%f %f m", aX0, aY1 + aThickness.bottom() / 2);
-				aContent.println("%f %f l", aX1, aY1 + aThickness.bottom() / 2);
-				aContent.println("s");
+				aBorderContent.println("%s RG", aBorderColor[2 % aBorderColor.length]);
+				aBorderContent.println("%f w", aThickness.bottom());
+				aBorderContent.println("%f %f m", aX0, aY1 + aThickness.bottom() / 2);
+				aBorderContent.println("%f %f l", aX1, aY1 + aThickness.bottom() / 2);
+				aBorderContent.println("s");
 			}
 
 			if (aThickness.left() > 0)
 			{
-				aContent.println("%s RG", aBorderColor[3 % aBorderColor.length]);
-				aContent.println("%f w", aThickness.left());
-				aContent.println("%f %f m", aX0 + aThickness.left() / 2, aY0);
-				aContent.println("%f %f l", aX0 + aThickness.left() / 2, aY1);
-				aContent.println("s");
+				aBorderContent.println("%s RG", aBorderColor[3 % aBorderColor.length]);
+				aBorderContent.println("%f w", aThickness.left());
+				aBorderContent.println("%f %f m", aX0 + aThickness.left() / 2, aY0);
+				aBorderContent.println("%f %f l", aX0 + aThickness.left() / 2, aY1);
+				aBorderContent.println("s");
 			}
 		}
 	}

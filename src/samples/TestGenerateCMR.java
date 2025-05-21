@@ -69,7 +69,7 @@ public class TestGenerateCMR
 
 			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
 
-			try (FileOutputStream out = new FileOutputStream("d:/output.pdf"))
+			try (FileOutputStream out = new FileOutputStream("c:/temp/output.pdf"))
 			{
 				CMRTemplate template = new CMRTemplate();
 				template.generate(out, "en", document);

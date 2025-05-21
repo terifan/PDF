@@ -59,7 +59,7 @@ public class Image extends Resource
 
 	public boolean isReady()
 	{
-		return mData != null;
+		return mData != null || mResourceRef != null;
 	}
 
 

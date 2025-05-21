@@ -25,16 +25,15 @@ import org.terifan.pdfwriter.TableArea;
 import org.terifan.pdfwriter.TableRow;
 import org.terifan.pdfwriter.TextArea;
 import org.terifan.pdfwriter.VerticalAlignment;
-import samples.CMRDocument.InstructionElement;
-import samples.CMRDocument.InstructionHeader;
+import samples.DWBDocument.InstructionElement;
+import samples.DWBDocument.InstructionHeader;
 
 
-public class DWBTemplate implements Template<DWBDocument>
+public class DWBTemplate
 {
-	@Override
 	public void generate(OutputStream aOutputStream, String aLanguage, DWBDocument aDocument) throws IOException
 	{
-		Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("segoeui.ttf").readAllBytes());
+		Font font1 = new ExtendedFont(PDFWriter.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
 
 		try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
 		{
@@ -66,6 +65,7 @@ public class DWBTemplate implements Template<DWBDocument>
 			}
 
 			Table productTable = new Table(0.25, 0.35, 0.1, 0.13, 0.1, 0.07)
+				.setDrawExtendedLines(true)
 				.setRepeatHeader(true)
 				.setVerticalGridColor(Color.BLACK)
 				.setVerticalGridThickness(1.0)
@@ -123,6 +123,7 @@ public class DWBTemplate implements Template<DWBDocument>
 			}
 
 			Table footerTable = new Table(0.25, 0.175, 0.175, 0.1, 0.13, 0.1, 0.07)
+				.setDrawExtendedLines(true)
 				.setRepeatHeader(true)
 				.setVerticalGridColor(Color.BLACK)
 				.setVerticalGridThickness(1.0)
@@ -242,6 +243,7 @@ public class DWBTemplate implements Template<DWBDocument>
 					).setAnchor(Anchor.NORTH_EAST));
 
 					page.append(new TableArea(300, 775-2, 555, 755-2, new Table(1, 1)
+						.setDrawExtendedLines(true)
 						.addRow(
 							new Paragraph(new Span(style1, "Date: "), new Span(style2, aDocument.getDocumentDate())).setMargins(margins7).setVerticalAlignment(VerticalAlignment.CENTER),
 							new Paragraph(new Span(style1, "Order type: "), new Span(style2, aDocument.getOrderType())).setMargins(margins7).setVerticalAlignment(VerticalAlignment.CENTER)
@@ -249,6 +251,7 @@ public class DWBTemplate implements Template<DWBDocument>
 					));
 
 					page.append(new TableArea(300, 755, 555, 670, new Table(1, 1)
+						.setDrawExtendedLines(true)
 						.addRow(new Paragraph(style1, "Consignment ID:").setMargins(margins4), new Paragraph(style1, "Trip No:").setMargins(margins4))
 						.addRow(new Paragraph(style2, aDocument.getConsignmentId()).setMargins(margins7), new Paragraph(style2, aDocument.getTripNo()).setMargins(margins7))
 					));
@@ -257,6 +260,7 @@ public class DWBTemplate implements Template<DWBDocument>
 					page.append(new TextArea(300, 755, 555, 670, new Paragraph(new Span(style1, "Waybill: "), new Span(style4, aDocument.getWaybill())).setMargins(margins1)).setAnchor(Anchor.SOUTH_WEST));
 
 					page.append(new TableArea(300, 670, 555, 590, new Table(1, 1)
+						.setDrawExtendedLines(true)
 						.addRow(new Paragraph(style1, "Carrier:").setMargins(margins4), new Paragraph(style1, "Unit:").setMargins(margins4))
 						.addRow(new Paragraph(style2, aDocument.getCarrier()).setMargins(margins7), new Paragraph(style2, aDocument.getUnit()).setMargins(margins7))
 						.addRow(new Paragraph(style1, "Phone:").setMargins(margins4))
@@ -266,6 +270,7 @@ public class DWBTemplate implements Template<DWBDocument>
 					if (aDocument.getEquipments() != null && !aDocument.getEquipments().isEmpty())
 					{
 						page.append(new TableArea(300, 590, 555, 465, new Table(1, 1, 1)
+							.setDrawExtendedLines(true)
 							.addRow(new Paragraph(style1, "Equipment:").setMargins(margins4), new Paragraph(style1, "ID:").setMargins(margins4), new Paragraph(style1, "License plate:").setMargins(margins4))
 							.addRow(new Paragraph(style2, aDocument.getEquipments().get(0)[0]).setMargins(margins7), new Paragraph(style2, aDocument.getEquipments().get(0)[1]).setMargins(margins7), new Paragraph(style2, aDocument.getEquipments().get(0)[2]).setMargins(margins7))
 						));

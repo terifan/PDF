@@ -20,10 +20,10 @@ public class TestMultipleFonts
 		try
 		{
 			Font font0 = new StandardFont("Helvetica");
-			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("segoeui.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("verdana.ttf").readAllBytes());
-			Font font3 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("impact.ttf").readAllBytes());
-			Font font4 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("opensans.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/Roboto-Italic.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/Segoeui-Bold.ttf").readAllBytes());
+			Font font3 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/impact.ttf").readAllBytes());
+			Font font4 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/OpenSans-Regular.ttf").readAllBytes());
 
 			Style style1 = new Style(font1, 11);
 			Style style2 = new Style(font2, 13);
@@ -39,7 +39,7 @@ public class TestMultipleFonts
 			String latvian = "jo daudz kas, ak, cilvēki, notiks ar jums kā šīs lietas tiesnesim, vēl jo vairāk, ja jūs viņiem tik ļoti uzticēsities: jo esmu redzējis, ka, ja jums būs tāds pats viedoklis par citiem, tas notiks arī jūs, pat ja tā nebūtu: tie, kas nav sašutuši par dzimušajiem, bet visi tie, kas cenšas nodarīt tik mazu ļaunumu, ir apmierināti. Ja es esmu cilvēks, lai kas arī viņš būtu, ak, kas atrodas pie viņa kapa, kura dēļ jūs rakstītajos tekstos pasludināt cilvēku tikumus, es apsveicu, ja tiem, kam par tiem ir stāstīts dažas dienas, viņi saka: jo viņi visi ir vīrieši, ar visu laiku nepietiek, kamēr jūs rūpējaties par strādniekiem. , šī iemesla dēļ arī pilsēta mani pārbauda, ​​ko nodrošina tie, kas runā veltīgi, no mazuma rodas bauslis , tādējādi būdams abats, ja tiešām jūs viņiem piedodat, nevis klausītāji.";
 			String english = "for many things, O people, will happen to you as the judge of this matter, the more so if you put so much trust in them: for I have seen that if you have the same opinion of others, it will happen to you also, even if so would not be: those who are not outraged at the born, but all those who seek to do so little harm are satisfied. If I am a man, whoever he may be, O who is at his grave, for whose sake you in the written to proclaim the virtues of men in texts, I congratulate them if those who have been told about them for a few days say: because they are all men, all the time is not enough while you take care of the workers. , for this reason also the city examines me, which is provided by those who speak in vain, from a little comes the commandment , thus being an abbot, if indeed you forgive them and not the listeners.";
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(true))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:/temp/output.pdf")).setCompress(true))
 			{
 				try (Page page = pdf.addPage())
 				{

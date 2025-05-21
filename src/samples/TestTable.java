@@ -26,7 +26,7 @@ public class TestTable
 	{
 		try
 		{
-			Font[] fonts = {new ExtendedFont(TestTable.class.getResourceAsStream("verdana.ttf").readAllBytes())};
+			Font[] fonts = {new ExtendedFont(TestTable.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes())};
 			int[] sizes = {8,15,20};
 			Color[] textColors = {new Color(1,0,0), new Color(0,1,0), new Color(0,0,1)};
 			Color[] boxFillColor = {new Color(0.5,0,0), new Color(0,0.5,0), new Color(0,0,0.5)};
@@ -43,7 +43,7 @@ public class TestTable
 //			}
 			words.addAll(Arrays.asList("apple","banan","dog","cat","table","chair"));
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("d:\\output.pdf")).setCompress(!true))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:/temp/output.pdf")).setCompress(!true))
 			{
 				Random rnd = new Random(2);
 

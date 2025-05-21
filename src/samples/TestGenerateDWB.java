@@ -3,8 +3,8 @@ package samples;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import samples.CMRDocument.InstructionHeader;
-import samples.CMRDocument.InstructionText;
+import samples.DWBDocument.InstructionHeader;
+import samples.DWBDocument.InstructionText;
 
 
 public class TestGenerateDWB
@@ -97,7 +97,7 @@ public class TestGenerateDWB
 
 			document.setBarcode(TestGenerateCMR.class.getResourceAsStream("barcode.png").readAllBytes());
 
-			try (FileOutputStream out = new FileOutputStream("d:/output.pdf"))
+			try (FileOutputStream out = new FileOutputStream("c:/temp/output.pdf"))
 			{
 				DWBTemplate template = new DWBTemplate();
 				template.generate(out, "en", document);

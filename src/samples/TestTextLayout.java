@@ -20,7 +20,7 @@ public class TestTextLayout
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("opensans.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:\\temp\\output.pdf")).setCompress(!true))
 			{
