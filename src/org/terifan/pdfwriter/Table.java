@@ -462,7 +462,7 @@ public class Table implements Content
 	@Override
 	public double produce(PDFWriter aPDFWriter, Output aOutput, Page aPage, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight) throws IOException
 	{
-		double y = aBoundsTop;
+		Double y = aBoundsTop;
 		boolean firstRowInTable = true;
 
 		if (mRenderRow >= mContents.size())
@@ -497,8 +497,9 @@ public class Table implements Content
 			{
 				y = renderRow(aPDFWriter, aPage, textOutput, fillOutput, lineOutput, y, aBoundsLeft + mBorderThickness.left(), aBoundsBottom, aBoundsRight - mBorderThickness.right(), mContents.get(mRenderRow), tableRowIndex, firstRowInTable);
 
-				if (y < aBoundsBottom)
+				if (y == null)
 				{
+					y = aBoundsBottom;
 					break;
 				}
 
@@ -540,7 +541,7 @@ public class Table implements Content
 	}
 
 
-	private double renderRow(PDFWriter aPDFWriter, Page aPage, Output textOutput, Output fillOutput, Output borderOutput, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, TableRow aRow, int aTableRowIndex, boolean aFirstRowInTable) throws IOException
+	private Double renderRow(PDFWriter aPDFWriter, Page aPage, Output textOutput, Output fillOutput, Output borderOutput, double aBoundsTop, double aBoundsLeft, double aBoundsBottom, double aBoundsRight, TableRow aRow, int aTableRowIndex, boolean aFirstRowInTable) throws IOException
 	{
 		Insets rowBorderThickness = aRow.getBorderThickness() == null ? ZERO : aRow.getBorderThickness();
 
@@ -605,7 +606,7 @@ public class Table implements Content
 
 				if (loop == 0 && aTableRowIndex > 0 && aBoundsTop - rowHeight < aBoundsBottom)
 				{
-					return -1;
+					return null;
 				}
 			}
 		}

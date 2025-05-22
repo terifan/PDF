@@ -165,6 +165,17 @@ class ByteBufferReader
 	}
 
 
+	public byte[] getByteArray(int aLength)
+	{
+		byte[] buffer = new byte[aLength];
+		for (int i = 0; i < buffer.length; i++)
+		{
+			buffer[i] = (byte)getInt8();
+		}
+		return buffer;
+	}
+
+
 	public int[] getInt8Array(int aLength)
 	{
 		int[] buffer = new int[aLength];

@@ -28,9 +28,10 @@ public class TestTable
 		{
 			Font[] fonts =
 			{
-				new ExtendedFont(TestTable.class.getResourceAsStream("resources/DMSans-Regular.ttf").readAllBytes()),
-				new ExtendedFont(TestTable.class.getResourceAsStream("resources/KaushanScript-Regular.ttf").readAllBytes()),
-				new ExtendedFont(TestTable.class.getResourceAsStream("resources/impact.ttf").readAllBytes())
+//				new ExtendedFont(TestTable.class.getResourceAsStream("resources/DMSans-Regular.ttf").readAllBytes()),
+//				new ExtendedFont(TestTable.class.getResourceAsStream("resources/KaushanScript-Regular.ttf").readAllBytes()),
+//				new ExtendedFont(TestTable.class.getResourceAsStream("resources/impact.ttf").readAllBytes())
+				new ExtendedFont(TestTable.class.getResourceAsStream("resources/AtlassianSans-latin.ttf").readAllBytes())
 			};
 			int[] sizes =
 			{

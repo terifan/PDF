@@ -40,7 +40,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 		}
 		catch (Exception e)
 		{
-			throw new IllegalStateException();
+			throw new IllegalStateException(e);
 		}
 	}
 

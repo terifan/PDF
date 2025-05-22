@@ -249,6 +249,9 @@ public class TrueTypeFont implements FontFile
 				case 4:
 					mCmaps.add(new CMap4(mBuffer));
 					break;
+				case 6:
+					mCmaps.add(new CMap6(mBuffer));
+					break;
 				default:
 					System.out.println("Cmap format not implemented: " + cmapFormat);
 					break;
