@@ -164,6 +164,30 @@ public class Insets implements Cloneable
 	}
 
 
+	public static double left(Insets aInsets)
+	{
+		return aInsets == null || aInsets.left == null ? 0 : aInsets.left;
+	}
+
+
+	public static double right(Insets aInsets)
+	{
+		return aInsets == null || aInsets.right == null ? 0 : aInsets.right;
+	}
+
+
+	public static double top(Insets aInsets)
+	{
+		return aInsets == null || aInsets.top == null ? 0 : aInsets.top;
+	}
+
+
+	public static double bottom(Insets aInsets)
+	{
+		return aInsets == null || aInsets.bottom == null ? 0 : aInsets.bottom;
+	}
+
+
 	public static Insets first(Insets... aInsets)
 	{
 		Insets result = new Insets();

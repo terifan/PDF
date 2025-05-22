@@ -18,8 +18,8 @@ public class Paragraph implements Content, Cloneable
 	private Insets mMargins;
 	private double mWidth;
 	private ArrayList<Row> mLayout;
-	private double mLineExtra;
-	private double mLineEndSpacing;
+//	private double mLineExtra;
+//	private double mLineEndSpacing;
 
 	private Insets mBorderThickness;
 	private Color mBorderColor;
@@ -32,6 +32,7 @@ public class Paragraph implements Content, Cloneable
 		mAlignment = Alignment.LEFT;
 		mMargins = new Insets();
 		mBorderThickness = ZERO;
+		mVerticalAlignment = VerticalAlignment.BASELINE;
 
 //		mLineEndSpacing = 10;
 	}
@@ -73,6 +74,12 @@ public class Paragraph implements Content, Cloneable
 	{
 		mSpans.add(aSpan);
 		return this;
+	}
+
+
+	public ArrayList<Span> getSpans()
+	{
+		return mSpans;
 	}
 
 
@@ -169,36 +176,30 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
-	public double getLineEndSpacing()
-	{
-		return mLineEndSpacing;
-	}
+//	public double getLineEndSpacing()
+//	{
+//		return mLineEndSpacing;
+//	}
+//
+//
+//	public Paragraph setLineEndSpacing(double aLineEndSpacing)
+//	{
+//		mLineEndSpacing = aLineEndSpacing;
+//		return this;
+//	}
 
 
-	public Paragraph setLineEndSpacing(double aLineEndSpacing)
-	{
-		mLineEndSpacing = aLineEndSpacing;
-		return this;
-	}
-
-
-	public ArrayList<Span> getSpans()
-	{
-		return mSpans;
-	}
-
-
-	public double getLineExtra()
-	{
-		return mLineExtra;
-	}
-
-
-	public Paragraph setLineExtra(double aLineExtra)
-	{
-		mLineExtra = aLineExtra;
-		return this;
-	}
+//	public double getLineExtra()
+//	{
+//		return mLineExtra;
+//	}
+//
+//
+//	public Paragraph setLineExtra(double aLineExtra)
+//	{
+//		mLineExtra = aLineExtra;
+//		return this;
+//	}
 
 
 	@Override
@@ -304,20 +305,45 @@ public class Paragraph implements Content, Cloneable
 				}
 			}
 
+			double topMargin = 0;
+			double botMargin = 0;
+			double maxAscent = 0;
+			double maxDescent = 0;
+
+			for (Chunk chunk : row)
+			{
+				Insets margins = chunk.span.getStyle().getMargins();
+				Insets thickness = chunk.span.getStyle().getBorderThickness();
+				if(margins==null)margins=ZERO;
+				if(thickness==null)margins=ZERO;
+				topMargin = Math.max(topMargin, thickness.top() + margins.top());
+				botMargin = Math.max(botMargin, thickness.bottom() + margins.bottom());
+				maxAscent = Math.max(maxAscent, chunk.span.getStyle().getAscent());
+				maxDescent = Math.max(maxDescent, chunk.span.getStyle().getDescent());
+			}
+
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
 
 				textOutput.println("BT");
 
-				chunk.y0 = nextOffsetY;
-				chunk.y1 = nextOffsetY - row.height + mLineExtra / 2;
-				chunk.yt = chunk.y1 + style.getLineHeight() - mMargins.top();
+				chunk.y0 = nextOffsetY - maxAscent;
+				chunk.y1 = nextOffsetY - maxAscent - row.height /*+ mLineExtra / 2*/;
+				chunk.yt = chunk.y0; // + style.getLineHeight() - mMargins.top();
 
-				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.BOTTOM)
+				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.TOP)
 				{
 					double adjust;
-					if (chunk.verticalAlignment == VerticalAlignment.CENTER)
+					if (chunk.verticalAlignment == VerticalAlignment.BASELINE)
+					{
+						adjust = chunk.span.getStyle().getAscent();
+					}
+					else if (chunk.verticalAlignment == VerticalAlignment.BOTTOM)
+					{
+						adjust = chunk.span.getStyle().getLineHeight() - chunk.span.getStyle().getDescent();
+					}
+					else if (chunk.verticalAlignment == VerticalAlignment.CENTER)
 					{
 						adjust = chunk.y0 - chunk.yt;
 						adjust /= 2;
@@ -338,12 +364,12 @@ public class Paragraph implements Content, Cloneable
 				{
 					double x1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
 
-					textOutput.println("%s rg", style.getHighlightColor());
-					textOutput.println("%f %f m", chunk.x0, chunk.yt);
-					textOutput.println("%f %f l", x1, chunk.yt);
-					textOutput.println("%f %f l", x1, chunk.y1);
-					textOutput.println("%f %f l", chunk.x0, chunk.y1);
-					textOutput.println("f");
+					fillOutput.println("%s rg", style.getHighlightColor());
+					fillOutput.println("%f %f m", chunk.x0, chunk.yt);
+					fillOutput.println("%f %f l", x1, chunk.yt);
+					fillOutput.println("%f %f l", x1, chunk.y1);
+					fillOutput.println("%f %f l", chunk.x0, chunk.y1);
+					fillOutput.println("f");
 				}
 
 				String text = chunk.span.getText();
@@ -357,8 +383,8 @@ public class Paragraph implements Content, Cloneable
 
 				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
 
-				double x = chunk.x0;
-				double y = chunk.y1 - style.getDescent();
+				double x = chunk.x0 + style.getBorderThickness().left();
+				double y = chunk.y0 - style.getBorderThickness().top() - style.getAscent() - mMargins.top();
 
 				for (int i = 0; i < chunk.length; i++)
 				{
@@ -377,14 +403,14 @@ public class Paragraph implements Content, Cloneable
 				textOutput.println("ET");
 			}
 
-			for (Chunk chunk : row)
-			{
-				if (chunk.lineEnd)
-				{
-					row.height += mLineEndSpacing;
-					break;
-				}
-			}
+//			for (Chunk chunk : row)
+//			{
+//				if (chunk.lineEnd)
+//				{
+//					row.height += mLineEndSpacing;
+//					break;
+//				}
+//			}
 
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
@@ -457,6 +483,9 @@ public class Paragraph implements Content, Cloneable
 					Chunk chunk = new Chunk(x, span, offset, chunkLen, span.getVerticalAlignment() != null ? span.getVerticalAlignment() : mVerticalAlignment);
 					currentRow.add(chunk);
 
+					x += span.getStyle().getBorderThickness().left();
+					x += span.getStyle().getBorderThickness().right();
+
 					double bestX = x;
 					for (int i = 0; i < chunkLen; i++, offset++)
 					{
@@ -502,12 +531,12 @@ public class Paragraph implements Content, Cloneable
 
 			for (Chunk chunk : row)
 			{
-				double chunkHeight = chunk.span.getStyle().getLineHeight();
+				double chunkHeight = chunk.span.getStyle().getLineHeight() + chunk.span.getStyle().getLineGap() + chunk.span.getStyle().getBorderThickness().top() + chunk.span.getStyle().getBorderThickness().bottom();
 				rowHeight = Math.max(rowHeight, chunkHeight);
 				width += chunk.x1 - chunk.x0;
 			}
 
-			rowHeight += mLineExtra;
+//			rowHeight += mLineExtra;
 
 			row.height = rowHeight;
 			mHeight += rowHeight;

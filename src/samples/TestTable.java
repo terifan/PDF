@@ -10,7 +10,6 @@ import org.terifan.pdfwriter.Style;
 import org.terifan.pdfwriter.ExtendedFont;
 import org.terifan.pdfwriter.Font;
 import org.terifan.pdfwriter.Insets;
-import org.terifan.pdfwriter.Paragraph;
 import org.terifan.pdfwriter.PDFWriter;
 import org.terifan.pdfwriter.Page;
 import org.terifan.pdfwriter.Paragraph;
@@ -29,7 +28,9 @@ public class TestTable
 		{
 			Font[] fonts =
 			{
-				new ExtendedFont(TestTable.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes())
+				new ExtendedFont(TestTable.class.getResourceAsStream("resources/DMSans-Regular.ttf").readAllBytes()),
+				new ExtendedFont(TestTable.class.getResourceAsStream("resources/KaushanScript-Regular.ttf").readAllBytes()),
+				new ExtendedFont(TestTable.class.getResourceAsStream("resources/impact.ttf").readAllBytes())
 			};
 			int[] sizes =
 			{
@@ -61,22 +62,28 @@ public class TestTable
 
 				Table table = new Table(0.3, 0.5, 0.2)
 					.setRepeatHeader(true)
-					.setBreakRows(!true)
+					.setBreakRows(false)
 					.setFillColor(Color.LIGHT_GRAY)
-					.setBorderColor(Color.RED)
-					.setBorderThickness(new Insets(1, 1, 1, 1));
+					.setBorder(Color.RED, new Insets(1, 1, 1, 1));
 
 				table.setHeader(new TableRow(
 					new Paragraph(new Style(fonts[0], sizes[1]), "ID"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Description"),
 					new Paragraph(new Style(fonts[0], sizes[1]), "Price").setAlignment(Alignment.RIGHT)
 				));
-				for (int i = 0; i < 100; i++)
-				{
-					ArrayList<Span> name = new ArrayList<>();
-					name.add(new Span(new Style().setFont(fonts[0]), i + " "));
 
-					for (int j = 1 + rnd.nextInt(20); --j >= 0;)
+				Style style0 = new Style().setFont(fonts[0]).setSize(12).setTextColor(Color.BLACK);
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "0test 1test 2test 3test 4test 5test 6test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+
+				for (int i = 0; i < 4; i++)
+				{
+					ArrayList<Span> spans = new ArrayList<>();
+					spans.add(new Span(new Style().setFont(fonts[0]), "" + i));
+
+					for (int j = 0, n = 1 + rnd.nextInt(20); j < n; j++)
 					{
 						Style style = new Style()
 							.setFont(fonts[0])
@@ -85,33 +92,37 @@ public class TestTable
 
 						if (rnd.nextBoolean())
 						{
+							style.setFont(fonts[rnd.nextInt(fonts.length)]);
+						}
+						if (rnd.nextBoolean())
+						{
 							style.setHighlightColor(highlightColors[rnd.nextInt(highlightColors.length)]);
 						}
 						if (rnd.nextBoolean())
 						{
-							style.setBorderThickness(Insets.ONE);
-							style.setBorderColor(boxStrokeColor[rnd.nextInt(boxStrokeColor.length)]);
+							style.setBorder(boxStrokeColor[rnd.nextInt(boxStrokeColor.length)], new Insets(3,3,3,3));
 						}
 						if (rnd.nextBoolean())
 						{
 							style.setFillColor(boxFillColor[rnd.nextInt(boxFillColor.length)]);
 						}
 
-						name.add(new Span(style, i + words.get(rnd.nextInt(words.size())) + "s "));
+						spans.add(new Span(style, i+":"+j + words.get(rnd.nextInt(words.size()))));
 					}
 
 					TableRow tableRow = new TableRow(
 						new TableCell(new Paragraph(new Style(fonts[0], sizes[1]), "product-" + i))
-							.setFillColor(new Color(100,150,255))
-							.setBorder(Color.YELLOW, new Insets(1,1,1,1)),
-						new TableCell(new Paragraph(name))
-							.setBorder(Color.YELLOW, new Insets(1,1,1,1)),
+							.setFillColor(new Color(100, 150, 255))
+							.setBorder(Color.YELLOW, new Insets(1, 1, 1, 1)),
+						new TableCell(new Paragraph(spans))
+							.setBorder(Color.YELLOW, new Insets(1, 1, 1, 1)),
 						new TableCell(new Paragraph(new Style(fonts[0], sizes[1]), String.format("%.2f", rnd.nextDouble() * 100)).setAlignment(Alignment.RIGHT))
-							.setBorder(Color.YELLOW, new Insets(1,1,1,1))
+							.setBorder(Color.YELLOW, new Insets(1, 1, 1, 1))
 					).setBorder(Color.GREEN, new Insets(1, 1, 1, 1));
+
 					if (i == 1)
 					{
-						tableRow.setFillColor(new Color(255,100,255));
+						tableRow.setFillColor(new Color(255, 100, 255));
 					}
 
 					table.add(tableRow);
@@ -119,7 +130,7 @@ public class TestTable
 
 				try (Page page = pdf.addPage())
 				{
-					page.append(new TableArea(70, 780, 530, 420, table));
+					page.append(new TableArea(70, 780, 530, 420, table).setBackgroundColor(Color.CYAN));
 					page.append(new TableArea(70, 400, 530, 70, table));
 				}
 

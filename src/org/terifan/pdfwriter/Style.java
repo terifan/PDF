@@ -41,9 +41,17 @@ public class Style implements Cloneable
 	}
 
 
-	public Style setBorderThickness(Insets aBorderThickness)
+	public Style setBorderThickness(Insets aThickness)
 	{
-		this.mBorderThickness = aBorderThickness;
+		mBorderThickness = aThickness;
+		return this;
+	}
+
+
+	public Style setBorder(Color aColor, Insets aThickness)
+	{
+		mBorderColor = aColor;
+		mBorderThickness = aThickness;
 		return this;
 	}
 
@@ -56,7 +64,7 @@ public class Style implements Cloneable
 
 	public Style setMargins(Insets aMargins)
 	{
-		this.mMargins = aMargins;
+		mMargins = aMargins;
 		return this;
 	}
 

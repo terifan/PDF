@@ -26,6 +26,7 @@ public class Table implements Content
 
 	protected double mRowSpacing;
 	protected double mHeaderSpacing;
+	protected Insets mCellPadding;
 
 	protected Color mFillColor;
 	protected Color mBorderColor;
@@ -38,9 +39,6 @@ public class Table implements Content
 	protected Double mHorizontalGridThickness;
 	protected Double mVerticalGridThickness;
 	protected Double mHeaderGridThickness;
-
-	// rename mDefaultCellPadding
-	protected Insets mCellPadding;
 
 	@Deprecated
 	protected boolean mDrawExtendedLines;
@@ -72,7 +70,8 @@ public class Table implements Content
 		mVerticalGridThickness = 0.5;
 		mHorizontalGridThickness = 0.5;
 		mHeaderGridThickness = 0.5;
-		mBorderThickness = ZERO;
+		mBorderThickness = new Insets();
+		mCellPadding = new Insets();
 	}
 
 
@@ -200,9 +199,9 @@ public class Table implements Content
 	}
 
 
-	public Table setCellPadding(Insets aCellPadding)
+	public Table setCellPadding(Insets aDefaultCellPadding)
 	{
-		mCellPadding = aCellPadding;
+		mCellPadding = aDefaultCellPadding;
 		return this;
 	}
 
@@ -484,12 +483,11 @@ public class Table implements Content
 			{
 				p.reuseContent();
 			}
-			double ny = renderRow(aPDFWriter, aPage, textOutput, fillOutput, lineOutput, y, aBoundsLeft + mBorderThickness.left(), aBoundsBottom, aBoundsRight - mBorderThickness.right(), mHeader, -1, firstRowInTable) - mHeaderSpacing;
-			if (ny > 0)
+			y = renderRow(aPDFWriter, aPage, textOutput, fillOutput, lineOutput, y, aBoundsLeft + mBorderThickness.left(), aBoundsBottom, aBoundsRight - mBorderThickness.right(), mHeader, -1, firstRowInTable) - mHeaderSpacing;
+			if (y > 0)
 			{
 				setHeaderConsumed(true);
 			}
-			y = ny;
 			firstRowInTable = false;
 		}
 
@@ -497,20 +495,24 @@ public class Table implements Content
 		{
 			for (int tableRowIndex = 0; mRenderRow < mContents.size(); tableRowIndex++)
 			{
-				double ny = renderRow(aPDFWriter, aPage, textOutput, fillOutput, lineOutput, y, aBoundsLeft + mBorderThickness.left(), aBoundsBottom, aBoundsRight - mBorderThickness.right(), mContents.get(mRenderRow), tableRowIndex, firstRowInTable);
+				y = renderRow(aPDFWriter, aPage, textOutput, fillOutput, lineOutput, y, aBoundsLeft + mBorderThickness.left(), aBoundsBottom, aBoundsRight - mBorderThickness.right(), mContents.get(mRenderRow), tableRowIndex, firstRowInTable);
 
-				if (ny < 0)
+				if (y < aBoundsBottom)
 				{
 					break;
 				}
 
-				y = ny;
 				mRenderRow++;
 				firstRowInTable = false;
 			}
-		}
 
-		y -= mBorderThickness.bottom();
+			y -= mBorderThickness.bottom();
+
+			if (!isConsumed())
+			{
+				y -= mRowSpacing;
+			}
+		}
 
 		renderRectangle(backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, mBorderThickness, mBorderColor);
 
@@ -569,10 +571,10 @@ public class Table implements Content
 					Content content = aRow.get(dataColumn);
 					double columnX1 = columnX0 + mColumnWidths[layoutColumn] * boundsWidth;
 
-					Insets in;
+					Insets padding = null;
 					if (content instanceof TableCell v)
 					{
-						in = Insets.add(Insets.first(v.getPadding(), aRow.getPadding(), mCellPadding, ZERO), v.getBorderThickness());
+						padding = Insets.add(Insets.first(v.getPadding(), aRow.getPadding(), mCellPadding), v.getBorderThickness());
 						for (int i = 1; i < v.getColSpan(); i++)
 						{
 							columnX1 += mColumnWidths[++layoutColumn] * boundsWidth;
@@ -580,22 +582,22 @@ public class Table implements Content
 					}
 					else
 					{
-						in = Insets.first(aRow.getPadding(), mCellPadding, ZERO);
+						padding = Insets.add(aRow.getPadding(), mCellPadding);
 					}
 
-					content.layout(columnX0 + in.left(), columnX1 - in.right());
+					content.layout(columnX0 + padding.left(), columnX1 - padding.right());
 
 					double contentHeight;
 					if (loop == 0)
 					{
 						contentHeight = content.getLayoutHeight();
-						rowHeight = Math.max(rowHeight, contentHeight + in.bottom());
+						rowHeight = Math.max(rowHeight, contentHeight + padding.bottom());
 					}
 					else
 					{
 						outputs[dataColumn] = new Output(new ByteArrayOutputStream());
-						contentHeight = content.produce(aPDFWriter, outputs[dataColumn], aPage, aBoundsTop - rowBorderThickness.top() - in.top(), columnX0 + in.left(), aBoundsBottom, columnX1 - in.right());
-						rowHeight = Math.max(rowHeight, aBoundsTop - contentHeight + in.bottom());
+						contentHeight = content.produce(aPDFWriter, outputs[dataColumn], aPage, aBoundsTop - rowBorderThickness.top() - padding.top(), columnX0 + padding.left(), aBoundsBottom, columnX1 - padding.right());
+						rowHeight = Math.max(rowHeight, aBoundsTop - contentHeight + padding.bottom());
 					}
 
 					columnX0 = columnX1;
@@ -613,10 +615,7 @@ public class Table implements Content
 		double y0 = aBoundsTop;
 		double y1 = y0 - rowHeight;
 
-		if (aRow.getBorderColor() != null || aRow.getFillColor() != null)
-		{
-			renderRectangle(fillOutput, borderOutput, x0 - rowBorderThickness.left(), y0, x1 + rowBorderThickness.right(), y1 - rowBorderThickness.bottom(), aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderColor());
-		}
+		renderRectangle(fillOutput, borderOutput, x0 - rowBorderThickness.left(), y0, x1 + rowBorderThickness.right(), y1 - rowBorderThickness.bottom(), aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderColor());
 
 		y0 -= rowBorderThickness.top();
 		y1 -= rowBorderThickness.bottom();
@@ -665,12 +664,7 @@ public class Table implements Content
 			columnX0 = columnX1;
 		}
 
-		y0 -= rowHeight + mRowSpacing;
-
-		if (y0 < aBoundsBottom)
-		{
-			return -1;
-		}
+		y0 = y1;
 
 		return y0;
 	}

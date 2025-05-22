@@ -11,11 +11,13 @@ public class Span implements Cloneable
 
 	private Span()
 	{
+		mVerticalAlignment = VerticalAlignment.BASELINE;
 	}
 
 
 	public Span(Style aStyle, String aText)
 	{
+		this();
 		mStyle = aStyle;
 		mText = aText;
 	}

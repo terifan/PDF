@@ -1,6 +1,10 @@
 package org.terifan.pdfwriter;
 
 import java.io.IOException;
+import static org.terifan.pdfwriter.Insets.bottom;
+import static org.terifan.pdfwriter.Insets.left;
+import static org.terifan.pdfwriter.Insets.right;
+import static org.terifan.pdfwriter.Insets.top;
 
 
 public class Utilities
@@ -86,11 +90,11 @@ public class Utilities
 		{
 			aFillContent.println("%s rg", aFillColor);
 			aFillContent.println("%f w", 1.0);
-			aFillContent.println("%f %f m", aX0 + aThickness.left(), aY0 - aThickness.top());
-			aFillContent.println("%f %f l", aX1 - aThickness.right(), aY0 - aThickness.top());
-			aFillContent.println("%f %f l", aX1 - aThickness.right(), aY1 + aThickness.bottom());
-			aFillContent.println("%f %f l", aX0 + aThickness.left(), aY1 + aThickness.bottom());
-			aFillContent.println("%f %f l", aX0 + aThickness.left(), aY0 - aThickness.top());
+			aFillContent.println("%f %f m", aX0 + left(aThickness), aY0 - top(aThickness));
+			aFillContent.println("%f %f l", aX1 - right(aThickness), aY0 - top(aThickness));
+			aFillContent.println("%f %f l", aX1 - right(aThickness), aY1 + bottom(aThickness));
+			aFillContent.println("%f %f l", aX0 + left(aThickness), aY1 + bottom(aThickness));
+			aFillContent.println("%f %f l", aX0 + left(aThickness), aY0 - top(aThickness));
 			aFillContent.println("f");
 		}
 

@@ -5,5 +5,6 @@ public enum VerticalAlignment
 {
 	TOP,
 	CENTER,
-	BOTTOM
+	BOTTOM,
+	BASELINE
 }

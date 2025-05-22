@@ -18,6 +18,7 @@ public class TableRow implements Iterable<Content>
 	public TableRow(Object... aContents)
 	{
 		mContents = new ArrayList<>();
+
 		for (Object o : aContents)
 		{
 			if (o instanceof Collection v)
