@@ -337,11 +337,11 @@ public class Paragraph implements Content, Cloneable
 				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0-0*botMargin);
 			}
 
+			textOutput.println("q");
+
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
-
-				textOutput.println("BT");
 
 				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.TOP)
 				{
@@ -383,6 +383,9 @@ public class Paragraph implements Content, Cloneable
 
 				String text = chunk.span.getText();
 
+				double x = chunk.x0 + style.getBorderThickness().left();
+				double y = chunk.yt;
+
 				aPage.registerFont(style);
 
 				if (style.getTextColor() != null)
@@ -390,18 +393,14 @@ public class Paragraph implements Content, Cloneable
 					textOutput.println("%s rg", style.getTextColor());
 				}
 
-				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+				textOutput.println("BT");
 
-				double x = chunk.x0 + style.getBorderThickness().left();
-				double y = chunk.yt;// - style.getBorderThickness().top() - style.getAscent() - mMargins.top();
+				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+				textOutput.println("1 0 0 1 0 0 Tm");
 
 				for (int i = 0; i < chunk.length; i++)
 				{
-					char ch = text.charAt(chunk.offset + i);
-					if (ch < ' ')
-					{
-						ch = ' ';
-					}
+					char ch = (char)Math.max(' ',text.charAt(chunk.offset + i));
 
 					textOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
 
@@ -412,17 +411,12 @@ public class Paragraph implements Content, Cloneable
 				textOutput.println("ET");
 			}
 
-//			for (Chunk chunk : row)
-//			{
-//				if (chunk.lineEnd)
-//				{
-//					row.height += mLineEndSpacing;
-//					break;
-//				}
-//			}
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
 		}
+
+		textOutput.println("Q");
+		textOutput.println("EMC");
 
 		aOutput.append(fillOutput);
 		aOutput.append(lineOutput);

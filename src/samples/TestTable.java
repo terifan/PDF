@@ -1,9 +1,13 @@
 package samples;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.zip.InflaterInputStream;
 import org.terifan.pdfwriter.Alignment;
 import org.terifan.pdfwriter.Color;
 import org.terifan.pdfwriter.Style;
@@ -22,6 +26,19 @@ import org.terifan.pdfwriter.TableRow;
 
 public class TestTable
 {
+//	public static void main(String ... args)
+//	{
+//		try
+//		{
+//			byte[] data = Files.readAllBytes(Paths.get("C:\\Users\\patrik\\Desktop\\Untitled document.pdf"));
+//			InflaterInputStream in = new InflaterInputStream(new ByteArrayInputStream(data,197,315));
+//			System.out.println(new String(in.readAllBytes()));
+//		}
+//		catch (Throwable e)
+//		{
+//			e.printStackTrace(System.out);
+//		}
+//	}
 	public static void main(String... args)
 	{
 		try

@@ -4,7 +4,9 @@ import org.terifan.font.FontFile;
 import org.terifan.font.truetype.TrueTypeFont;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
@@ -73,6 +75,31 @@ public class ExtendedFont extends Font implements Value, Cloneable
 	}
 
 
+	public double getDefaultWidth()
+	{
+		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
+
+		HashMap<Double, Integer> def = new HashMap<>();
+
+		for (int symbolIndex = 0; symbolIndex < symbols.size(); symbolIndex++)
+		{
+			double w = mFontFile.getGlyphWidth(symbolIndex);
+			def.put(w, def.getOrDefault(w, 0) + 1);
+		}
+		int c = 0;
+		double w = 0;
+		for (Entry<Double, Integer> entry : def.entrySet())
+		{
+			if (entry.getValue() > c)
+			{
+				c = entry.getValue();
+				w = entry.getKey();
+			}
+		}
+		return w;
+	}
+
+
 	/**
 	 * NOTE: problem exists! If this information is added to the font declaration space characters cannot be selected...
 	 */
@@ -82,25 +109,26 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
 
-		for (int i = 0; i < symbols.size(); i++)
+		double SCALE = 100;
+
+		for (int symbolIndex = 0; symbolIndex < symbols.size(); symbolIndex++)
 		{
 			boolean done = false;
 
-			if (i < symbols.size() - 1)
+			if (symbolIndex < symbols.size() - 1)
 			{
-				Integer s0 = symbols.get(i + 0);
-				Integer s1 = symbols.get(i + 1);
-				double w0 = mFontFile.getGlyphWidth(s0);
-				double w1 = mFontFile.getGlyphWidth(s1);
+				int s0 = symbols.get(symbolIndex + 0);
+				int s1 = symbols.get(symbolIndex + 1);
+				double w0 = SCALE * mFontFile.getGlyphWidth(s0);
+				double w1 = SCALE * mFontFile.getGlyphWidth(s1);
 
 				if (w0 == w1)
 				{
-					int j = i + 1;
+					int j = symbolIndex + 1;
 					for (; j < symbols.size(); j++)
 					{
-						Integer s = symbols.get(j);
-						double w = mFontFile.getGlyphWidth(s);
-						if (w0 != w)
+						int s = symbols.get(j);
+						if (w0 != SCALE * mFontFile.getGlyphWidth(s))
 						{
 							break;
 						}
@@ -109,20 +137,20 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 					array.add(s0).add(s1).add(w0);
 					done = true;
-					i = j - 1;
+					symbolIndex = j - 1;
 				}
-				else if (s0 + 1 == s1)
+				else
 				{
 					Array widths = new Array();
 					widths.add(w0);
 
-					int j = i + 1;
-					for (int k = 0; j < symbols.size(); k++, j++)
+					int j = symbolIndex + 1;
+					for (int k = 0; j < symbols.size() - 1; k++, j++)
 					{
-						Integer s2 = symbols.get(j + 0);
-						Integer s3 = symbols.get(j + 1);
-						double w2 = mFontFile.getGlyphWidth(s2);
-						double w3 = s3 == symbols.size() ? -1 : mFontFile.getGlyphWidth(s3);
+						int s2 = symbols.get(j + 0);
+						int s3 = symbols.get(j + 1);
+						double w2 = SCALE * mFontFile.getGlyphWidth(s2);
+						double w3 = s3 == symbols.size() ? -1 : SCALE * mFontFile.getGlyphWidth(s3);
 						if (w2 == w3) // if a repetition is found
 						{
 							break;
@@ -136,14 +164,14 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 					array.add(s0).add(widths);
 					done = true;
-					i = j - 1;
+					symbolIndex = j - 1;
 				}
 			}
 
 			if (!done)
 			{
-				Integer symbol = symbols.get(i);
-				double w = mFontFile.getGlyphWidth(symbol);
+				int symbol = symbols.get(symbolIndex);
+				double w = SCALE * mFontFile.getGlyphWidth(symbol);
 				array.add(symbol).add(new Array().add(w));
 			}
 		}
@@ -230,7 +258,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				.put("/StemV", 76))
 			);
 
-			Ref descendantFont = aWriter.print(new Obj(aWriter.mCompress, null, new Dictionary()
+			Obj o = new Obj(aWriter.mCompress, null, new Dictionary()
 				.put("/Type", "/Font")
 				.put("/Subtype", "/CIDFontType2")
 				.put("/BaseFont", fontName)
@@ -240,7 +268,11 @@ public class ExtendedFont extends Font implements Value, Cloneable
 					.put("/Supplement", 0))
 				.put("/CIDToGIDMap", "/Identity")
 				.put("/FontDescriptor", fontDescriptor)
-			));
+				.put("/W", generateWidthsArray())
+				.put("/DW", getDefaultWidth())
+			);
+
+			Ref descendantFont = aWriter.print(o);
 
 			mResourceRef = aWriter.print(new Obj(new Dictionary()
 				.put("/Type", "/Font")

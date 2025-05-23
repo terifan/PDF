@@ -57,6 +57,13 @@ public class Obj
 	}
 
 
+	public Obj setContent(Value aContent)
+	{
+		mContent = aContent;
+		return this;
+	}
+
+
 	private void setContent(boolean aCompress, Value aContent) throws IOException
 	{
 		if (mDictionary == null)
@@ -99,7 +106,11 @@ public class Obj
 			mDictionary.writeTo(aOutput);
 		}
 
-		if (mContent != null)
+		if (mContent instanceof DictionaryValue v)
+		{
+			v.writeTo(aOutput);
+		}
+		else if (mContent != null)
 		{
 			aOutput.println("stream");
 			mContent.writeTo(aOutput);
