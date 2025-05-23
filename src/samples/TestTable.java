@@ -39,11 +39,13 @@ public class TestTable
 			};
 			Color[] textColors =
 			{
-				new Color(1, 0, 0), new Color(0, 1, 0), new Color(0, 0, 1)
+				new Color(0, 0, 0.2), new Color(0, 0, 0.3), new Color(0, 0, 0.4), new Color(0, 0, 0.5),
+				new Color(0, 0, 0.6), new Color(0, 0, 0.7), new Color(0, 0, 0.8), new Color(0, 0, 0.9)
 			};
 			Color[] boxFillColor =
 			{
-				new Color(0.5, 0, 0), new Color(0, 0.5, 0), new Color(0, 0, 0.5)
+				new Color(0, 0.2, 0), new Color(0, 0.3, 0), new Color(0, 0.4, 0), new Color(0, 0.5, 0),
+				new Color(0, 0.6, 0), new Color(0, 0.7, 0), new Color(0, 0.8, 0), new Color(0, 0.9, 0)
 			};
 			Color[] boxStrokeColor =
 			{
@@ -51,7 +53,8 @@ public class TestTable
 			};
 			Color[] highlightColors =
 			{
-				new Color(0.5, 0, 0), new Color(0, 0.5, 0), new Color(0, 0, 0.5)
+				new Color(0.2, 0, 0), new Color(0.3, 0, 0), new Color(0.4, 0, 0), new Color(0.5, 0, 0),
+				new Color(0.6, 0, 0), new Color(0.7, 0, 0), new Color(0.8, 0, 0), new Color(0.9, 0, 0)
 			};
 
 			ArrayList<String> words = new ArrayList<>();
@@ -74,10 +77,10 @@ public class TestTable
 				));
 
 				Style style0 = new Style().setFont(fonts[0]).setSize(12).setTextColor(Color.BLACK);
-				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
-				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "0test 1test 2test 3test 4test 5test 6test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
-				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
-				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test"))),new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "0test 1test 2test 3test 4test 5test 6test"))), new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
+				table.add(new TableRow(new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test"))), new TableCell(new Paragraph(new Span(style0, "test")))).setBorder(Color.BLUE, new Insets(1, 0, 0, 0)));
 
 				for (int i = 0; i < 4; i++)
 				{
@@ -101,14 +104,14 @@ public class TestTable
 						}
 						if (rnd.nextBoolean())
 						{
-							style.setBorder(boxStrokeColor[rnd.nextInt(boxStrokeColor.length)], new Insets(3,3,3,3));
+							style.setBorder(boxStrokeColor[rnd.nextInt(boxStrokeColor.length)], new Insets(3, 3, 3, 3));
 						}
 						if (rnd.nextBoolean())
 						{
 							style.setFillColor(boxFillColor[rnd.nextInt(boxFillColor.length)]);
 						}
 
-						spans.add(new Span(style, i+":"+j + words.get(rnd.nextInt(words.size()))));
+						spans.add(new Span(style, i + ":" + j + words.get(rnd.nextInt(words.size()))));
 					}
 
 					TableRow tableRow = new TableRow(

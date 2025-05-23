@@ -187,8 +187,6 @@ public class Paragraph implements Content, Cloneable
 //		mLineEndSpacing = aLineEndSpacing;
 //		return this;
 //	}
-
-
 //	public double getLineExtra()
 //	{
 //		return mLineExtra;
@@ -200,8 +198,6 @@ public class Paragraph implements Content, Cloneable
 //		mLineExtra = aLineExtra;
 //		return this;
 //	}
-
-
 	@Override
 	public double getLayoutWidth()
 	{
@@ -309,13 +305,21 @@ public class Paragraph implements Content, Cloneable
 			double botMargin = 0;
 			double maxAscent = 0;
 			double maxDescent = 0;
+			double top = -10000;
+			double bot = 10000;
 
 			for (Chunk chunk : row)
 			{
 				Insets margins = chunk.span.getStyle().getMargins();
 				Insets thickness = chunk.span.getStyle().getBorderThickness();
-				if(margins==null)margins=ZERO;
-				if(thickness==null)margins=ZERO;
+				if (margins == null)
+				{
+					margins = ZERO;
+				}
+				if (thickness == null)
+				{
+					margins = ZERO;
+				}
 				topMargin = Math.max(topMargin, thickness.top() + margins.top());
 				botMargin = Math.max(botMargin, thickness.bottom() + margins.bottom());
 				maxAscent = Math.max(maxAscent, chunk.span.getStyle().getAscent());
@@ -325,12 +329,19 @@ public class Paragraph implements Content, Cloneable
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
-
-				textOutput.println("BT");
-
 				chunk.y0 = nextOffsetY - maxAscent;
 				chunk.y1 = nextOffsetY - maxAscent - row.height /*+ mLineExtra / 2*/;
-				chunk.yt = chunk.y0; // + style.getLineHeight() - mMargins.top();
+				chunk.yt = chunk.y0 - topMargin - style.getAscent();
+
+				top = Math.max(top, nextOffsetY-0*topMargin);
+				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0-0*botMargin);
+			}
+
+			for (Chunk chunk : row)
+			{
+				Style style = chunk.span.getStyle();
+
+				textOutput.println("BT");
 
 				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.TOP)
 				{
@@ -353,22 +364,20 @@ public class Paragraph implements Content, Cloneable
 						adjust = chunk.y0 - chunk.yt;
 						adjust -= mMargins.top();
 					}
-					chunk.y0 += adjust;
-					chunk.y1 += adjust;
 					chunk.yt += adjust;
 				}
 
-				renderRectangle(fillOutput, lineOutput, chunk.x0, chunk.y0, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, chunk.y1, style.getFillColor(), style.getBorderThickness(), style.getBorderColor());
+				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
 					double x1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
 
 					fillOutput.println("%s rg", style.getHighlightColor());
-					fillOutput.println("%f %f m", chunk.x0, chunk.yt);
-					fillOutput.println("%f %f l", x1, chunk.yt);
-					fillOutput.println("%f %f l", x1, chunk.y1);
-					fillOutput.println("%f %f l", chunk.x0, chunk.y1);
+					fillOutput.println("%f %f m", chunk.x0, chunk.yt + style.getAscent());
+					fillOutput.println("%f %f l", x1, chunk.yt + style.getAscent());
+					fillOutput.println("%f %f l", x1, chunk.yt + style.getDescent());
+					fillOutput.println("%f %f l", chunk.x0, chunk.yt + style.getDescent());
 					fillOutput.println("f");
 				}
 
@@ -384,7 +393,7 @@ public class Paragraph implements Content, Cloneable
 				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
 
 				double x = chunk.x0 + style.getBorderThickness().left();
-				double y = chunk.y0 - style.getBorderThickness().top() - style.getAscent() - mMargins.top();
+				double y = chunk.yt;// - style.getBorderThickness().top() - style.getAscent() - mMargins.top();
 
 				for (int i = 0; i < chunk.length; i++)
 				{
@@ -411,7 +420,6 @@ public class Paragraph implements Content, Cloneable
 //					break;
 //				}
 //			}
-
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
 		}
@@ -537,7 +545,6 @@ public class Paragraph implements Content, Cloneable
 			}
 
 //			rowHeight += mLineExtra;
-
 			row.height = rowHeight;
 			mHeight += rowHeight;
 			mWidth = Math.max(mWidth, width);
