@@ -65,7 +65,7 @@ public class DWBTemplate
 			}
 
 			Table productTable = new Table(0.25, 0.35, 0.1, 0.13, 0.1, 0.07)
-				.setDrawExtendedLines(true)
+				.setExtendTableEnabled(true)
 				.setRepeatHeader(true)
 				.setVerticalGridColor(Color.BLACK)
 				.setVerticalGridThickness(1.0)
@@ -123,7 +123,7 @@ public class DWBTemplate
 			}
 
 			Table footerTable = new Table(0.25, 0.175, 0.175, 0.1, 0.13, 0.1, 0.07)
-				.setDrawExtendedLines(true)
+				.setExtendTableEnabled(true)
 				.setRepeatHeader(true)
 				.setVerticalGridColor(Color.BLACK)
 				.setVerticalGridThickness(1.0)
@@ -243,7 +243,7 @@ public class DWBTemplate
 					).setAnchor(Anchor.NORTH_EAST));
 
 					page.append(new TableArea(300, 775-2, 555, 755-2, new Table(1, 1)
-						.setDrawExtendedLines(true)
+						.setExtendTableEnabled(true)
 						.addRow(
 							new Paragraph(new Span(style1, "Date: "), new Span(style2, aDocument.getDocumentDate())).setMargins(margins7).setVerticalAlignment(VerticalAlignment.CENTER),
 							new Paragraph(new Span(style1, "Order type: "), new Span(style2, aDocument.getOrderType())).setMargins(margins7).setVerticalAlignment(VerticalAlignment.CENTER)
@@ -251,7 +251,7 @@ public class DWBTemplate
 					));
 
 					page.append(new TableArea(300, 755, 555, 670, new Table(1, 1)
-						.setDrawExtendedLines(true)
+						.setExtendTableEnabled(true)
 						.addRow(new Paragraph(style1, "Consignment ID:").setMargins(margins4), new Paragraph(style1, "Trip No:").setMargins(margins4))
 						.addRow(new Paragraph(style2, aDocument.getConsignmentId()).setMargins(margins7), new Paragraph(style2, aDocument.getTripNo()).setMargins(margins7))
 					));
@@ -260,7 +260,7 @@ public class DWBTemplate
 					page.append(new TextArea(300, 755, 555, 670, new Paragraph(new Span(style1, "Waybill: "), new Span(style4, aDocument.getWaybill())).setMargins(margins1)).setAnchor(Anchor.SOUTH_WEST));
 
 					page.append(new TableArea(300, 670, 555, 590, new Table(1, 1)
-						.setDrawExtendedLines(true)
+						.setExtendTableEnabled(true)
 						.addRow(new Paragraph(style1, "Carrier:").setMargins(margins4), new Paragraph(style1, "Unit:").setMargins(margins4))
 						.addRow(new Paragraph(style2, aDocument.getCarrier()).setMargins(margins7), new Paragraph(style2, aDocument.getUnit()).setMargins(margins7))
 						.addRow(new Paragraph(style1, "Phone:").setMargins(margins4))
@@ -270,7 +270,7 @@ public class DWBTemplate
 					if (aDocument.getEquipments() != null && !aDocument.getEquipments().isEmpty())
 					{
 						page.append(new TableArea(300, 590, 555, 465, new Table(1, 1, 1)
-							.setDrawExtendedLines(true)
+							.setExtendTableEnabled(true)
 							.addRow(new Paragraph(style1, "Equipment:").setMargins(margins4), new Paragraph(style1, "ID:").setMargins(margins4), new Paragraph(style1, "License plate:").setMargins(margins4))
 							.addRow(new Paragraph(style2, aDocument.getEquipments().get(0)[0]).setMargins(margins7), new Paragraph(style2, aDocument.getEquipments().get(0)[1]).setMargins(margins7), new Paragraph(style2, aDocument.getEquipments().get(0)[2]).setMargins(margins7))
 						));

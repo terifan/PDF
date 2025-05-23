@@ -40,8 +40,8 @@ public class Table implements Content
 	protected Double mVerticalGridThickness;
 	protected Double mHeaderGridThickness;
 
-	@Deprecated
-	protected boolean mDrawExtendedLines;
+	protected boolean mExtendTableEnabled;
+
 	@Deprecated
 	protected Color mCellBorderColor;
 
@@ -88,17 +88,24 @@ public class Table implements Content
 	}
 
 
-	@Deprecated
-	public boolean isDrawExtendedLines()
+	/**
+	 *
+	 * @return true if the Table should be extended.
+	 */
+	public boolean isExtendTableEnabled()
 	{
-		return mDrawExtendedLines;
+		return mExtendTableEnabled;
 	}
 
 
-	@Deprecated
-	public Table setDrawExtendedLines(boolean aDrawExtendedLines)
+	/**
+	 * The Table will be extended to fill the entire TableArea it is placed in.
+	 *
+	 * @param aExtendTableEnabled true if the table should be extended.
+	 */
+	public Table setExtendTableEnabled(boolean aExtendTableEnabled)
 	{
-		mDrawExtendedLines = aDrawExtendedLines;
+		mExtendTableEnabled = aExtendTableEnabled;
 		return this;
 	}
 
@@ -517,7 +524,7 @@ public class Table implements Content
 
 		renderRectangle(backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, mBorderThickness, mBorderColor);
 
-		if (mDrawExtendedLines)
+		if (mExtendTableEnabled)
 		{
 			double boundsWidth = aBoundsRight - aBoundsLeft;
 			double[] columnWidths = getColumnWidths();
@@ -655,7 +662,7 @@ public class Table implements Content
 			{
 				renderLine(borderOutput, columnX0, y0, columnX1, y0, mHorizontalGridThickness, mHorizontalGridColor);
 			}
-			if (!mDrawExtendedLines && dataColumn > 0)
+			if (!mExtendTableEnabled && dataColumn > 0)
 			{
 				renderLine(borderOutput, columnX0, y1, columnX0, y0, mVerticalGridThickness, mVerticalGridColor);
 			}

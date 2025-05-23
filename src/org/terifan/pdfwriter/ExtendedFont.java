@@ -96,8 +96,10 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				w = entry.getKey();
 			}
 		}
-		return w;
+		return SCALE * w;
 	}
+
+	double SCALE = 100;
 
 
 	/**
@@ -109,13 +111,9 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
 
-		double SCALE = 100;
-
-		for (int symbolIndex = 0; symbolIndex < symbols.size(); symbolIndex++)
+		for (int symbolIndex = 0, count = symbols.size(); symbolIndex < count; symbolIndex++)
 		{
-			boolean done = false;
-
-			if (symbolIndex < symbols.size() - 1)
+			if (symbolIndex < count - 1)
 			{
 				int s0 = symbols.get(symbolIndex + 0);
 				int s1 = symbols.get(symbolIndex + 1);
@@ -125,7 +123,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				if (w0 == w1)
 				{
 					int j = symbolIndex + 1;
-					for (; j < symbols.size(); j++)
+					for (; j < count; j++)
 					{
 						int s = symbols.get(j);
 						if (w0 != SCALE * mFontFile.getGlyphWidth(s))
@@ -136,44 +134,43 @@ public class ExtendedFont extends Font implements Value, Cloneable
 					}
 
 					array.add(s0).add(s1).add(w0);
-					done = true;
 					symbolIndex = j - 1;
+					continue;
 				}
-				else
+				else if (s1 == s0 + 1)
 				{
 					Array widths = new Array();
 					widths.add(w0);
 
 					int j = symbolIndex + 1;
-					for (int k = 0; j < symbols.size() - 1; k++, j++)
+					for (int k = 0; j < count - 1; k++, j++)
 					{
 						int s2 = symbols.get(j + 0);
-						int s3 = symbols.get(j + 1);
-						double w2 = SCALE * mFontFile.getGlyphWidth(s2);
-						double w3 = s3 == symbols.size() ? -1 : SCALE * mFontFile.getGlyphWidth(s3);
-						if (w2 == w3) // if a repetition is found
-						{
-							break;
-						}
 						if (s0 + k + 1 != s2)
 						{
 							break;
 						}
+
+						int s3 = symbols.get(j + 1);
+						double w2 = SCALE * mFontFile.getGlyphWidth(s2);
+						double w3 = s3 == count ? -1 : SCALE * mFontFile.getGlyphWidth(s3);
+						if (w2 == w3) // if a repetition is found
+						{
+							break;
+						}
+
 						widths.add(w2);
 					}
 
 					array.add(s0).add(widths);
-					done = true;
 					symbolIndex = j - 1;
+					continue;
 				}
 			}
 
-			if (!done)
-			{
-				int symbol = symbols.get(symbolIndex);
-				double w = SCALE * mFontFile.getGlyphWidth(symbol);
-				array.add(symbol).add(new Array().add(w));
-			}
+			int symbol = symbols.get(symbolIndex);
+			double w = SCALE * mFontFile.getGlyphWidth(symbol);
+			array.add(symbol).add(new Array().add(w));
 		}
 
 		return array;
