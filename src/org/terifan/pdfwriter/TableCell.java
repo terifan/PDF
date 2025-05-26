@@ -10,6 +10,7 @@ public class TableCell implements Content
 	private Color mFillColor;
 	private Color[] mBorderColor;
 	private Insets mBorderThickness;
+	private String mBorderPattern;
 	private Insets mPadding;
 
 
@@ -122,6 +123,19 @@ public class TableCell implements Content
 	}
 
 
+	public String getBorderPattern()
+	{
+		return mBorderPattern;
+	}
+
+
+	public TableCell setBorderPattern(String aBorderPattern)
+	{
+		mBorderPattern = aBorderPattern;
+		return this;
+	}
+
+
 	public Insets getPadding()
 	{
 		return mPadding;
@@ -130,7 +144,7 @@ public class TableCell implements Content
 
 	public TableCell setPadding(Insets aPadding)
 	{
-		this.mPadding = aPadding;
+		mPadding = aPadding;
 		return this;
 	}
 }

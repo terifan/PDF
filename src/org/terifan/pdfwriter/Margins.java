@@ -13,37 +13,37 @@ public class Margins implements Cloneable
 
 	public Margins(double aTop, double aLeft, double aBottom, double aRight)
 	{
-		this.top = aTop;
-		this.left = aLeft;
-		this.bottom = aBottom;
-		this.right = aRight;
+		top = aTop;
+		left = aLeft;
+		bottom = aBottom;
+		right = aRight;
 	}
 
 
 	public Margins setTop(Double aTop)
 	{
-		this.top = aTop;
+		top = aTop;
 		return this;
 	}
 
 
 	public Margins setLeft(Double aLeft)
 	{
-		this.left = aLeft;
+		left = aLeft;
 		return this;
 	}
 
 
 	public Margins setBottom(Double aBottom)
 	{
-		this.bottom = aBottom;
+		bottom = aBottom;
 		return this;
 	}
 
 
 	public Margins setRight(Double aRight)
 	{
-		this.right = aRight;
+		right = aRight;
 		return this;
 	}
 

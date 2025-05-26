@@ -43,7 +43,7 @@ public class Span implements Cloneable
 
 	public Span setVerticalAlignment(VerticalAlignment aVerticalAlignment)
 	{
-		this.mVerticalAlignment = aVerticalAlignment;
+		mVerticalAlignment = aVerticalAlignment;
 		return this;
 	}
 

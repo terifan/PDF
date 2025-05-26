@@ -13,6 +13,7 @@ public class TableRow implements Iterable<Content>
 	private Color mBorderColor;
 	private Color mFillColor;
 	private Insets mBorderThickness;
+	private String mBorderPattern;
 
 
 	public TableRow(Object... aContents)
@@ -46,7 +47,7 @@ public class TableRow implements Iterable<Content>
 
 	public TableRow(ArrayList<Content> aContents)
 	{
-		this.mContents = aContents;
+		mContents = aContents;
 	}
 
 
@@ -83,7 +84,7 @@ public class TableRow implements Iterable<Content>
 
 	public TableRow setPadding(Insets aPadding)
 	{
-		this.mPadding = aPadding;
+		mPadding = aPadding;
 		return this;
 	}
 
@@ -126,6 +127,19 @@ public class TableRow implements Iterable<Content>
 	}
 
 
+	public String getBorderPattern()
+	{
+		return mBorderPattern;
+	}
+
+
+	public TableRow setBorderPattern(String aBorderPattern)
+	{
+		mBorderPattern = aBorderPattern;
+		return this;
+	}
+
+
 	public Color getFillColor()
 	{
 		return mFillColor;
@@ -134,7 +148,7 @@ public class TableRow implements Iterable<Content>
 
 	public TableRow setFillColor(Color aFillColor)
 	{
-		this.mFillColor = aFillColor;
+		mFillColor = aFillColor;
 		return this;
 	}
 }

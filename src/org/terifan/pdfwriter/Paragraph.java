@@ -18,12 +18,11 @@ public class Paragraph implements Content, Cloneable
 	private Insets mMargins;
 	private double mWidth;
 	private ArrayList<Row> mLayout;
-//	private double mLineExtra;
-//	private double mLineEndSpacing;
 
 	private Insets mBorderThickness;
 	private Color mBorderColor;
 	private Color mFillColor;
+	private String mBorderPattern;
 
 
 	public Paragraph()
@@ -33,8 +32,6 @@ public class Paragraph implements Content, Cloneable
 		mMargins = new Insets();
 		mBorderThickness = ZERO;
 		mVerticalAlignment = VerticalAlignment.BASELINE;
-
-//		mLineEndSpacing = 10;
 	}
 
 
@@ -92,6 +89,40 @@ public class Paragraph implements Content, Cloneable
 	public Paragraph setBorderColor(Color aBorderColor)
 	{
 		mBorderColor = aBorderColor;
+		return this;
+	}
+
+
+	public Insets getBorderThickness()
+	{
+		return mBorderThickness;
+	}
+
+
+	public Paragraph setBorderThickness(Insets aBorderThickness)
+	{
+		mBorderThickness = aBorderThickness;
+		return this;
+	}
+
+
+	public Paragraph setBorder(Color aBorderColor, Insets aBorderThickness)
+	{
+		mBorderColor = aBorderColor;
+		mBorderThickness = aBorderThickness;
+		return this;
+	}
+
+
+	public String getBorderPattern()
+	{
+		return mBorderPattern;
+	}
+
+
+	public Paragraph setBorderPattern(String aBorderPattern)
+	{
+		mBorderPattern = aBorderPattern;
 		return this;
 	}
 
@@ -176,28 +207,6 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
-//	public double getLineEndSpacing()
-//	{
-//		return mLineEndSpacing;
-//	}
-//
-//
-//	public Paragraph setLineEndSpacing(double aLineEndSpacing)
-//	{
-//		mLineEndSpacing = aLineEndSpacing;
-//		return this;
-//	}
-//	public double getLineExtra()
-//	{
-//		return mLineExtra;
-//	}
-//
-//
-//	public Paragraph setLineExtra(double aLineExtra)
-//	{
-//		mLineExtra = aLineExtra;
-//		return this;
-//	}
 	@Override
 	public double getLayoutWidth()
 	{
@@ -254,7 +263,7 @@ public class Paragraph implements Content, Cloneable
 
 			if (firstRow)
 			{
-				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderColor);
+				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 				firstRow = false;
 			}
 
@@ -367,7 +376,7 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderColor());
+				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{

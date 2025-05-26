@@ -44,6 +44,7 @@ public class Table implements Content
 
 	@Deprecated
 	protected Color mCellBorderColor;
+	private String mBorderPattern;
 
 
 	/**
@@ -247,7 +248,7 @@ public class Table implements Content
 
 	public Table setBorderColor(Color aBorderColor)
 	{
-		this.mBorderColor = aBorderColor;
+		mBorderColor = aBorderColor;
 		return this;
 	}
 
@@ -260,7 +261,7 @@ public class Table implements Content
 
 	public Table setBorderThickness(Insets aBorderThickness)
 	{
-		this.mBorderThickness = aBorderThickness;
+		mBorderThickness = aBorderThickness;
 		return this;
 	}
 
@@ -269,6 +270,19 @@ public class Table implements Content
 	{
 		setBorderColor(aColor);
 		setBorderThickness(aThickness);
+		return this;
+	}
+
+
+	public String getBorderPattern()
+	{
+		return mBorderPattern;
+	}
+
+
+	public Table setBorderPattern(String aBorderPattern)
+	{
+		mBorderPattern = aBorderPattern;
 		return this;
 	}
 
@@ -522,7 +536,7 @@ public class Table implements Content
 			}
 		}
 
-		renderRectangle(backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, mBorderThickness, mBorderColor);
+		renderRectangle(backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 
 		if (mExtendTableEnabled)
 		{
@@ -623,7 +637,7 @@ public class Table implements Content
 		double y0 = aBoundsTop;
 		double y1 = y0 - rowHeight;
 
-		renderRectangle(fillOutput, borderOutput, x0 - rowBorderThickness.left(), y0, x1 + rowBorderThickness.right(), y1 - rowBorderThickness.bottom(), aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderColor());
+		renderRectangle(fillOutput, borderOutput, x0 - rowBorderThickness.left(), y0, x1 + rowBorderThickness.right(), y1 - rowBorderThickness.bottom(), aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderPattern(), aRow.getBorderColor());
 
 		y0 -= rowBorderThickness.top();
 		y1 -= rowBorderThickness.bottom();
@@ -636,6 +650,7 @@ public class Table implements Content
 			Color cellFillColor = null;
 			Color[] cellBorderColors = null;
 			Insets cellBorderThickness = new Insets();
+			String borderPattern = null;
 
 			double columnX1 = columnX0 + mColumnWidths[layoutColumn] * boundsWidth;
 
@@ -644,6 +659,7 @@ public class Table implements Content
 				cellFillColor = v.getFillColor();
 				cellBorderColors = v.getBorderColor();
 				cellBorderThickness.set(v.getBorderThickness());
+				borderPattern = v.getBorderPattern();
 
 				for (int i = 1; i < v.getColSpan(); i++)
 				{
@@ -652,7 +668,7 @@ public class Table implements Content
 				}
 			}
 
-			renderRectangle(fillOutput, borderOutput, columnX0, y0, columnX1, y1 + cellBorderThickness.bottom(), cellFillColor, cellBorderThickness, cellBorderColors);
+			renderRectangle(fillOutput, borderOutput, columnX0, y0, columnX1, y1 + cellBorderThickness.bottom(), cellFillColor, cellBorderThickness, borderPattern, cellBorderColors);
 
 			if (aTableRowIndex == 0 && mHeaderGridThickness > 0)
 			{

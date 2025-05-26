@@ -57,7 +57,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setStrokeThickness(double aStrokeThickness)
 	{
-		this.mStrokeThickness = aStrokeThickness;
+		mStrokeThickness = aStrokeThickness;
 		return this;
 	}
 
@@ -70,7 +70,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setLeft(double aLeft)
 	{
-		this.mLeft = aLeft;
+		mLeft = aLeft;
 		return this;
 	}
 
@@ -83,7 +83,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setTop(double aTop)
 	{
-		this.mTop = aTop;
+		mTop = aTop;
 		return this;
 	}
 
@@ -96,7 +96,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setRight(double aRight)
 	{
-		this.mRight = aRight;
+		mRight = aRight;
 		return this;
 	}
 
@@ -109,7 +109,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setBottom(double aBottom)
 	{
-		this.mBottom = aBottom;
+		mBottom = aBottom;
 		return this;
 	}
 
@@ -122,7 +122,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setCornerRadius(double aCornerRadius)
 	{
-		this.mCornerRadius = aCornerRadius;
+		mCornerRadius = aCornerRadius;
 		return this;
 	}
 
@@ -135,7 +135,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setStrokeColor(Color aStrokeColor)
 	{
-		this.mStrokeColor = aStrokeColor;
+		mStrokeColor = aStrokeColor;
 		return this;
 	}
 
@@ -148,7 +148,7 @@ public class Rectangle implements Producer, Serializable
 
 	public Rectangle setFillColor(Color aFillColor)
 	{
-		this.mFillColor = aFillColor;
+		mFillColor = aFillColor;
 		return this;
 	}
 

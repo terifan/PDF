@@ -71,7 +71,7 @@ public class Image extends Resource
 
 	public Image setMargins(Insets aMargins)
 	{
-		this.mMargins = aMargins;
+		mMargins = aMargins;
 		return this;
 	}
 

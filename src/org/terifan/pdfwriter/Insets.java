@@ -79,19 +79,19 @@ public class Insets implements Cloneable
 
 	public Insets(double aTop, double aLeft, double aBottom, double aRight)
 	{
-		this.top = aTop;
-		this.left = aLeft;
-		this.bottom = aBottom;
-		this.right = aRight;
+		top = aTop;
+		left = aLeft;
+		bottom = aBottom;
+		right = aRight;
 	}
 
 
 	public Insets(Double aTop, Double aLeft, Double aBottom, Double aRight)
 	{
-		this.top = aTop;
-		this.left = aLeft;
-		this.bottom = aBottom;
-		this.right = aRight;
+		top = aTop;
+		left = aLeft;
+		bottom = aBottom;
+		right = aRight;
 	}
 
 
@@ -114,28 +114,28 @@ public class Insets implements Cloneable
 
 	public Insets setTop(Double aTop)
 	{
-		this.top = aTop;
+		top = aTop;
 		return this;
 	}
 
 
 	public Insets setLeft(Double aLeft)
 	{
-		this.left = aLeft;
+		left = aLeft;
 		return this;
 	}
 
 
 	public Insets setBottom(Double aBottom)
 	{
-		this.bottom = aBottom;
+		bottom = aBottom;
 		return this;
 	}
 
 
 	public Insets setRight(Double aRight)
 	{
-		this.right = aRight;
+		right = aRight;
 		return this;
 	}
 

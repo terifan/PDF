@@ -16,6 +16,7 @@ public class Style implements Cloneable
 	private Double mCharacterSpacing;
 	private Insets mMargins;
 	private Insets mBorderThickness;
+	private String mBorderPattern;
 
 
 	public Style()
@@ -104,6 +105,19 @@ public class Style implements Cloneable
 	public Style setBorderColor(Color aBorderColor)
 	{
 		mBorderColor = aBorderColor;
+		return this;
+	}
+
+
+	public String getBorderPattern()
+	{
+		return mBorderPattern;
+	}
+
+
+	public Style setBorderPattern(String aBorderPattern)
+	{
+		mBorderPattern = aBorderPattern;
 		return this;
 	}
 

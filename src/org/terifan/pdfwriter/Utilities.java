@@ -84,8 +84,10 @@ public class Utilities
 	}
 
 
-	static void renderRectangle(Output aFillContent, Output aLineContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, Color... aBorderColor) throws IOException
+	static void renderRectangle(Output aFillContent, Output aLineContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, String aBorderPattern, Color... aBorderColor) throws IOException
 	{
+		aFillContent.println("q");
+
 		if (aFillColor != null)
 		{
 			aFillContent.println("%s rg", aFillColor);
@@ -96,6 +98,11 @@ public class Utilities
 			aFillContent.println("%f %f l", aX0 + left(aThickness), aY1 + bottom(aThickness));
 			aFillContent.println("%f %f l", aX0 + left(aThickness), aY0 - top(aThickness));
 			aFillContent.println("f");
+		}
+
+		if (aBorderPattern != null)
+		{
+			aLineContent.println("%s d", aBorderPattern);
 		}
 
 		if (aThickness != null && aBorderColor != null && aBorderColor.length > 0)
@@ -136,6 +143,8 @@ public class Utilities
 				aLineContent.println("s");
 			}
 		}
+
+		aFillContent.println("Q");
 	}
 
 

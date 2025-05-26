@@ -28,11 +28,11 @@ public class Color implements Serializable, Cloneable
 	private double r, g, b;
 
 
-	public Color(double r, double g, double b)
+	public Color(double aRed, double aGreen, double aBlue)
 	{
-		this.r = r;
-		this.g = g;
-		this.b = b;
+		r = aRed;
+		g = aGreen;
+		b = aBlue;
 	}
 
 

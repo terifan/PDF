@@ -42,7 +42,7 @@ public class ContentArea implements Producer
 
 	public ContentArea setBackground(Color aBackground)
 	{
-		this.mBackground = aBackground;
+		mBackground = aBackground;
 		return this;
 	}
 
@@ -55,7 +55,7 @@ public class ContentArea implements Producer
 
 	public ContentArea setAnchor(Anchor aAnchor)
 	{
-		this.mAnchor = aAnchor;
+		mAnchor = aAnchor;
 		return this;
 	}
 

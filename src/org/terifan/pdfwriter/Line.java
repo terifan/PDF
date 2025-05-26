@@ -48,7 +48,7 @@ public class Line implements Producer, Serializable
 
 	public Line setStrokeThickness(double aStrokeThickness)
 	{
-		this.mStrokeThickness = aStrokeThickness;
+		mStrokeThickness = aStrokeThickness;
 		return this;
 	}
 
@@ -61,7 +61,7 @@ public class Line implements Producer, Serializable
 
 	public Line setLeft(double aLeft)
 	{
-		this.mLeft = aLeft;
+		mLeft = aLeft;
 		return this;
 	}
 
@@ -74,7 +74,7 @@ public class Line implements Producer, Serializable
 
 	public Line setTop(double aTop)
 	{
-		this.mTop = aTop;
+		mTop = aTop;
 		return this;
 	}
 
@@ -87,7 +87,7 @@ public class Line implements Producer, Serializable
 
 	public Line setRight(double aRight)
 	{
-		this.mRight = aRight;
+		mRight = aRight;
 		return this;
 	}
 
@@ -100,7 +100,7 @@ public class Line implements Producer, Serializable
 
 	public Line setBottom(double aBottom)
 	{
-		this.mBottom = aBottom;
+		mBottom = aBottom;
 		return this;
 	}
 
@@ -113,7 +113,7 @@ public class Line implements Producer, Serializable
 
 	public Line setStrokeColor(Color aStrokeColor)
 	{
-		this.mStrokeColor = aStrokeColor;
+		mStrokeColor = aStrokeColor;
 		return this;
 	}
 
