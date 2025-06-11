@@ -52,18 +52,7 @@ public class Table implements Content
 	 */
 	public Table(double... aColumnWeights)
 	{
-		if (aColumnWeights.length == 0)
-		{
-			throw new IllegalArgumentException("No column widths defined!");
-		}
-
-		mColumnWidths = aColumnWeights;
-
-		double w = Arrays.stream(mColumnWidths).sum();
-		for (int i = 0; i < mColumnWidths.length; i++)
-		{
-			mColumnWidths[i] /= w;
-		}
+		setColumnWeights(aColumnWeights);
 
 		mContents = new ArrayList<>();
 		mMargins = new Insets();
@@ -73,6 +62,20 @@ public class Table implements Content
 		mHeaderGridThickness = 0.5;
 		mBorderThickness = new Insets();
 		mCellPadding = new Insets();
+	}
+
+
+	public Table setColumnWeights(double... aColumnWeights)
+	{
+		mColumnWidths = aColumnWeights;
+
+		double w = Arrays.stream(mColumnWidths).sum();
+		for (int i = 0; i < mColumnWidths.length; i++)
+		{
+			mColumnWidths[i] /= w;
+		}
+
+		return this;
 	}
 
 

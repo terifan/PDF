@@ -22,26 +22,33 @@ public class TableRow implements Iterable<Content>
 
 		for (Object o : aContents)
 		{
-			if (o instanceof Collection v)
+			add(o);
+		}
+	}
+
+
+	public TableRow add(Object aO)
+	{
+		if (aO instanceof Collection v)
+		{
+			mContents.addAll(v);
+		}
+		else if (aO instanceof Content v)
+		{
+			mContents.add(v);
+		}
+		else if (aO.getClass().isArray())
+		{
+			for (int i = 0, n = java.lang.reflect.Array.getLength(aO); i < n; i++)
 			{
-				mContents.addAll(v);
-			}
-			else if (o instanceof Content v)
-			{
-				mContents.add(v);
-			}
-			else if (o.getClass().isArray())
-			{
-				for (int i = 0, n = java.lang.reflect.Array.getLength(o); i < n; i++)
-				{
-					mContents.add((Content)java.lang.reflect.Array.get(o, i));
-				}
-			}
-			else
-			{
-				throw new IllegalArgumentException(o.getClass().getName());
+				mContents.add((Content)java.lang.reflect.Array.get(aO, i));
 			}
 		}
+		else
+		{
+			throw new IllegalArgumentException(aO.getClass().getName());
+		}
+		return this;
 	}
 
 
