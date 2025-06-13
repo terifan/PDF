@@ -14,6 +14,7 @@ public class Style implements Cloneable
 	private Color mHighlightColor;
 	private FontFile mFontFile;
 	private Double mCharacterSpacing;
+	private double mAdjust;
 	private Insets mMargins;
 	private Insets mBorderThickness;
 	private String mBorderPattern;
@@ -247,6 +248,19 @@ public class Style implements Cloneable
 		}
 
 		return len;
+	}
+
+
+	public double getAdjust()
+	{
+		return mAdjust;
+	}
+
+
+	public Style setAdjust(double aAdjust)
+	{
+		mAdjust = aAdjust;
+		return this;
 	}
 
 

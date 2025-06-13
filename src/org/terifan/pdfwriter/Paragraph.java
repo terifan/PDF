@@ -338,12 +338,12 @@ public class Paragraph implements Content, Cloneable
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
-				chunk.y0 = nextOffsetY - maxAscent;
-				chunk.y1 = nextOffsetY - maxAscent - row.height /*+ mLineExtra / 2*/;
+				chunk.y0 = nextOffsetY - maxAscent - chunk.span.getStyle().getAdjust();
+				chunk.y1 = nextOffsetY - maxAscent - chunk.span.getStyle().getAdjust() - row.height;
 				chunk.yt = chunk.y0 - topMargin - style.getAscent();
 
-				top = Math.max(top, nextOffsetY-0*topMargin);
-				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0-0*botMargin);
+				top = Math.max(top, nextOffsetY);
+				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0);
 			}
 
 			textOutput.println("q");
