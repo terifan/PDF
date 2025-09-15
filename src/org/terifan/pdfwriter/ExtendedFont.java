@@ -4,6 +4,9 @@ import org.terifan.font.FontFile;
 import org.terifan.font.truetype.TrueTypeFont;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
@@ -14,6 +17,8 @@ import java.util.stream.Collectors;
 public class ExtendedFont extends Font implements Value, Cloneable
 {
 	private final static boolean ALWAYS_COMPRESS_FONT_DATA = true;
+
+	private final static double SCALE = 72;
 
 	private FontFile mFontFile;
 	private TreeMap<Integer, Integer> mGlyphMap;
@@ -77,13 +82,16 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 	public double getDefaultWidth()
 	{
-		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
+		return getMedianWidth();
+	}
 
+
+	private double getPopularWidth()
+	{
 		HashMap<Double, Integer> def = new HashMap<>();
-
-		for (int symbolIndex = 0; symbolIndex < symbols.size(); symbolIndex++)
+		for (int i : mGlyphMap.values())
 		{
-			double w = mFontFile.getGlyphWidth(symbolIndex);
+			double w = mFontFile.getGlyphWidth(i);
 			def.put(w, def.getOrDefault(w, 0) + 1);
 		}
 		int c = 0;
@@ -99,7 +107,30 @@ public class ExtendedFont extends Font implements Value, Cloneable
 		return SCALE * w;
 	}
 
-	double SCALE = 100;
+
+	private double getMedianWidth()
+	{
+		ArrayList<Double> symbols = new ArrayList<>();
+		for (int i : mGlyphMap.values())
+		{
+			symbols.add(mFontFile.getGlyphWidth(i));
+		}
+		symbols.sort(Double::compare);
+
+		return SCALE * symbols.get(symbols.size() / 2);
+	}
+
+
+	private double getAverageWidth()
+	{
+		double w = 0;
+		Collection<Integer> symbols = mGlyphMap.values();
+		for (int i = 0; i < symbols.size(); i++)
+		{
+			w += mFontFile.getGlyphWidth(i);
+		}
+		return SCALE * w / symbols.size();
+	}
 
 
 	/**
@@ -117,8 +148,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 			{
 				int s0 = symbols.get(symbolIndex + 0);
 				int s1 = symbols.get(symbolIndex + 1);
-				double w0 = SCALE * mFontFile.getGlyphWidth(s0);
-				double w1 = SCALE * mFontFile.getGlyphWidth(s1);
+				double w0 = mFontFile.getGlyphWidth(s0);
+				double w1 = mFontFile.getGlyphWidth(s1);
 
 				if (w0 == w1)
 				{
@@ -126,7 +157,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 					for (; j < count; j++)
 					{
 						int s = symbols.get(j);
-						if (w0 != SCALE * mFontFile.getGlyphWidth(s))
+						if (w0 != mFontFile.getGlyphWidth(s))
 						{
 							break;
 						}
@@ -140,7 +171,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				else if (s1 == s0 + 1)
 				{
 					Array widths = new Array();
-					widths.add(w0);
+					widths.add(SCALE * w0);
 
 					int j = symbolIndex + 1;
 					for (int k = 0; j < count - 1; k++, j++)
@@ -191,17 +222,17 @@ public class ExtendedFont extends Font implements Value, Cloneable
 		aOutput.println("<0000> <FFFF>");
 		aOutput.println("endcodespacerange");
 
-		Integer[] keys = mGlyphMap.keySet().toArray(new Integer[mGlyphMap.size()]);
+		Integer[] keys = mGlyphMap.keySet().toArray(Integer[]::new);
 
-		for (int outer = 0; outer < keys.length; outer += 100)
+		for (int index = 0; index < keys.length;)
 		{
-			int size = Math.min(mGlyphMap.size() - outer * 100, 100);
+			int size = Math.min(mGlyphMap.size() - index, 100);
 
 			aOutput.println(size + " beginbfchar");
 
-			for (int inner = outer; inner < outer + size; inner++)
+			for (int i = 0; i < size; i++, index++)
 			{
-				aOutput.println(String.format("<%04X> <%04X>", mGlyphMap.get(keys[inner]), keys[inner]));
+				aOutput.println(String.format("<%04X> <%04X>", mGlyphMap.get(keys[index]), keys[index]));
 			}
 
 			aOutput.println("endbfchar");
@@ -226,7 +257,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 	@Override
 	public void registerGlyph(int aGlyph, int aCharacter)
 	{
-		mGlyphMap.put(aGlyph, aCharacter);
+		mGlyphMap.putIfAbsent(aGlyph, aCharacter);
 	}
 
 
@@ -238,33 +269,40 @@ public class ExtendedFont extends Font implements Value, Cloneable
 			Ref data = aWriter.print(new Obj(ALWAYS_COMPRESS_FONT_DATA | aWriter.mCompress, new ArrayValue(getFontData())));
 			Ref cmap = aWriter.print(new Obj(aWriter.mCompress, this));
 
-			Array box = new Array(mFontFile.getFontBBox());
+			Array box = new Array(
+				SCALE * mFontFile.getFontBBox()[0],
+				SCALE * mFontFile.getFontBBox()[1],
+				SCALE * mFontFile.getFontBBox()[2],
+				SCALE * mFontFile.getFontBBox()[3]
+			);
 
 			String fontName = "/" + mFontFile.getName().replace(" ", "+");
 
 			Ref fontDescriptor = aWriter.print(new Obj(aWriter.mCompress, null, new Dictionary()
 				.put("/Type", "/FontDescriptor")
 				.put("/FontName", fontName)
-				.put("/Ascent", mFontFile.getAscent())
-				.put("/CapHeight", 715)
-				.put("/Descent", mFontFile.getDescent())
-				.put("/Flags", 0)
+				.put("/Flags", 4) // see 5.7.1 Font Descriptor Flag
+				.put("/Ascent", SCALE * mFontFile.getAscent())
+				.put("/Descent", SCALE * mFontFile.getDescent())
+				.put("/StemV", SCALE * (mFontFile.getFontBBox()[2] - mFontFile.getFontBBox()[0]) * 0.13)
+				.put("/CapHeight", SCALE * mFontFile.getAscent() * 0.8)
+				.put("/AvgWidth", getAverageWidth())
+				.put("/ItalicAngle", 0)
 				.put("/FontBBox", box)
 				.put("/FontFile2", data)
-				.put("/ItalicAngle", 0)
-				.put("/StemV", 76))
+			)
 			);
 
 			Obj o = new Obj(aWriter.mCompress, null, new Dictionary()
 				.put("/Type", "/Font")
-				.put("/Subtype", "/CIDFontType2")
-				.put("/BaseFont", fontName)
-				.put("/CIDSystemInfo", new Dictionary()
-					.put("/Ordering", "(Identity)")
-					.put("/Registry", "(Adobe)")
-					.put("/Supplement", 0))
-				.put("/CIDToGIDMap", "/Identity")
 				.put("/FontDescriptor", fontDescriptor)
+				.put("/BaseFont", fontName)
+				.put("/Subtype", "/CIDFontType2")
+				.put("/CIDToGIDMap", "/Identity")
+				.put("/CIDSystemInfo", new Dictionary()
+					.put("/Registry", "(Adobe)")
+					.put("/Ordering", "(Identity)")
+					.put("/Supplement", 0))
 				.put("/W", generateWidthsArray())
 				.put("/DW", getDefaultWidth())
 			);
@@ -275,8 +313,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				.put("/Type", "/Font")
 				.put("/Subtype", "/Type0")
 				.put("/BaseFont", fontName)
-				.put("/DescendantFonts", new Array().add(descendantFont))
 				.put("/Encoding", "/Identity-H")
+				.put("/DescendantFonts", new Array().add(descendantFont))
 				.put("/ToUnicode", cmap)
 			));
 

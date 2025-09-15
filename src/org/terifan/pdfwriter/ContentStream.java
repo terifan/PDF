@@ -83,10 +83,15 @@ public class ContentStream implements Content
 	@Override
 	public double produce(PDFWriter aPDFWriter, Output aOutput, Page aPage, double aY0, double aX0, double aY1, double aX1) throws IOException
 	{
+		aOutput.println("q");
+
 		for (Content content : mContents)
 		{
 			aY0 = content.produce(aPDFWriter, aOutput, aPage, aY0, aX0, aY1, aX1);
 		}
+
+		aOutput.println("Q");
+		aOutput.println("EMC");
 
 		return aY0;
 	}

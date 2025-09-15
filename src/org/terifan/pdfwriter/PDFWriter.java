@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 public class PDFWriter implements AutoCloseable
 {
-	private ArrayList<Integer> mReferences;
+	private ArrayList<Offset> mObjectOffsets;
 	private ArrayList<Page> mPages;
 	private Output mOutput;
 	private HashMap<Resource, Ref> mFonts;
@@ -17,7 +17,7 @@ public class PDFWriter implements AutoCloseable
 
 	public PDFWriter(OutputStream aOutput) throws IOException
 	{
-		mReferences = new ArrayList<>();
+		mObjectOffsets = new ArrayList<>();
 		mPages = new ArrayList<>();
 		mFonts = new HashMap<>();
 		mCompress = true;
@@ -42,16 +42,26 @@ public class PDFWriter implements AutoCloseable
 	}
 
 
+	ObjRef alloc(Obj aObject) throws IOException
+	{
+		Offset offset = new Offset(-1);
+
+		mObjectOffsets.add(offset);
+
+		return new ObjRef(new Ref(mObjectOffsets.size()), aObject, offset);
+	}
+
+
 	public Ref print(Obj aObject) throws IOException
 	{
-		mReferences.add(mOutput.size());
+		mObjectOffsets.add(new Offset(mOutput.size()));
 
-		mOutput.println(mReferences.size() + " 0 obj");
+		mOutput.println(mObjectOffsets.size() + " 0 obj");
 		aObject.write(mOutput);
 		mOutput.println("");
 		mOutput.println("endobj");
 
-		return new Ref(mReferences.size());
+		return new Ref(mObjectOffsets.size());
 	}
 
 
@@ -97,30 +107,49 @@ public class PDFWriter implements AutoCloseable
 			mFonts.put(font, font.print(this));
 		}
 
+		Dictionary pagesDic = new Dictionary()
+			.put("/Type", "/Pages");
+
+		ObjRef pagesObj = alloc(new Obj().setDictionary(pagesDic));
+
 		Array pages = new Array();
 		for (Page page : mPages)
 		{
+			page.setParent(pagesObj);
 			pages.add(page.printHeader());
 		}
 
-		Ref pagesRef = print(new Obj().setDictionary(new Dictionary().put("/Count", pages.size()).put("/Type", "/Pages").put("/Kids", pages)));
-		Ref root = print(new Obj().setDictionary(new Dictionary().put("/Type", "/Catalog").put("/Pages", pagesRef)));
+		pagesDic
+			.put("/Kids", pages)
+			.put("/Count", pages.size());
+
+		Ref root = print(new Obj()
+			.setDictionary(new Dictionary()
+				.put("/Type", "/Catalog")
+				.put("/Pages", pagesObj.getReference())
+			)
+		);
+
+		pagesObj.writeTo(mOutput);
 
 		int xref = mOutput.size();
 
-		Dictionary trailer = new Dictionary().put("/Size", 1 + mReferences.size()).put("/Root", root);
+		Dictionary trailer = new Dictionary()
+			.put("/Size", 1 + mObjectOffsets.size())
+			.put("/Root", root);
 
 		mOutput.println("xref");
-		mOutput.println(String.format("0 %d", 1 + mReferences.size()));
+		mOutput.println(String.format("0 %d", 1 + mObjectOffsets.size()));
 		mOutput.println("0000000000 65535 f");
 
-		for (Integer ref : mReferences)
+		for (Offset offset : mObjectOffsets)
 		{
-			mOutput.println(String.format("%010d 00000 n", ref));
+			offset.print(mOutput);
 		}
 
 		mOutput.println("trailer");
 		trailer.writeTo(mOutput);
+		mOutput.println("");
 		mOutput.println("startxref");
 		mOutput.println(Integer.toString(xref));
 		mOutput.println("%%EOF");

@@ -19,7 +19,7 @@ public class TableArea implements Producer
 	{
 		if (aRight < aLeft || aBottom > aTop)
 		{
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("right:"+aRight+" < left:"+aLeft+" || bottom:"+aBottom+" > top:"+aTop);
 		}
 
 		mBoundsTop = aTop;

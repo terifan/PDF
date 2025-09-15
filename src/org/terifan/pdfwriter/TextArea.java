@@ -22,7 +22,7 @@ public class TextArea implements Producer
 	{
 		if (aRight < aLeft || aBottom > aTop)
 		{
-			throw new IllegalArgumentException();
+			throw new IllegalArgumentException("aRight < aLeft || aBottom > aTop");
 		}
 
 		mBoundsTop = aTop;
@@ -120,10 +120,15 @@ public class TextArea implements Producer
 				break;
 		}
 
+		content.println("q");
+
 		for (Paragraph paragraph : mParagraphs)
 		{
 			boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
 		}
+
+		content.println("Q");
+		content.println("EMC");
 
 		return baos.toString();
 	}

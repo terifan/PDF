@@ -14,7 +14,7 @@ public class Array implements Value
 	}
 
 
-	public Array(double[] aValues)
+	public Array(double... aValues)
 	{
 		for (double value : aValues)
 		{

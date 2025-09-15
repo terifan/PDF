@@ -264,48 +264,53 @@ public class Paragraph implements Content, Cloneable
 			if (firstRow)
 			{
 				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
-				firstRow = false;
+//				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, new Insets(2,2,2,2), mBorderPattern, Color.RED);
 			}
 
 			if (!row.isEmpty())
 			{
-				double adjust = aBoundsLeft - row.get(0).x0 + mMargins.left();
-				for (Chunk chunk : row)
+				if (mAlignment == Alignment.LEFT)
 				{
-					chunk.x0 += adjust;
-					chunk.x1 += adjust;
-					chunk.xt += adjust;
-				}
-				if (mAlignment != Alignment.LEFT)
-				{
-					adjust = aBoundsRight - row.get(row.size() - 1).xt;
-					if (mAlignment == Alignment.SPLIT)
+					double adjust = aBoundsLeft - row.get(0).x0 + mMargins.left();
+					for (Chunk chunk : row)
 					{
-						adjust -= mMargins.right();
-						for (int i = row.size() / 2; i < row.size(); i++)
-						{
-							Chunk chunk = row.get(i);
-							chunk.x0 += adjust;
-							chunk.x1 += adjust;
-							chunk.xt += adjust;
-						}
+						chunk.x0 += adjust;
+						chunk.x1 += adjust;
+						chunk.xt += adjust;
 					}
-					else
+				}
+				else if (mAlignment == Alignment.CENTER)
+				{
+					double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+					adjust /= 2;
+					for (Chunk chunk : row)
 					{
-						if (mAlignment == Alignment.CENTER)
-						{
-							adjust /= 2;
-						}
-						else
-						{
-							adjust -= mMargins.right();
-						}
-						for (Chunk chunk : row)
-						{
-							chunk.x0 += adjust;
-							chunk.x1 += adjust;
-							chunk.xt += adjust;
-						}
+						chunk.x0 += adjust;
+						chunk.x1 += adjust;
+						chunk.xt += adjust;
+					}
+				}
+				else if (mAlignment == Alignment.RIGHT)
+				{
+					double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+					adjust -= mMargins.right();
+					for (Chunk chunk : row)
+					{
+						chunk.x0 += adjust;
+						chunk.x1 += adjust;
+						chunk.xt += adjust;
+					}
+				}
+				else if (mAlignment == Alignment.SPLIT)
+				{
+					double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+					adjust -= mMargins.right();
+					for (int i = row.size() / 2; i < row.size(); i++)
+					{
+						Chunk chunk = row.get(i);
+						chunk.x0 += adjust;
+						chunk.x1 += adjust;
+						chunk.xt += adjust;
 					}
 				}
 			}
@@ -314,39 +319,54 @@ public class Paragraph implements Content, Cloneable
 			double botMargin = 0;
 			double maxAscent = 0;
 			double maxDescent = 0;
-			double top = -10000;
-			double bot = 10000;
+			double top = -100000;
+			double bot = 100000;
 
 			for (Chunk chunk : row)
 			{
-				Insets margins = chunk.span.getStyle().getMargins();
-				Insets thickness = chunk.span.getStyle().getBorderThickness();
+				Style style = chunk.span.getStyle();
+				Insets margins = style.getMargins();
+				Insets thickness = style.getBorderThickness();
 				if (margins == null)
 				{
 					margins = ZERO;
 				}
 				if (thickness == null)
 				{
-					margins = ZERO;
+					thickness = ZERO;
 				}
 				topMargin = Math.max(topMargin, thickness.top() + margins.top());
 				botMargin = Math.max(botMargin, thickness.bottom() + margins.bottom());
-				maxAscent = Math.max(maxAscent, chunk.span.getStyle().getAscent());
-				maxDescent = Math.max(maxDescent, chunk.span.getStyle().getDescent());
+				maxAscent = Math.max(maxAscent, style.getAscent());
+				maxDescent = Math.max(maxDescent, style.getDescent());
 			}
+
+			double extra = 0;
+			double spacing = 0;
 
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
-				chunk.y0 = nextOffsetY - maxAscent - chunk.span.getStyle().getAdjust();
-				chunk.y1 = nextOffsetY - maxAscent - chunk.span.getStyle().getAdjust() - row.height;
-				chunk.yt = chunk.y0 - topMargin - style.getAscent();
+				chunk.y0 = nextOffsetY - maxAscent - style.getAdjust();
+				chunk.y1 = nextOffsetY - maxAscent - style.getAdjust() - row.height;
+				chunk.yt = Math.round(chunk.y0 - topMargin - style.getAscent()); // a round feels wrong but looks better when rendered!
 
 				top = Math.max(top, nextOffsetY);
 				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0);
+
+				extra = Math.max(extra, style.getLineExtra());
+				spacing = Math.max(spacing, style.getLineSpacing());
 			}
 
-			textOutput.println("q");
+			top -= extra/2;
+			bot -= extra/2;
+			row.height += extra;
+			if (!firstRow)
+			{
+				top -= spacing;
+				bot -= spacing;
+				row.height += spacing;
+			}
 
 			for (Chunk chunk : row)
 			{
@@ -357,11 +377,11 @@ public class Paragraph implements Content, Cloneable
 					double adjust;
 					if (chunk.verticalAlignment == VerticalAlignment.BASELINE)
 					{
-						adjust = chunk.span.getStyle().getAscent();
+						adjust = style.getAscent();
 					}
 					else if (chunk.verticalAlignment == VerticalAlignment.BOTTOM)
 					{
-						adjust = chunk.span.getStyle().getLineHeight() - chunk.span.getStyle().getDescent();
+						adjust = style.getLineHeight() - style.getDescent();
 					}
 					else if (chunk.verticalAlignment == VerticalAlignment.CENTER)
 					{
@@ -374,6 +394,16 @@ public class Paragraph implements Content, Cloneable
 						adjust -= mMargins.top();
 					}
 					chunk.yt += adjust;
+				}
+
+				chunk.y0 -= extra / 2;
+				chunk.y1 -= extra / 2;
+				chunk.yt -= extra / 2;
+				if (!firstRow)
+				{
+					chunk.y0 -= spacing;
+					chunk.y1 -= spacing;
+					chunk.yt -= spacing;
 				}
 
 				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
@@ -397,24 +427,60 @@ public class Paragraph implements Content, Cloneable
 
 				aPage.registerFont(style);
 
+				textOutput.println("BT");
+				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+				textOutput.println("1 0 0 1 0 0 Tm");
+
 				if (style.getTextColor() != null)
 				{
 					textOutput.println("%s rg", style.getTextColor());
 				}
 
-				textOutput.println("BT");
+//				textOutput.print("%f %f Td <", x, y);
+//				for (int i = 0; i < chunk.length; i++)
+//				{
+//					char ch = text.charAt(chunk.offset + i);
+//
+//					if (ch >= ' ')
+//					{
+//						textOutput.print("%04X".formatted(style.getGlyphIndex(ch)));
+//					}
+//				}
+//				textOutput.println("> Tj");
 
-				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
-				textOutput.println("1 0 0 1 0 0 Tm");
+				double _x = x;
 
 				for (int i = 0; i < chunk.length; i++)
 				{
-					char ch = (char)Math.max(' ',text.charAt(chunk.offset + i));
+					char ch = text.charAt(chunk.offset + i);
 
-					textOutput.println("%f %f Td <%04X> Tj", x, y, style.getGlyphIndex(ch));
+					if (ch == ' ')
+					{
+						textOutput.println("ET");
 
-					x = style.getAdvance(ch);
-					y = 0;
+						x = _x;
+						y = chunk.yt;
+
+						textOutput.println("BT");
+						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+						textOutput.println("1 0 0 1 0 0 Tm");
+						textOutput.println("%f %f Td <%s> Tj", x, y, "%04X".formatted(style.getGlyphIndex(ch)));
+						textOutput.println("ET");
+						textOutput.println("BT");
+						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+						textOutput.println("1 0 0 1 0 0 Tm");
+						_x += style.getAdvance(ch);
+
+						x = _x;
+						y = chunk.yt;
+					}
+					else if (ch >= ' ')
+					{
+						textOutput.println("%f %f Td <%s> Tj", x, y, "%04X".formatted(style.getGlyphIndex(ch)));
+						x = style.getAdvance(ch);
+						_x += style.getAdvance(ch);
+						y = 0;
+					}
 				}
 
 				textOutput.println("ET");
@@ -422,14 +488,19 @@ public class Paragraph implements Content, Cloneable
 
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
+			firstRow = false;
 		}
-
-		textOutput.println("Q");
-		textOutput.println("EMC");
 
 		aOutput.append(fillOutput);
 		aOutput.append(lineOutput);
-		aOutput.append(textOutput);
+
+		if (textOutput.size() > 0)
+		{
+//			aOutput.println("q");
+			aOutput.append(textOutput);
+//			aOutput.println("Q");
+//			aOutput.println("EMC");
+		}
 
 		return nextOffsetY;
 	}
@@ -542,12 +613,16 @@ public class Paragraph implements Content, Cloneable
 
 			for (Chunk chunk : row)
 			{
-				double chunkHeight = chunk.span.getStyle().getLineHeight() + chunk.span.getStyle().getLineGap() + chunk.span.getStyle().getBorderThickness().top() + chunk.span.getStyle().getBorderThickness().bottom();
+				Style style = chunk.span.getStyle();
+				double chunkHeight = style.getLineHeight() + style.getLineGap() + style.getBorderThickness().top() + style.getBorderThickness().bottom();
 				rowHeight = Math.max(rowHeight, chunkHeight);
 				width += chunk.x1 - chunk.x0;
 			}
 
-//			rowHeight += mLineExtra;
+			///////////////// rows are one pixel too high when rendered!!!!!????
+			rowHeight--;
+			/////////////////
+
 			row.height = rowHeight;
 			mHeight += rowHeight;
 			mWidth = Math.max(mWidth, width);

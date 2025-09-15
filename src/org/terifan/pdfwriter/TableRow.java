@@ -1,6 +1,7 @@
 package org.terifan.pdfwriter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -14,6 +15,7 @@ public class TableRow implements Iterable<Content>
 	private Color mFillColor;
 	private Insets mBorderThickness;
 	private String mBorderPattern;
+	private double[] mColumnWidths;
 
 
 	public TableRow(Object... aContents)
@@ -27,26 +29,26 @@ public class TableRow implements Iterable<Content>
 	}
 
 
-	public TableRow add(Object aO)
+	public TableRow add(Object aObject)
 	{
-		if (aO instanceof Collection v)
+		if (aObject instanceof Collection v)
 		{
 			mContents.addAll(v);
 		}
-		else if (aO instanceof Content v)
+		else if (aObject instanceof Content v)
 		{
 			mContents.add(v);
 		}
-		else if (aO.getClass().isArray())
+		else if (aObject.getClass().isArray())
 		{
-			for (int i = 0, n = java.lang.reflect.Array.getLength(aO); i < n; i++)
+			for (int i = 0, n = java.lang.reflect.Array.getLength(aObject); i < n; i++)
 			{
-				mContents.add((Content)java.lang.reflect.Array.get(aO, i));
+				mContents.add((Content)java.lang.reflect.Array.get(aObject, i));
 			}
 		}
 		else
 		{
-			throw new IllegalArgumentException(aO.getClass().getName());
+			throw new IllegalArgumentException(aObject.getClass().getName());
 		}
 		return this;
 	}
@@ -156,6 +158,33 @@ public class TableRow implements Iterable<Content>
 	public TableRow setFillColor(Color aFillColor)
 	{
 		mFillColor = aFillColor;
+		return this;
+	}
+
+
+	public double[] getColumnWidths()
+	{
+		return mColumnWidths;
+	}
+
+
+	public TableRow setColumnWidths(double... aColumnWidths)
+	{
+		mColumnWidths = aColumnWidths;
+
+		double w = Arrays.stream(mColumnWidths).sum();
+		if (w <= 0)
+		{
+			Arrays.fill(mColumnWidths, 1.0 / mColumnWidths.length);
+		}
+		else
+		{
+			for (int i = 0; i < mColumnWidths.length; i++)
+			{
+				mColumnWidths[i] /= w;
+			}
+		}
+
 		return this;
 	}
 }

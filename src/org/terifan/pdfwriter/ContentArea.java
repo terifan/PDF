@@ -29,8 +29,6 @@ public class ContentArea implements Producer
 		mBoundsRight = aRight;
 		mContentStream = aContentStream;
 		mAnchor = Anchor.NORTH_WEST;
-
-//		setBackground(new Color(new Random().nextDouble(),new Random().nextDouble(),new Random().nextDouble()));
 	}
 
 

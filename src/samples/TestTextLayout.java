@@ -25,35 +25,53 @@ public class TestTextLayout
 			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:\\temp\\output.pdf")).setCompress(!true))
 			{
 				Style style0 = new Style(font1, 15);
-				Style style1 = new Style(font1, 15).setFillColor(Color.YELLOW);
+				Style style1 = new Style(font1, 15).setFillColor(Color.YELLOW).setLineExtra(4);
 				Style style2 = new Style(font1, 10).setFillColor(Color.RED);
+				Style style3 = new Style(font1, 8).setTextColor(Color.GRAY);
+				Style style4 = new Style(font1, 18).setFillColor(Color.CYAN).setTextColor(Color.BLUE);
+				Style style5 = new Style(font1, 8).setFillColor(Color.GREEN);
 
+				Alignment[] al = Alignment.values();
+				Anchor[] an = Anchor.values();
+
+//				try (Page page = pdf.addPage())
+//				{
+//					page.append(new TextArea( 70, 790, 530, 750, new Paragraph(style0, "TextArea anchor")).setAnchor(Anchor.NORTH));
+//					for (int y = 290, i = 0; y < 800; y+=230)
+//					{
+//						for (int x = 70; x < 385; x+=150, i++)
+//						{
+//							page.append(
+//								new TextArea(x, y, x+140, y-200,
+//									new Paragraph(style1, "para1"),
+//									new Paragraph(style1, "para2").add(new Span(style5,"span2")).add(new Span(style4,"span3")).add(new Span(style2,"span4ohhhhwrap!!")),
+//									new Paragraph(style1, "para3")
+//								)
+//								.setBackground(Color.LIGHT_GRAY)
+//								.setAnchor(an[i]));
+//							page.append(new TextArea(x, y+10, x+140, y-220, new Paragraph(style3, ""+an[i])).setAnchor(Anchor.NORTH_WEST));
+//						}
+//					}
+//				}
 				try (Page page = pdf.addPage())
 				{
-					page.append(new TextArea( 70, 790, 530, 750, new Paragraph(style0, "TextArea Anchor")).setAnchor(Anchor.NORTH));
-					page.append(new TextArea( 70, 750, 215, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH_WEST));
-					page.append(new TextArea(225, 750, 375, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH));
-					page.append(new TextArea(385, 750, 530, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH_EAST));
-					page.append(new TextArea( 70, 520, 215, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.WEST));
-					page.append(new TextArea(225, 520, 375, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.CENTER));
-					page.append(new TextArea(385, 520, 530, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.EAST));
-					page.append(new TextArea( 70, 290, 215,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_WEST));
-					page.append(new TextArea(225, 290, 375,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH));
-					page.append(new TextArea(385, 290, 530,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")), new Paragraph(style1, "para3")).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_EAST));
-				}
+					page.append(new TextArea(70, 790, 530, 750, new Paragraph(style0, "TextArea anchor + Paragraph alignment")).setAnchor(Anchor.NORTH));
 
-				try (Page page = pdf.addPage())
-				{
-					page.append(new TextArea( 70, 790, 530, 750, new Paragraph(style0, "TextArea Anchor + Paragraph alignment")).setAnchor(Anchor.NORTH));
-					page.append(new TextArea( 70, 750, 215, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH_WEST));
-					page.append(new TextArea(225, 750, 375, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH));
-					page.append(new TextArea(385, 750, 530, 530, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.NORTH_EAST));
-					page.append(new TextArea( 70, 520, 215, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.WEST));
-					page.append(new TextArea(225, 520, 375, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.CENTER));
-					page.append(new TextArea(385, 520, 530, 300, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.EAST));
-					page.append(new TextArea( 70, 290, 215,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_WEST));
-					page.append(new TextArea(225, 290, 375,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH));
-					page.append(new TextArea(385, 290, 530,  70, new Paragraph(style1, "paragraph1"), new Paragraph(style1, "para2", "span2", "span3").add(new Span(style2,"ohhhhwrap!!")).setAlignment(Alignment.RIGHT), new Paragraph(style1, "para3").setAlignment(Alignment.RIGHT)).setBackground(Color.LIGHT_GRAY).setAnchor(Anchor.SOUTH_EAST));
+					for (int y = 290, r = 0, i = 0; y < 800; y += 230, r++)
+					{
+						for (int x = 70; x < 385; x += 150, i++)
+						{
+							page.append(
+								new TextArea(x, y, x + 140, y - 200,
+									new Paragraph(style1, "para1").setAlignment(al[r]),
+									new Paragraph(style1, "para2").add(new Span(style5, "span2")).add(new Span(style4, "span3")).add(new Span(style2, "span4ohhhhwrap!!")).setAlignment(al[r]),
+									new Paragraph(style1, "para3").setAlignment(al[r])
+								)
+									.setBackground(Color.LIGHT_GRAY)
+									.setAnchor(an[i]));
+							page.append(new TextArea(x, y + 10, x + 140, y - 220, new Paragraph(style3, an[i] + " + " + al[r])).setAnchor(Anchor.NORTH_WEST));
+						}
+					}
 				}
 			}
 		}

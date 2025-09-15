@@ -18,6 +18,8 @@ public class Style implements Cloneable
 	private Insets mMargins;
 	private Insets mBorderThickness;
 	private String mBorderPattern;
+	private double mLineExtra;
+	private double mLineSpacing;
 
 
 	public Style()
@@ -208,29 +210,57 @@ public class Style implements Cloneable
 
 	public int getGlyphIndex(int aCharacter)
 	{
-		int glyph = mFontFile.findGlyphIndex(aCharacter);
-		mFont.registerGlyph(aCharacter, glyph);
-		return glyph;
+		try
+		{
+			int glyph = mFontFile.findGlyphIndex(aCharacter);
+			mFont.registerGlyph(aCharacter, glyph);
+			return glyph;
+		}
+		catch (IllegalArgumentException e)
+		{
+			int glyph = mFontFile.findGlyphIndex(' ');
+			mFont.registerGlyph(aCharacter, glyph);
+			return glyph;
+		}
 	}
 
 
 	public double getAdvance(char aCharacter)
 	{
+		double aw;
 		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
-		return mSize * mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter)) * cs / mFontFile.getUnitsPerEm();
+		try
+		{
+			aw = mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter));
+		}
+		catch (IllegalArgumentException e)
+		{
+			aw = mFontFile.getGlyphAdvanceWidth(getGlyphIndex(' '));
+		}
+		return mSize * aw * cs / mFontFile.getUnitsPerEm();
 	}
 
 
 	public double getLeftBearing(char aCharacter)
 	{
 		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
-		return mSize * mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter)) * cs / mFontFile.getUnitsPerEm();
+		double aw;
+		try
+		{
+			aw = mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter));
+		}
+		catch (IllegalArgumentException e)
+		{
+			aw = mFontFile.getGlyphLeftSideBearing(getGlyphIndex(' '));
+		}
+		return mSize * aw * cs / mFontFile.getUnitsPerEm();
 	}
 
 
 	private double scale(double aValue)
 	{
-		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
+//		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
+		return aValue * mSize / mFontFile.getLineHeight();
 	}
 
 
@@ -264,6 +294,32 @@ public class Style implements Cloneable
 	}
 
 
+	public double getLineExtra()
+	{
+		return mLineExtra;
+	}
+
+
+	public Style setLineExtra(double aLineExtra)
+	{
+		mLineExtra = aLineExtra;
+		return this;
+	}
+
+
+	public double getLineSpacing()
+	{
+		return mLineSpacing;
+	}
+
+
+	public Style setLineSpacing(double aLineSpacing)
+	{
+		mLineSpacing = aLineSpacing;
+		return this;
+	}
+
+
 	@Override
 	public Style clone()
 	{
@@ -274,16 +330,6 @@ public class Style implements Cloneable
 		catch (CloneNotSupportedException e)
 		{
 			throw new IllegalStateException(e);
-//			Style style = new Style();
-//			style.mFont;
-//			style.mSize;
-//			style.mTextColor;
-//			style.mBorderColor;
-//			style.mFillColor;
-//			style.mHighlightColor;
-//			style.mFontFile;
-//			style.mCharacterSpacing;
-//			style.mMargins;
 		}
 	}
 }

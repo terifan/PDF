@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.IntStream;
 import static org.terifan.pdfwriter.Insets.ZERO;
 import static org.terifan.pdfwriter.Utilities.renderLine;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
@@ -48,7 +49,11 @@ public class Table implements Content
 
 
 	/**
-	 * @param aColumnWeights Weight of each column. Weights are normalized and column widths are computed from these weights.
+	 * @param aColumnWeights
+	 *   Weight of each column. Weights are normalized and column widths are computed from these weights.
+	 *   <p>
+	 *   Hint: to create five equally sized columns simply write: <pre>new Table(new double[5])</pre>
+	 *   </p>
 	 */
 	public Table(double... aColumnWeights)
 	{
@@ -65,14 +70,28 @@ public class Table implements Content
 	}
 
 
+	/**
+	 * @param aColumnWeights
+	 *   Weight of each column. Weights are normalized and column widths are computed from these weights.
+	 *   <p>
+	 *   Hint: to create five equally sized columns simply write: <pre>table.setColumnWeights(new double[5])</pre>
+	 *   </p>
+	 */
 	public Table setColumnWeights(double... aColumnWeights)
 	{
 		mColumnWidths = aColumnWeights;
 
 		double w = Arrays.stream(mColumnWidths).sum();
-		for (int i = 0; i < mColumnWidths.length; i++)
+		if (w <= 0)
 		{
-			mColumnWidths[i] /= w;
+			Arrays.fill(mColumnWidths, 1.0 / mColumnWidths.length);
+		}
+		else
+		{
+			for (int i = 0; i < mColumnWidths.length; i++)
+			{
+				mColumnWidths[i] /= w;
+			}
 		}
 
 		return this;
@@ -426,27 +445,28 @@ public class Table implements Content
 
 		for (int tableRowIndex = 0, sourceRowIndex = mRenderRow; sourceRowIndex < mContents.size(); tableRowIndex++, sourceRowIndex++)
 		{
-			TableRow aRow = mContents.get(sourceRowIndex);
+			TableRow row = mContents.get(sourceRowIndex);
 			double x0 = aX0;
 			double rowHeight = 0;
+			double[] cw = row.getColumnWidths() != null ? row.getColumnWidths() : mColumnWidths;
 
-			for (int dataColumn = 0, layoutColumn = 0, n = Math.min(mColumnWidths.length, aRow.size()); dataColumn < n; dataColumn++, layoutColumn++)
+			for (int dataColumn = 0, layoutColumn = 0, n = Math.min(cw.length, row.size()); dataColumn < n; dataColumn++, layoutColumn++)
 			{
-				Content content = aRow.get(dataColumn);
-				double x1 = x0 + mColumnWidths[layoutColumn] * boundsWidth;
+				Content content = row.get(dataColumn);
+				double x1 = x0 + cw[layoutColumn] * boundsWidth;
 
 				Insets in;
 				if (content instanceof TableCell v)
 				{
-					in = Insets.add(Insets.first(v.getPadding(), aRow.getPadding(), mCellPadding, ZERO), v.getBorderThickness());
+					in = Insets.add(Insets.first(v.getPadding(), row.getPadding(), mCellPadding, ZERO), v.getBorderThickness());
 					for (int i = 1; i < v.getColSpan(); i++)
 					{
-						x1 += mColumnWidths[++layoutColumn] * boundsWidth;
+						x1 += cw[++layoutColumn] * boundsWidth;
 					}
 				}
 				else
 				{
-					in = Insets.first(aRow.getPadding(), mCellPadding, ZERO);
+					in = Insets.first(row.getPadding(), mCellPadding, ZERO);
 				}
 
 				content.layout(x0 + in.left(), x1 - in.left() - in.right());
@@ -561,6 +581,8 @@ public class Table implements Content
 		aOutput.append(lineOutput);
 		aOutput.append(textOutput);
 
+		mLayoutHeight = aBoundsTop - y;
+
 		return y;
 	}
 
@@ -574,8 +596,9 @@ public class Table implements Content
 
 		double boundsWidth = (x1 - rowBorderThickness.right()) - (x0 + rowBorderThickness.right());
 		double rowHeight = 0;
+		double[] cw = aRow.getColumnWidths() != null ? aRow.getColumnWidths() : mColumnWidths;
 
-		Output[] outputs = new Output[mColumnWidths.length];
+		Output[] outputs = new Output[cw.length];
 
 		if (aRow.isEmpty())
 		{
@@ -591,10 +614,10 @@ public class Table implements Content
 			{
 				double columnX0 = x0;
 
-				for (int dataColumn = 0, layoutColumn = 0, n = Math.min(mColumnWidths.length, aRow.size()); dataColumn < n; dataColumn++, layoutColumn++)
+				for (int dataColumn = 0, layoutColumn = 0, n = Math.min(cw.length, aRow.size()); dataColumn < n; dataColumn++, layoutColumn++)
 				{
 					Content content = aRow.get(dataColumn);
-					double columnX1 = columnX0 + mColumnWidths[layoutColumn] * boundsWidth;
+					double columnX1 = columnX0 + cw[layoutColumn] * boundsWidth;
 
 					Insets padding = null;
 					if (content instanceof TableCell v)
@@ -602,7 +625,7 @@ public class Table implements Content
 						padding = Insets.add(Insets.first(v.getPadding(), aRow.getPadding(), mCellPadding), v.getBorderThickness());
 						for (int i = 1; i < v.getColSpan(); i++)
 						{
-							columnX1 += mColumnWidths[++layoutColumn] * boundsWidth;
+							columnX1 += cw[++layoutColumn] * boundsWidth;
 						}
 					}
 					else
@@ -646,7 +669,7 @@ public class Table implements Content
 		y1 -= rowBorderThickness.bottom();
 
 		double columnX0 = x0;
-		for (int dataColumn = 0, layoutColumn = 0, n = Math.min(mColumnWidths.length, aRow.size()); dataColumn < n; dataColumn++, layoutColumn++)
+		for (int dataColumn = 0, layoutColumn = 0, n = Math.min(cw.length, aRow.size()); dataColumn < n; dataColumn++, layoutColumn++)
 		{
 			Content content = aRow.get(dataColumn);
 
@@ -655,7 +678,7 @@ public class Table implements Content
 			Insets cellBorderThickness = new Insets();
 			String borderPattern = null;
 
-			double columnX1 = columnX0 + mColumnWidths[layoutColumn] * boundsWidth;
+			double columnX1 = columnX0 + cw[layoutColumn] * boundsWidth;
 
 			if (content instanceof TableCell v)
 			{
@@ -667,7 +690,7 @@ public class Table implements Content
 				for (int i = 1; i < v.getColSpan(); i++)
 				{
 					layoutColumn++;
-					columnX1 += mColumnWidths[layoutColumn] * boundsWidth;
+					columnX1 += cw[layoutColumn] * boundsWidth;
 				}
 			}
 

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Formatter;
 import java.util.Locale;
+import static org.terifan.pdfwriter.Utilities.roundDouble;
 
 
 class Output implements AutoCloseable
@@ -46,13 +47,7 @@ class Output implements AutoCloseable
 
 	public void print(double aNumber) throws IOException
 	{
-		String s = "" + aNumber;
-		if (s.endsWith(".0"))
-		{
-			s = s.substring(0, s.length() - 2);
-		}
-
-		print(s.getBytes());
+		print(roundDouble(aNumber));
 	}
 
 
@@ -67,7 +62,35 @@ class Output implements AutoCloseable
 
 	public void print(String aText, Object... aParams) throws IOException
 	{
-		byte[] buf = new Formatter(Locale.US).format(aText, aParams).toString().getBytes();
+//		byte[] buf = new Formatter(Locale.US).format(aText, aParams).toString().getBytes();
+
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		for (int i = 0, pi = 0; i < aText.length(); i++)
+		{
+			char c = aText.charAt(i);
+			if (c == '%')
+			{
+				c = aText.charAt(++i);
+				switch (c)
+				{
+					case 'f':
+						baos.write(roundDouble((double)aParams[pi++]).getBytes());
+						break;
+					case 'd':
+					case 's':
+						baos.write(aParams[pi++].toString().getBytes());
+						break;
+					default:
+						throw new IllegalStateException(aText);
+				}
+			}
+			else
+			{
+				baos.write(c);
+			}
+		}
+		byte[] buf = baos.toByteArray();
+
 		mOutput.write(buf);
 		mSize += buf.length;
 	}

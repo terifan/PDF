@@ -16,6 +16,7 @@ public class Page implements AutoCloseable
 	private Dictionary mXObjectResourceDictionary;
 	private Dictionary mResourcesDictionary;
 	private HashMap<UUID, String> mIdentityMap;
+	private ObjRef mParent;
 
 
 	Page(PDFWriter aWriter)
@@ -97,8 +98,13 @@ public class Page implements AutoCloseable
 
 	Ref printHeader() throws IOException
 	{
+		Array resArr = new Array();
+		resArr.add("/PDF").add("/Text");
+
+		Ref refResources = mWriter.print(new Obj().setContent(resArr));
+
 		Dictionary resDic = new Dictionary();
-		resDic.put("/ProcSet", new Array().add("/PDF").add("/Text"));
+		resDic.put("/ProcSet", refResources);
 
 		if (!mFonts.isEmpty())
 		{
@@ -116,8 +122,18 @@ public class Page implements AutoCloseable
 			resDic.put("/XObject", mXObjectResourceDictionary);
 		}
 
-		Ref refResources = mWriter.print(new Obj(resDic));
+		return mWriter.print(new Obj(new Dictionary()
+			.put("/Type", "/Page")
+			.put("/Parent", mParent.getReference())
+			.put("/MediaBox", "[0 0 595 842]")
+			.put("/Contents", mRefContent)
+			.put("/Resources", resDic)
+		));
+	}
 
-		return mWriter.print(new Obj(new Dictionary().put("/Type", "/Page").put("/MediaBox", "[0 0 595 842]").put("/Contents", mRefContent).put("/Resources", refResources)));
+
+	void setParent(ObjRef aPagesRef)
+	{
+		mParent = aPagesRef;
 	}
 }
