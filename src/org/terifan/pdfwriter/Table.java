@@ -606,7 +606,7 @@ public class Table implements Content
 		aOutput.append(lineOutput);
 		aOutput.append(textOutput);
 
-//		mLayoutHeight = aBoundsTop - y;
+		mLayoutHeight = aBoundsTop - y;
 
 		return y;
 	}
