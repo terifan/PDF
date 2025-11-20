@@ -228,7 +228,7 @@ public class Style implements Cloneable
 			mFont.registerGlyph(aCharacter, glyph);
 			return glyph;
 		}
-		catch (IllegalArgumentException e)
+		catch (Exception e)
 		{
 			System.out.println(e);
 			int glyph = mFontFile.findGlyphIndex(' ');
@@ -246,9 +246,10 @@ public class Style implements Cloneable
 		{
 			aw = mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter));
 		}
-		catch (IllegalArgumentException e)
+		catch (Exception e)
 		{
-			System.out.println(e);
+			System.out.println("Font renderer error, getAdvance, char " + (int)aCharacter + ": " + e);
+			e.printStackTrace(System.out);
 			aw = mFontFile.getGlyphAdvanceWidth(getGlyphIndex(' '));
 		}
 		return mSize * aw * cs / mFontFile.getUnitsPerEm();
@@ -263,9 +264,10 @@ public class Style implements Cloneable
 		{
 			aw = mFontFile.getGlyphLeftSideBearing(getGlyphIndex(aCharacter));
 		}
-		catch (IllegalArgumentException e)
+		catch (Exception e)
 		{
-			System.out.println(e);
+			System.out.println("Font renderer error, getLeftBearing, char " + (int)aCharacter + ": " + e);
+			e.printStackTrace(System.out);
 			aw = mFontFile.getGlyphLeftSideBearing(getGlyphIndex(' '));
 		}
 		return mSize * aw * cs / mFontFile.getUnitsPerEm();
