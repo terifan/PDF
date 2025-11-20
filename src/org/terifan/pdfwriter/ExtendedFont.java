@@ -145,14 +145,14 @@ public class ExtendedFont extends Font implements Value, Cloneable
 		double ss = SCALE;
 
 		// {32=321, 40=345, 41=346, 44=325, 45=341, 46=324, 48=290, 49=291, 50=292, 51=293,
-		System.out.println(mGlyphMap);
+//		System.out.println(mGlyphMap);
 
 		for (int charIndex = 0; charIndex < symbols.size(); charIndex++)
 		{
 //			System.out.println(mGlyphMap);
 //			System.out.println(mGlyphMap.get(symbols.get(charIndex))+"\t" + mFontFile.getGlyphWidth(symbols.get(charIndex)));
 		}
-		System.out.println(mGlyphMap.get(32));
+//		System.out.println(mGlyphMap.get(32));
 
 		for (int symbolIndex = 0, count = symbols.size(); symbolIndex < count; symbolIndex++)
 		{
