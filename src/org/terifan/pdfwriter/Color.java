@@ -42,10 +42,16 @@ public class Color implements Serializable, Cloneable
 	}
 
 
+	String getRGBString()
+	{
+		return Utilities.roundDouble(r) + " " + Utilities.roundDouble(g) + " " + Utilities.roundDouble(b);
+	}
+
+
 	@Override
 	public String toString()
 	{
-		return Utilities.roundDouble(r) + " " + Utilities.roundDouble(g) + " " + Utilities.roundDouble(b);
+		return "[" + Utilities.roundDouble(r) + " " + Utilities.roundDouble(g) + " " + Utilities.roundDouble(b) + "]";
 	}
 
 

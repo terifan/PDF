@@ -142,14 +142,26 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
 
+		double ss = SCALE;
+
+		// {32=321, 40=345, 41=346, 44=325, 45=341, 46=324, 48=290, 49=291, 50=292, 51=293,
+		System.out.println(mGlyphMap);
+
+		for (int charIndex = 0; charIndex < symbols.size(); charIndex++)
+		{
+//			System.out.println(mGlyphMap);
+//			System.out.println(mGlyphMap.get(symbols.get(charIndex))+"\t" + mFontFile.getGlyphWidth(symbols.get(charIndex)));
+		}
+		System.out.println(mGlyphMap.get(32));
+
 		for (int symbolIndex = 0, count = symbols.size(); symbolIndex < count; symbolIndex++)
 		{
 			if (symbolIndex < count - 1)
 			{
 				int s0 = symbols.get(symbolIndex + 0);
 				int s1 = symbols.get(symbolIndex + 1);
-				double w0 = mFontFile.getGlyphWidth(s0);
-				double w1 = mFontFile.getGlyphWidth(s1);
+				double w0 = ss * mFontFile.getGlyphWidth(s0);
+				double w1 = ss * mFontFile.getGlyphWidth(s1);
 
 				if (w0 == w1)
 				{
@@ -157,7 +169,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 					for (; j < count; j++)
 					{
 						int s = symbols.get(j);
-						if (w0 != mFontFile.getGlyphWidth(s))
+						if (w0 != ss * mFontFile.getGlyphWidth(s))
 						{
 							break;
 						}
@@ -171,7 +183,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				else if (s1 == s0 + 1)
 				{
 					Array widths = new Array();
-					widths.add(SCALE * w0);
+					widths.add(w0);
 
 					int j = symbolIndex + 1;
 					for (int k = 0; j < count - 1; k++, j++)
@@ -183,8 +195,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 						}
 
 						int s3 = symbols.get(j + 1);
-						double w2 = SCALE * mFontFile.getGlyphWidth(s2);
-						double w3 = s3 == count ? -1 : SCALE * mFontFile.getGlyphWidth(s3);
+						double w2 = ss * mFontFile.getGlyphWidth(s2);
+						double w3 = s3 == count ? -1 : ss * mFontFile.getGlyphWidth(s3);
 						if (w2 == w3) // if a repetition is found
 						{
 							break;
@@ -200,7 +212,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 			}
 
 			int symbol = symbols.get(symbolIndex);
-			double w = SCALE * mFontFile.getGlyphWidth(symbol);
+			double w = ss * mFontFile.getGlyphWidth(symbol);
 			array.add(symbol).add(new Array().add(w));
 		}
 
@@ -216,7 +228,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 		aOutput.println("begincmap");
 		aOutput.println("/CIDSystemInfo");
 		aOutput.println("<< /Registry (Adobe) /Ordering (UCS) /Supplement 0 >> def");
-		aOutput.println("/CMapName /Adobe-Identity-UCS def");
+		aOutput.println("/CMapName " + "/" + mFontFile.getName().replace(" ", "+") + " def");
 		aOutput.println("/CMapType 2 def");
 		aOutput.println("1 begincodespacerange");
 		aOutput.println("<0000> <FFFF>");

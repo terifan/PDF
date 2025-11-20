@@ -20,7 +20,6 @@ public class TrueTypeFont implements FontFile
 //	private final static int REPEAT          =  8;
 //	private final static int X_DELTA         = 16;
 //	private final static int Y_DELTA         = 32;
-
 	private HEAD mHEAD;
 	private HHEA mHHEA;
 	private HMTX mHMTX;
@@ -47,7 +46,7 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public String getName()
 	{
-		return mNAME.getName(null, null, null, 1);
+		return mNAME.getName(null, null, null, 4);
 	}
 
 
@@ -97,7 +96,8 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public double getLineHeight()
 	{
-		return mHEAD.mYMax - mHEAD.mYMin;
+		return getAscent() - getDescent();
+//		return mHEAD.mYMax - mHEAD.mYMin;
 	}
 
 

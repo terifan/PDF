@@ -129,6 +129,13 @@ public class TableCell implements Content
 	}
 
 
+	/**
+	 * The following dash pattern format is used to set the dash: Dash_array Dash_phase d, where Dash_array is an array that specifies the
+	 * lengths of dashes and gaps, the Dash_phase specifies the distance into the dash pattern at which to start the dash and the d is the
+	 * setdash operator. For example, the pattern format [3] 0 d defines the dash pattern as 3 units of dash and 3 units of gap, the pattern
+	 * format [2 1] 0 d defines the dash pattern as 2 units of dash and 1 unit of gap and the pattern format [] 0 d defines a solid line
+	 * with no dash.
+	 */
 	public TableCell setBorderPattern(String aBorderPattern)
 	{
 		mBorderPattern = aBorderPattern;

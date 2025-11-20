@@ -78,7 +78,20 @@ class Output implements AutoCloseable
 						break;
 					case 'd':
 					case 's':
-						baos.write(aParams[pi++].toString().getBytes());
+						if (aParams[pi] instanceof Color v)
+						{
+							baos.write(v.getRGBString().getBytes());
+						}
+						else if (aParams[pi] instanceof String v)
+						{
+							baos.write(v.getBytes());
+						}
+						else
+						{
+							new UnsupportedOperationException("Unsupported type: " + aParams[pi].getClass()).printStackTrace();
+							baos.write(aParams[pi].toString().getBytes());
+						}
+						pi++;
 						break;
 					default:
 						throw new IllegalStateException(aText);

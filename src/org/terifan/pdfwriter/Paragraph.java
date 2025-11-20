@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
+import static org.terifan.pdfwriter.Insets.THIN;
 import static org.terifan.pdfwriter.Insets.ZERO;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
@@ -247,8 +248,10 @@ public class Paragraph implements Content, Cloneable
 		Output fillOutput = new Output();
 		Output lineOutput = new Output();
 
-		boolean firstRow = true;
 		double nextOffsetY = aBoundsTop - mMargins.top();
+
+		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
+//		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, THIN, mBorderPattern, Color.RED);
 
 		while (!mLayout.isEmpty())
 		{
@@ -261,66 +264,65 @@ public class Paragraph implements Content, Cloneable
 
 			mLayout.remove(0);
 
-			if (firstRow)
+			if (mAlignment != null && !row.isEmpty())
 			{
-				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
-//				renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, new Insets(2,2,2,2), mBorderPattern, Color.RED);
-			}
-
-			if (!row.isEmpty())
-			{
-				if (mAlignment == Alignment.LEFT)
+				switch (mAlignment)
 				{
-					double adjust = aBoundsLeft - row.get(0).x0 + mMargins.left();
-					for (Chunk chunk : row)
+					case LEFT:
 					{
-						chunk.x0 += adjust;
-						chunk.x1 += adjust;
-						chunk.xt += adjust;
+						double adjust = aBoundsLeft - row.get(0).x0 + mMargins.left();
+						for (Chunk chunk : row)
+						{
+							chunk.x0 += adjust;
+							chunk.x1 += adjust;
+							chunk.xt += adjust;
+						}
+						break;
 					}
-				}
-				else if (mAlignment == Alignment.CENTER)
-				{
-					double adjust = aBoundsRight - row.get(row.size() - 1).xt;
-					adjust /= 2;
-					for (Chunk chunk : row)
+					case CENTER:
 					{
-						chunk.x0 += adjust;
-						chunk.x1 += adjust;
-						chunk.xt += adjust;
+						double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+						adjust /= 2;
+						for (Chunk chunk : row)
+						{
+							chunk.x0 += adjust;
+							chunk.x1 += adjust;
+							chunk.xt += adjust;
+						}
+						break;
 					}
-				}
-				else if (mAlignment == Alignment.RIGHT)
-				{
-					double adjust = aBoundsRight - row.get(row.size() - 1).xt;
-					adjust -= mMargins.right();
-					for (Chunk chunk : row)
+					case RIGHT:
 					{
-						chunk.x0 += adjust;
-						chunk.x1 += adjust;
-						chunk.xt += adjust;
+						double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+						adjust -= mMargins.right();
+						for (Chunk chunk : row)
+						{
+							chunk.x0 += adjust;
+							chunk.x1 += adjust;
+							chunk.xt += adjust;
+						}
+						break;
 					}
-				}
-				else if (mAlignment == Alignment.SPLIT)
-				{
-					double adjust = aBoundsRight - row.get(row.size() - 1).xt;
-					adjust -= mMargins.right();
-					for (int i = row.size() / 2; i < row.size(); i++)
+					case SPLIT:
 					{
-						Chunk chunk = row.get(i);
-						chunk.x0 += adjust;
-						chunk.x1 += adjust;
-						chunk.xt += adjust;
+						double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+						adjust -= mMargins.right();
+						for (int i = row.size() / 2; i < row.size(); i++)
+						{
+							Chunk chunk = row.get(i);
+							chunk.x0 += adjust;
+							chunk.x1 += adjust;
+							chunk.xt += adjust;
+						}
+						break;
 					}
 				}
 			}
 
 			double topMargin = 0;
 			double botMargin = 0;
-			double maxAscent = 0;
-			double maxDescent = 0;
-			double top = -100000;
-			double bot = 100000;
+			double maxAscent = -100000;
+			double maxDescent = 100000;
 
 			for (Chunk chunk : row)
 			{
@@ -338,11 +340,13 @@ public class Paragraph implements Content, Cloneable
 				topMargin = Math.max(topMargin, thickness.top() + margins.top());
 				botMargin = Math.max(botMargin, thickness.bottom() + margins.bottom());
 				maxAscent = Math.max(maxAscent, style.getAscent());
-				maxDescent = Math.max(maxDescent, style.getDescent());
+				maxDescent = Math.min(maxDescent, style.getDescent());
 			}
 
+			double top = -100000;
+			double bot = 100000;
 			double extra = 0;
-			double spacing = 0;
+			double gap = 0;
 
 			for (Chunk chunk : row)
 			{
@@ -355,17 +359,13 @@ public class Paragraph implements Content, Cloneable
 				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0);
 
 				extra = Math.max(extra, style.getLineExtra());
-				spacing = Math.max(spacing, style.getLineSpacing());
+				gap = Math.max(gap, style.getLineGap());
 			}
 
-			top -= extra/2;
-			bot -= extra/2;
-			row.height += extra;
-			if (!firstRow)
+			bot -= extra;
+			if (!mLayout.isEmpty())
 			{
-				top -= spacing;
-				bot -= spacing;
-				row.height += spacing;
+				bot += gap;
 			}
 
 			for (Chunk chunk : row)
@@ -396,17 +396,11 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-				chunk.y0 -= extra / 2;
-				chunk.y1 -= extra / 2;
-				chunk.yt -= extra / 2;
-				if (!firstRow)
-				{
-					chunk.y0 -= spacing;
-					chunk.y1 -= spacing;
-					chunk.yt -= spacing;
-				}
+				chunk.y1 -= extra;
+				chunk.yt -= extra;
 
 				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
+//				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, Color.YELLOW, style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
@@ -422,33 +416,19 @@ public class Paragraph implements Content, Cloneable
 
 				String text = chunk.span.getText();
 
-				double x = chunk.x0 + style.getBorderThickness().left();
-				double y = chunk.yt;
+				double advanceX = chunk.x0 + style.getBorderThickness().left();
+				double advanceY = chunk.yt;
+				double offsetX = advanceX;
 
 				aPage.registerFont(style);
 
 				textOutput.println("BT");
 				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
 				textOutput.println("1 0 0 1 0 0 Tm");
-
 				if (style.getTextColor() != null)
 				{
 					textOutput.println("%s rg", style.getTextColor());
 				}
-
-//				textOutput.print("%f %f Td <", x, y);
-//				for (int i = 0; i < chunk.length; i++)
-//				{
-//					char ch = text.charAt(chunk.offset + i);
-//
-//					if (ch >= ' ')
-//					{
-//						textOutput.print("%04X".formatted(style.getGlyphIndex(ch)));
-//					}
-//				}
-//				textOutput.println("> Tj");
-
-				double _x = x;
 
 				for (int i = 0; i < chunk.length; i++)
 				{
@@ -458,28 +438,30 @@ public class Paragraph implements Content, Cloneable
 					{
 						textOutput.println("ET");
 
-						x = _x;
-						y = chunk.yt;
-
 						textOutput.println("BT");
 						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
 						textOutput.println("1 0 0 1 0 0 Tm");
-						textOutput.println("%f %f Td <%s> Tj", x, y, "%04X".formatted(style.getGlyphIndex(ch)));
+						textOutput.println("%f %f Td <%s> Tj", offsetX, chunk.yt, "%04X".formatted(style.getGlyphIndex(ch)));
 						textOutput.println("ET");
+
 						textOutput.println("BT");
 						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
 						textOutput.println("1 0 0 1 0 0 Tm");
-						_x += style.getAdvance(ch);
+						if (style.getTextColor() != null)
+						{
+							textOutput.println("%s rg", style.getTextColor());
+						}
 
-						x = _x;
-						y = chunk.yt;
+						offsetX += style.getAdvance(ch);
+						advanceX = offsetX;
+						advanceY = chunk.yt;
 					}
 					else if (ch >= ' ')
 					{
-						textOutput.println("%f %f Td <%s> Tj", x, y, "%04X".formatted(style.getGlyphIndex(ch)));
-						x = style.getAdvance(ch);
-						_x += style.getAdvance(ch);
-						y = 0;
+						textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
+						advanceX = style.getAdvance(ch);
+						advanceY = 0;
+						offsetX += advanceX;
 					}
 				}
 
@@ -488,7 +470,6 @@ public class Paragraph implements Content, Cloneable
 
 			mHeight -= row.height;
 			nextOffsetY -= row.height;
-			firstRow = false;
 		}
 
 		aOutput.append(fillOutput);
@@ -496,10 +477,7 @@ public class Paragraph implements Content, Cloneable
 
 		if (textOutput.size() > 0)
 		{
-//			aOutput.println("q");
 			aOutput.append(textOutput);
-//			aOutput.println("Q");
-//			aOutput.println("EMC");
 		}
 
 		return nextOffsetY;
@@ -555,6 +533,7 @@ public class Paragraph implements Content, Cloneable
 				AtomicBoolean oLineEnd = new AtomicBoolean(false);
 
 				int chunkLen = findSpanCutoff(span, offset, x, oBreakLine, oLineEnd, aBoundsRight - mMargins.right(), currentRow.isEmpty());
+
 				if (chunkLen == 0)
 				{
 					break;
@@ -606,22 +585,31 @@ public class Paragraph implements Content, Cloneable
 		mWidth = 0;
 		mHeight = mMargins.top() + mMargins.bottom();
 
-		for (Row row : mLayout)
+		for (int i = 0; i < mLayout.size(); i++)
 		{
+			Row row = mLayout.get(i);
+
 			double rowHeight = 0;
 			double width = 0;
+			double gap = 0;
+
+			if (i < mLayout.size() - 1)
+			{
+				for (Chunk chunk : row)
+				{
+					Style style = chunk.span.getStyle();
+					gap = Math.max(gap, style.getLineGap());
+				}
+			}
 
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
-				double chunkHeight = style.getLineHeight() + style.getLineGap() + style.getBorderThickness().top() + style.getBorderThickness().bottom();
-				rowHeight = Math.max(rowHeight, chunkHeight);
+
+				rowHeight = Math.max(rowHeight, style.getLineExtra() + style.getLineHeight() + gap + style.getBorderThickness().top() + style.getBorderThickness().bottom());
+
 				width += chunk.x1 - chunk.x0;
 			}
-
-			///////////////// rows are one pixel too high when rendered!!!!!????
-			rowHeight--;
-			/////////////////
 
 			row.height = rowHeight;
 			mHeight += rowHeight;

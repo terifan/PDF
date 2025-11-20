@@ -65,6 +65,36 @@ public class Insets implements Cloneable
 		}
 	};
 
+	public final static Insets THIN = new Insets()
+	{
+		@Override
+		public double bottom()
+		{
+			return .1;
+		}
+
+
+		@Override
+		public double top()
+		{
+			return .1;
+		}
+
+
+		@Override
+		public double right()
+		{
+			return .1;
+		}
+
+
+		@Override
+		public double left()
+		{
+			return .1;
+		}
+	};
+
 
 	public Insets()
 	{
@@ -251,6 +281,6 @@ public class Insets implements Cloneable
 	@Override
 	public String toString()
 	{
-		return "Margins{" + "top=" + top + ", left=" + left + ", bottom=" + bottom + ", right=" + right + '}';
+		return "[" + top + " " + left + " " + bottom + " " + right + ']';
 	}
 }

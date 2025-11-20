@@ -14,6 +14,9 @@ public interface Content
 	double getLayoutHeight();
 
 
+	/**
+	 * @return nextOffsetY
+	 */
 	double produce(PDFWriter aPDFWriter, Output aOutput, Page aPage, double aY0, double aX0, double aY1, double aX1) throws IOException;
 
 

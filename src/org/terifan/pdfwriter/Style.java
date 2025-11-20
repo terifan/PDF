@@ -19,7 +19,7 @@ public class Style implements Cloneable
 	private Insets mBorderThickness;
 	private String mBorderPattern;
 	private double mLineExtra;
-	private double mLineSpacing;
+	private Double mLineGap;
 
 
 	public Style()
@@ -198,7 +198,19 @@ public class Style implements Cloneable
 
 	public double getLineGap()
 	{
-		return scale(mFontFile.getLineGap());
+		return mLineGap == null ? scale(mFontFile.getLineGap()) : mLineGap;
+	}
+
+
+	/**
+	 * Override the line gap specified by the font used or null to use the font file line gap.
+	 *
+	 * @param aLineGap the line gap specified by the font used or null to use the font file line gap
+	 */
+	public Style setLineGap(Double aLineGap)
+	{
+		mLineGap = aLineGap;
+		return this;
 	}
 
 
@@ -218,6 +230,7 @@ public class Style implements Cloneable
 		}
 		catch (IllegalArgumentException e)
 		{
+			System.out.println(e);
 			int glyph = mFontFile.findGlyphIndex(' ');
 			mFont.registerGlyph(aCharacter, glyph);
 			return glyph;
@@ -228,13 +241,14 @@ public class Style implements Cloneable
 	public double getAdvance(char aCharacter)
 	{
 		double aw;
-		double cs = mCharacterSpacing == null ? 1 : mCharacterSpacing;
+		double cs = mCharacterSpacing == null ? 1.0 : mCharacterSpacing;
 		try
 		{
 			aw = mFontFile.getGlyphAdvanceWidth(getGlyphIndex(aCharacter));
 		}
 		catch (IllegalArgumentException e)
 		{
+			System.out.println(e);
 			aw = mFontFile.getGlyphAdvanceWidth(getGlyphIndex(' '));
 		}
 		return mSize * aw * cs / mFontFile.getUnitsPerEm();
@@ -251,6 +265,7 @@ public class Style implements Cloneable
 		}
 		catch (IllegalArgumentException e)
 		{
+			System.out.println(e);
 			aw = mFontFile.getGlyphLeftSideBearing(getGlyphIndex(' '));
 		}
 		return mSize * aw * cs / mFontFile.getUnitsPerEm();
@@ -259,8 +274,8 @@ public class Style implements Cloneable
 
 	private double scale(double aValue)
 	{
-//		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
-		return aValue * mSize / mFontFile.getLineHeight();
+		return aValue * mSize / (mFontFile.getAscent() - mFontFile.getDescent());
+//		return aValue * mSize / mFontFile.getLineHeight();
 	}
 
 
@@ -307,19 +322,6 @@ public class Style implements Cloneable
 	}
 
 
-	public double getLineSpacing()
-	{
-		return mLineSpacing;
-	}
-
-
-	public Style setLineSpacing(double aLineSpacing)
-	{
-		mLineSpacing = aLineSpacing;
-		return this;
-	}
-
-
 	@Override
 	public Style clone()
 	{
@@ -331,5 +333,12 @@ public class Style implements Cloneable
 		{
 			throw new IllegalStateException(e);
 		}
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "Style{" + "mFont=" + mFont.getFontFile().getName() + ", mSize=" + mSize + ", lineHeight=" + getLineHeight() + ", ascent=" + getAscent() + ", descent=" + getDescent() + ", mCharacterSpacing=" + mCharacterSpacing + ", mAdjust=" + mAdjust + ", mMargins=" + mMargins + ", mBorderThickness=" + mBorderThickness + ", mBorderPattern=" + mBorderPattern + ", mLineExtra=" + mLineExtra + ", mLineGap=" + mLineGap + '}';
 	}
 }

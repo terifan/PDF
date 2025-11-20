@@ -11,12 +11,12 @@ class GLYF
 	float xMax;
 	float yMax;
 
-	int[] endPtsOfContours;
-	int instructionLength;
-	int[] instructions;
-	int[] flags;
-	int[] xCoordinates;
-	int[] yCoordinates;
+//	int[] endPtsOfContours;
+//	int instructionLength;
+//	int[] instructions;
+//	int[] flags;
+//	int[] xCoordinates;
+//	int[] yCoordinates;
 
 
 	public GLYF(ByteBufferReader aBuffer, HashMap<String, Table> aTables, HEAD aHEAD, int aSymbol)
