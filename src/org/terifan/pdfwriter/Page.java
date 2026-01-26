@@ -1,5 +1,6 @@
 package org.terifan.pdfwriter;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -9,6 +10,7 @@ import java.util.UUID;
 public class Page implements AutoCloseable
 {
 	private final PDFWriter mWriter;
+	private final Dimension mDimension;
 	private StringBuilder mBuffer;
 	private HashMap<String, Resource> mFonts;
 	private int mImageCount;
@@ -19,9 +21,10 @@ public class Page implements AutoCloseable
 	private ObjRef mParent;
 
 
-	Page(PDFWriter aWriter)
+	Page(PDFWriter aWriter, Dimension aDimension)
 	{
 		mWriter = aWriter;
+		mDimension = aDimension;
 		mBuffer = new StringBuilder();
 		mFonts = new HashMap<>();
 		mResourcesDictionary = new Dictionary();
@@ -96,6 +99,12 @@ public class Page implements AutoCloseable
 	}
 
 
+	public Dimension getDimension()
+	{
+		return mDimension;
+	}
+
+
 	Ref printHeader() throws IOException
 	{
 		Array resArr = new Array();
@@ -125,7 +134,7 @@ public class Page implements AutoCloseable
 		return mWriter.print(new Obj(new Dictionary()
 			.put("/Type", "/Page")
 			.put("/Parent", mParent.getReference())
-			.put("/MediaBox", "[0 0 595 842]")
+			.put("/MediaBox", "[0 0 " + mDimension.width + " " + mDimension.height + "]")
 			.put("/Contents", mRefContent)
 			.put("/Resources", resDic)
 		));

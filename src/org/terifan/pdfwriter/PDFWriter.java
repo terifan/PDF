@@ -1,5 +1,6 @@
 package org.terifan.pdfwriter;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ public class PDFWriter implements AutoCloseable
 	private Output mOutput;
 	private HashMap<Resource, Ref> mFonts;
 	protected boolean mCompress;
+
+	public final static Dimension A4_Portrait = new Dimension(595, 842);
+	public final static Dimension A4_Landscape = new Dimension(842, 595);
 
 
 	public PDFWriter(OutputStream aOutput) throws IOException
@@ -36,7 +40,13 @@ public class PDFWriter implements AutoCloseable
 
 	public Page addPage()
 	{
-		Page page = new Page(this);
+		return addPage(mPages.isEmpty() ? A4_Portrait : mPages.getLast().getDimension());
+	}
+
+
+	public Page addPage(Dimension aDimension)
+	{
+		Page page = new Page(this, aDimension);
 		mPages.add(page);
 		return page;
 	}
