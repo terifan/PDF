@@ -251,7 +251,6 @@ public class Paragraph implements Content, Cloneable
 		double nextOffsetY = aBoundsTop - mMargins.top();
 
 		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
-//		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, THIN, mBorderPattern, Color.RED);
 
 		while (!mLayout.isEmpty())
 		{
@@ -400,7 +399,6 @@ public class Paragraph implements Content, Cloneable
 				chunk.yt -= extra;
 
 				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
-//				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, Color.YELLOW, style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{

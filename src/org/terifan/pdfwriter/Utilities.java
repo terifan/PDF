@@ -87,7 +87,7 @@ public class Utilities
 	{
 		if (aFillColor != null)
 		{
-			aFillContent.print("q ");
+			aFillContent.println("q");
 			aFillContent.print("%s rg ", aFillColor);
 			aFillContent.print("%f w ", 1.0);
 			aFillContent.print("%f %f m ", aX0 + left(aThickness), aY0 - top(aThickness));
@@ -99,13 +99,15 @@ public class Utilities
 			aFillContent.println("Q");
 		}
 
-		if (aBorderPattern != null)
-		{
-			aLineContent.println("%s d", aBorderPattern);
-		}
-
 		if (aThickness != null && aBorderColor != null && aBorderColor.length > 0)
 		{
+			aLineContent.println("q");
+
+			if (aBorderPattern != null)
+			{
+				aLineContent.println("%s d", aBorderPattern);
+			}
+
 			if (aThickness.top() > 0)
 			{
 				aLineContent.print("%s RG ", aBorderColor[0]);
@@ -141,6 +143,8 @@ public class Utilities
 				aLineContent.print("%f %f l ", aX0 + aThickness.left() / 2, aY1);
 				aLineContent.println("s");
 			}
+
+			aLineContent.println("Q");
 		}
 	}
 
