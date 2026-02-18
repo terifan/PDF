@@ -120,15 +120,18 @@ public class TextArea implements Producer
 				break;
 		}
 
-		content.println("q");
-
-		for (Paragraph paragraph : mParagraphs)
+		if (!mParagraphs.isEmpty())
 		{
-			boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
-		}
+			content.println("q");
 
-		content.println("Q");
-		content.println("EMC");
+			for (Paragraph paragraph : mParagraphs)
+			{
+				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
+			}
+
+			content.println("Q");
+			content.println("EMC");
+		}
 
 		return baos.toString();
 	}

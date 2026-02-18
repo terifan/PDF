@@ -18,7 +18,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 {
 	private final static boolean ALWAYS_COMPRESS_FONT_DATA = true;
 
-	private final static double SCALE = 72;
+	private final static double SCALE = 128;
 
 	private FontFile mFontFile;
 	private TreeMap<Integer, Integer> mGlyphMap;
@@ -82,43 +82,43 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 	public double getDefaultWidth()
 	{
-		return getMedianWidth();
+		return getAverageWidth();
 	}
 
 
-	private double getPopularWidth()
-	{
-		HashMap<Double, Integer> def = new HashMap<>();
-		for (int i : mGlyphMap.values())
-		{
-			double w = mFontFile.getGlyphWidth(i);
-			def.put(w, def.getOrDefault(w, 0) + 1);
-		}
-		int c = 0;
-		double w = 0;
-		for (Entry<Double, Integer> entry : def.entrySet())
-		{
-			if (entry.getValue() > c)
-			{
-				c = entry.getValue();
-				w = entry.getKey();
-			}
-		}
-		return SCALE * w;
-	}
-
-
-	private double getMedianWidth()
-	{
-		ArrayList<Double> symbols = new ArrayList<>();
-		for (int i : mGlyphMap.values())
-		{
-			symbols.add(mFontFile.getGlyphWidth(i));
-		}
-		symbols.sort(Double::compare);
-
-		return SCALE * symbols.get(symbols.size() / 2);
-	}
+//	private double getPopularWidth()
+//	{
+//		HashMap<Double, Integer> def = new HashMap<>();
+//		for (int i : mGlyphMap.values())
+//		{
+//			double w = mFontFile.getGlyphWidth(i);
+//			def.put(w, def.getOrDefault(w, 0) + 1);
+//		}
+//		int c = 0;
+//		double w = 0;
+//		for (Entry<Double, Integer> entry : def.entrySet())
+//		{
+//			if (entry.getValue() > c)
+//			{
+//				c = entry.getValue();
+//				w = entry.getKey();
+//			}
+//		}
+//		return SCALE * w;
+//	}
+//
+//
+//	private double getMedianWidth()
+//	{
+//		ArrayList<Double> symbols = new ArrayList<>();
+//		for (int i : mGlyphMap.values())
+//		{
+//			symbols.add(mFontFile.getGlyphWidth(i));
+//		}
+//		symbols.sort(Double::compare);
+//
+//		return SCALE * symbols.get(symbols.size() / 2);
+//	}
 
 
 	private double getAverageWidth()
@@ -142,17 +142,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 
 		List<Integer> symbols = mGlyphMap.keySet().stream().map(e -> mGlyphMap.get(e)).sorted().collect(Collectors.toList());
 
-		double ss = SCALE;
-
-		// {32=321, 40=345, 41=346, 44=325, 45=341, 46=324, 48=290, 49=291, 50=292, 51=293,
-//		System.out.println(mGlyphMap);
-
-		for (int charIndex = 0; charIndex < symbols.size(); charIndex++)
-		{
-//			System.out.println(mGlyphMap);
-//			System.out.println(mGlyphMap.get(symbols.get(charIndex))+"\t" + mFontFile.getGlyphWidth(symbols.get(charIndex)));
-		}
-//		System.out.println(mGlyphMap.get(32));
+		double ss = 1; //SCALE;
 
 		for (int symbolIndex = 0, count = symbols.size(); symbolIndex < count; symbolIndex++)
 		{
@@ -160,8 +150,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 			{
 				int s0 = symbols.get(symbolIndex + 0);
 				int s1 = symbols.get(symbolIndex + 1);
-				double w0 = ss * mFontFile.getGlyphWidth(s0);
-				double w1 = ss * mFontFile.getGlyphWidth(s1);
+				double w0 = 6;//ss * mFontFile.getGlyphWidth(s0);
+				double w1 = 6;//ss * mFontFile.getGlyphWidth(s1);
 
 				if (w0 == w1)
 				{
@@ -169,7 +159,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 					for (; j < count; j++)
 					{
 						int s = symbols.get(j);
-						if (w0 != ss * mFontFile.getGlyphWidth(s))
+						if (w0 != 6)//ss * mFontFile.getGlyphWidth(s))
 						{
 							break;
 						}
@@ -195,8 +185,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 						}
 
 						int s3 = symbols.get(j + 1);
-						double w2 = ss * mFontFile.getGlyphWidth(s2);
-						double w3 = s3 == count ? -1 : ss * mFontFile.getGlyphWidth(s3);
+						double w2 = 6;//ss * mFontFile.getGlyphWidth(s2);
+						double w3 = s3 == count ? -1 : 6;//ss * mFontFile.getGlyphWidth(s3);
 						if (w2 == w3) // if a repetition is found
 						{
 							break;
@@ -212,7 +202,7 @@ public class ExtendedFont extends Font implements Value, Cloneable
 			}
 
 			int symbol = symbols.get(symbolIndex);
-			double w = ss * mFontFile.getGlyphWidth(symbol);
+			double w = 6;//ss * mFontFile.getGlyphWidth(symbol);
 			array.add(symbol).add(new Array().add(w));
 		}
 
@@ -296,8 +286,8 @@ public class ExtendedFont extends Font implements Value, Cloneable
 				.put("/Flags", 4) // see 5.7.1 Font Descriptor Flag
 				.put("/Ascent", SCALE * mFontFile.getAscent())
 				.put("/Descent", SCALE * mFontFile.getDescent())
-				.put("/StemV", SCALE * (mFontFile.getFontBBox()[2] - mFontFile.getFontBBox()[0]) * 0.13)
-				.put("/CapHeight", SCALE * mFontFile.getAscent() * 0.8)
+				.put("/StemV", SCALE * (mFontFile.getFontBBox()[2] - mFontFile.getFontBBox()[0]) * 0.25)
+				.put("/CapHeight", SCALE * mFontFile.getAscent() * 0.7)
 				.put("/AvgWidth", getAverageWidth())
 				.put("/ItalicAngle", 0)
 				.put("/FontBBox", box)

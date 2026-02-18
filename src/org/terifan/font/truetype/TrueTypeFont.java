@@ -14,24 +14,22 @@ public class TrueTypeFont implements FontFile
 {
 	private ByteBufferReader mBuffer;
 
-//	private final static int ON_CURVE        =  1;
-//	private final static int X_IS_BYTE       =  2;
-//	private final static int Y_IS_BYTE       =  4;
-//	private final static int REPEAT          =  8;
-//	private final static int X_DELTA         = 16;
-//	private final static int Y_DELTA         = 32;
 	private HEAD mHEAD;
 	private HHEA mHHEA;
 	private HMTX mHMTX;
 	private NAME mNAME;
 	private ArrayList<CMap> mCmaps;
 	private HashMap<String, Table> mTables;
+	private HashMap<Integer, GLYF> mGlyphs;
+	private HashMap<Integer, Integer> mGlyphLookup;
 
 
 	public TrueTypeFont(byte[] aData)
 	{
 		mBuffer = new ByteBufferReader(aData);
 		mTables = new HashMap<>();
+		mGlyphs = new HashMap<>();
+		mGlyphLookup = new HashMap<>();
 		mCmaps = new ArrayList<>();
 
 		readOffsetTables();
@@ -73,9 +71,14 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public double getGlyphWidth(int aSymbol)
 	{
-		GLYF glyf = new GLYF(mBuffer, mTables, mHEAD, aSymbol);
-
+		GLYF glyf = getGlyph(aSymbol);
 		return glyf.xMax - glyf.xMin;
+	}
+
+
+	GLYF getGlyph(int aSymbol)
+	{
+		return mGlyphs.computeIfAbsent(aSymbol, s -> new GLYF(mBuffer, mTables, mHEAD, s));
 	}
 
 
@@ -139,30 +142,33 @@ public class TrueTypeFont implements FontFile
 	@Override
 	public int findGlyphIndex(int aCharacter)
 	{
-		for (int attempt = 0, c = aCharacter; attempt <= 2; attempt++)
+		return mGlyphLookup.computeIfAbsent(aCharacter, v ->
 		{
-			for (CMap cmap : mCmaps)
+			for (int attempt = 0, c = aCharacter; attempt <= 2; attempt++)
 			{
-				int glyph = cmap.findGlyphIndex(c);
-				if (glyph != -1)
+				for (CMap cmap : mCmaps)
 				{
-					return glyph;
+					int glyph = cmap.findGlyphIndex(c);
+					if (glyph != -1)
+					{
+						return glyph;
+					}
+				}
+
+				if (attempt == 0)
+				{
+					// attempt to normalize the character to a simpler type
+					c = Normalizer.normalize(Character.toString(c), Normalizer.Form.NFD).charAt(0);
+				}
+				else
+				{
+					// attempt to return a space for missing glyphs
+					c = ' ';
 				}
 			}
 
-			if (attempt == 0)
-			{
-				// attempt to normalize the character to a simpler type
-				c = Normalizer.normalize(Character.toString(c), Normalizer.Form.NFD).charAt(0);
-			}
-			else
-			{
-				// attempt to return a space for missing glyphs
-				c = ' ';
-			}
-		}
-
-		throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", char: " + (char)aCharacter);
+			throw new IllegalArgumentException("Glyph not found: " + aCharacter + ", char: " + (char)aCharacter);
+		});
 	}
 
 

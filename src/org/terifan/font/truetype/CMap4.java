@@ -33,10 +33,17 @@ class CMap4 implements CMap
 		mIdRangeOffset = aBuffer.getUint16Array(segCount / 2);
 		mGlyphIndexArray = aBuffer.getUint16Array(aBuffer.position() - startOffset);
 
-//		for (int i = 0; i < startCode.length; i++)
+//		for (int i = 0; i < mStartCode.length; i++)
 //		{
-//			System.out.printf("%8d %8d %8d %8d\n", startCode[i], endCode[i], idDelta[i], idRangeOffset[i]);
+//			System.out.printf("%8d %8d %8d %8d\n", mStartCode[i], mEndCode[i], mIdDelta[i], mIdRangeOffset[i]);
 //		}
+	}
+
+
+	@Override
+	public int getEntryCount()
+	{
+		return mGlyphIndexArray.length;
 	}
 
 

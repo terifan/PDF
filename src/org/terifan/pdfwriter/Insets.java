@@ -5,97 +5,6 @@ public class Insets implements Cloneable
 {
 	private Double top, left, bottom, right;
 
-	public final static Insets ZERO = new Insets()
-	{
-		@Override
-		public double bottom()
-		{
-			return 0;
-		}
-
-
-		@Override
-		public double top()
-		{
-			return 0;
-		}
-
-
-		@Override
-		public double right()
-		{
-			return 0;
-		}
-
-
-		@Override
-		public double left()
-		{
-			return 0;
-		}
-	};
-
-	public final static Insets ONE = new Insets()
-	{
-		@Override
-		public double bottom()
-		{
-			return 1;
-		}
-
-
-		@Override
-		public double top()
-		{
-			return 1;
-		}
-
-
-		@Override
-		public double right()
-		{
-			return 1;
-		}
-
-
-		@Override
-		public double left()
-		{
-			return 1;
-		}
-	};
-
-	public final static Insets THIN = new Insets()
-	{
-		@Override
-		public double bottom()
-		{
-			return .1;
-		}
-
-
-		@Override
-		public double top()
-		{
-			return .1;
-		}
-
-
-		@Override
-		public double right()
-		{
-			return .1;
-		}
-
-
-		@Override
-		public double left()
-		{
-			return .1;
-		}
-	};
-
-
 	public Insets()
 	{
 	}
@@ -130,7 +39,7 @@ public class Insets implements Cloneable
 	 *
 	 * @param aOther source Insets or null.
 	 */
-	public void set(Insets aOther)
+	public Insets set(Insets aOther)
 	{
 		if (aOther!=null)
 		{
@@ -139,6 +48,7 @@ public class Insets implements Cloneable
 			top = aOther.top;
 			bottom = aOther.bottom;
 		}
+		return this;
 	}
 
 
@@ -261,6 +171,18 @@ public class Insets implements Cloneable
 			}
 		}
 		return result;
+	}
+
+
+	public double vertical()
+	{
+		return top() + bottom();
+	}
+
+
+	public double horizontal()
+	{
+		return left() + right();
 	}
 
 

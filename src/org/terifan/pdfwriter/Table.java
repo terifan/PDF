@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import static org.terifan.pdfwriter.Insets.THIN;
 import static org.terifan.pdfwriter.Utilities.renderLine;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
@@ -221,9 +220,13 @@ public class Table implements Content
 	}
 
 
-	public Insets getCellPadding()
+	public Insets getCellPadding(Insets aInsets)
 	{
-		return mCellPadding;
+		if (aInsets == null)
+		{
+			aInsets = new Insets();
+		}
+		return aInsets.set(mCellPadding);
 	}
 
 
@@ -273,9 +276,13 @@ public class Table implements Content
 	}
 
 
-	public Insets getBorderThickness()
+	public Insets getBorderThickness(Insets aInsets)
 	{
-		return mBorderThickness;
+		if (aInsets == null)
+		{
+			aInsets = new Insets();
+		}
+		return aInsets.set(mBorderThickness);
 	}
 
 
@@ -398,9 +405,13 @@ public class Table implements Content
 	}
 
 
-	public Insets getMargins()
+	public Insets getMargins(Insets aInsets)
 	{
-		return mMargins;
+		if (aInsets == null)
+		{
+			aInsets = new Insets();
+		}
+		return aInsets.set(mMargins);
 	}
 
 

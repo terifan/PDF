@@ -40,7 +40,7 @@ public class ImageArea implements Producer
 			Insets margins = mImage.getMargins();
 
 			Output content = new Output(baos);
-			content.print("q ");
+			content.println("q");
 			content.print(mBoundsRight - mBoundsLeft - margins.left() - margins.right());
 			content.print(" 0 ");
 			content.print(" 0 ");
@@ -49,8 +49,8 @@ public class ImageArea implements Producer
 			content.print(mBoundsLeft + margins.left());
 			content.print(" ");
 			content.print(mBoundsBottom + margins.bottom());
-			content.print(" cm " + mImage.getIdentity());
-			content.println(" Do Q");
+			content.print(" cm " + mImage.getIdentity() + " Do ");
+			content.println("Q");
 		}
 
 		return baos.toString();
