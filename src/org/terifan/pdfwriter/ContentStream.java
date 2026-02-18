@@ -85,15 +85,15 @@ public class ContentStream implements Content
 	{
 		if (!mContents.isEmpty())
 		{
-			aOutput.println("q");
+//			aOutput.println("q");
 
 			for (Content content : mContents)
 			{
 				aY0 = content.produce(aPDFWriter, aOutput, aPage, aY0, aX0, aY1, aX1);
 			}
 
-			aOutput.println("Q");
-			aOutput.println("EMC");
+//			aOutput.println("Q");
+//			aOutput.println("EMC");
 		}
 
 		return aY0;

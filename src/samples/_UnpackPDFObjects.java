@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.zip.InflaterInputStream;
 
 
-public class UnpackPDFObjects
+public class _UnpackPDFObjects
 {
 	public static void main(String... args)
 	{

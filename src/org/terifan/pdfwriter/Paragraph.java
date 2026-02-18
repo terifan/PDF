@@ -254,7 +254,6 @@ public class Paragraph implements Content, Cloneable
 		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 
 		textOutput.println("q");
-		textOutput.println(".75 0 0 .75 72 72 cm");
 		textOutput.println("/G3 gs");
 		textOutput.println("/P <</MCID 0 >>BDC");
 
@@ -350,6 +349,9 @@ public class Paragraph implements Content, Cloneable
 				chunk.y0 = nextOffsetY - maxAscent - style.getAdjust();
 				chunk.y1 = nextOffsetY - maxAscent - style.getAdjust() - row.height;
 				chunk.yt = chunk.y0 - topMargin - style.getAscent();
+//				chunk.x0 += style.getBorderThickness(null).left();
+//				chunk.x1 += style.getBorderThickness(null).left();
+//				chunk.xt += style.getBorderThickness(null).left();
 
 				gap = Math.max(gap, style.getLineGap());
 			}
@@ -369,6 +371,7 @@ public class Paragraph implements Content, Cloneable
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
+				aPage.registerFont(style);
 
 				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.TOP)
 				{
@@ -394,8 +397,7 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-//				renderRectangle(fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, style.getFillColor(), style.getBorderThickness(null), style.getBorderPattern(), style.getBorderColor());
-				renderRectangle(fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, Color.RED, style.getBorderThickness(null), style.getBorderPattern(), Color.RED);
+				renderRectangle(fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, style.getFillColor(), style.getBorderThickness(null), style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
@@ -411,45 +413,38 @@ public class Paragraph implements Content, Cloneable
 
 				String text = chunk.span.getText();
 
-				double advanceX = chunk.x0 + style.getBorderThickness(null).left();
+				double advanceX = chunk.x0;
 				double advanceY = chunk.yt;
 
-				aPage.registerFont(style);
-
-				boolean begin = true;
-
-				for (int i = 0; i < chunk.length; i++)
+				for (int i = 0, state; i < chunk.length; i++)
 				{
+					state = i == 0 ? 0 : (text.charAt(chunk.offset + i - 1) == ' ') != (text.charAt(chunk.offset + i) == ' ') ? 0 : 1;
+
 					char ch = text.charAt(chunk.offset + i);
 
-					if (begin)
+					if (state == 0)
 					{
 						if (i > 0)
 						{
 							textOutput.println("ET");
 						}
 
-						if (style.getTextColor() != null && !style.getTextColor().equals(lastColor))
+						Color color = style.getTextColor();
+						if (color != null && !color.equals(lastColor))
 						{
-							textOutput.println("%s RG %s rg", style.getTextColor(), style.getTextColor());
-							lastColor = style.getTextColor();
+							textOutput.println("%s RG %s rg", color, color);
+							lastColor = color;
 						}
 
 						textOutput.println("BT");
 						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
-						textOutput.println("1 0 0 1 0 .0000019073486 Tm");
-
-						begin = false;
+						textOutput.println("1 0 0 1 0 0 Tm");
 					}
 
 					textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
 
 					advanceX = style.getAdvance(ch);
 					advanceY = 0;
-
-					begin = text.charAt(chunk.offset + i) == ' ';
-
-
 				}
 
 				textOutput.println("ET");
@@ -459,8 +454,8 @@ public class Paragraph implements Content, Cloneable
 			nextOffsetY -= row.height;
 		}
 
-		textOutput.println("Q");
-		textOutput.println("EMC");
+//		textOutput.println("Q");
+//		textOutput.println("EMC");
 
 		aOutput.append(fillOutput);
 		aOutput.append(lineOutput);
