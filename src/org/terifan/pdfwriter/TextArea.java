@@ -122,15 +122,15 @@ public class TextArea implements Producer
 
 		if (!mParagraphs.isEmpty())
 		{
-			content.println("q");
+//			content.println("q");
 
 			for (Paragraph paragraph : mParagraphs)
 			{
 				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
 			}
 
-			content.println("Q");
-			content.println("EMC");
+//			content.println("Q");
+//			content.println("EMC");
 		}
 
 		return baos.toString();

@@ -3,15 +3,15 @@ package org.terifan.font.truetype;
 
 class CMap0 implements CMap
 {
-	private int length;
-	private int language;
+	private int mLength;
+	private int mLanguage;
 	private int[] mGlyphIndexArray; // Glyph index array
 
 
 	public CMap0(ByteBufferReader aBuffer)
 	{
-		length = aBuffer.getUint16();
-		language = aBuffer.getUint16();
+		mLength = aBuffer.getUint16();
+		mLanguage = aBuffer.getUint16();
 		mGlyphIndexArray = aBuffer.getUint8Array(256);
 	}
 

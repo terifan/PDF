@@ -12,12 +12,12 @@ public class _UnpackPDFObjects
 	{
 		try
 		{
-			try (FileInputStream in = new FileInputStream("d:\\home\\downloads\\Untitled document-2.pdf"))
+			try (FileInputStream in = new FileInputStream("c:\\home\\downloads\\Untitled document-5.pdf"))
 			{
+//				in.skip(13464);
 				in.skip(197);
-//				System.out.println(new String(unpack(in.readNBytes(286))));
-//				System.out.println(new String(unpack(in.readNBytes(225))));
-				System.out.println(new String(unpack(in.readNBytes(231))));
+//				System.out.println(new String(unpack(in.readNBytes(305))));
+				System.out.println(new String(unpack(in.readNBytes(333))));
 			}
 		}
 		catch (Throwable e)

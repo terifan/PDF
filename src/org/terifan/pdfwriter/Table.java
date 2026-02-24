@@ -731,7 +731,7 @@ public class Table implements Content
 				}
 			}
 
-//			renderRectangle(aFillOutput, aBorderOutput, columnX0, _y0, columnX1, _y1, cellFillColor, THIN, borderPattern, Color.GREEN);
+//			renderRectangle(aFillOutput, aBorderOutput, columnX0, _y0, columnX1, _y1, cellFillColor, new Insets(1, 1, 1, 1), borderPattern, Color.GREEN);
 			renderRectangle(aFillOutput, aBorderOutput, columnX0, _y0, columnX1, _y1, cellFillColor, cellBorderThickness, borderPattern, cellBorderColors);
 
 			if (aTableRowIndex == 0 && mHeaderGridThickness > 0)

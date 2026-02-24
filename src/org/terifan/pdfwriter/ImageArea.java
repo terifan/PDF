@@ -49,7 +49,7 @@ public class ImageArea implements Producer
 			content.print(mBoundsLeft + margins.left());
 			content.print(" ");
 			content.print(mBoundsBottom + margins.bottom());
-			content.print(" cm " + mImage.getIdentity() + " Do ");
+			content.println(" cm " + mImage.getIdentity() + " Do ");
 			content.println("Q");
 		}
 

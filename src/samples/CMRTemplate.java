@@ -36,7 +36,7 @@ public class CMRTemplate
 
 			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(!true))
 			{
-				Style style0 = new Style(font1, 8).setLineExtra(2);
+				Style style0 = new Style(font1, 8);
 				Style style1 = new Style(font1, 6);
 				Style style2 = new Style(font1, 10);
 				Style style5 = new Style(font2, 13).setLineExtra(4);

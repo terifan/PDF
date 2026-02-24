@@ -1,23 +1,22 @@
 package org.terifan.pdfwriter;
 
 
-
 public class Span implements Cloneable
 {
+	private VerticalAlignment mVerticalAlignment;
 	private Style mStyle;
 	private String mText;
-	private VerticalAlignment mVerticalAlignment;
 
 
 	private Span()
 	{
-		mVerticalAlignment = VerticalAlignment.BASELINE;
+		this(null, null);
 	}
 
 
 	public Span(Style aStyle, String aText)
 	{
-		this();
+		mVerticalAlignment = VerticalAlignment.BASELINE;
 		mStyle = aStyle;
 		mText = aText;
 	}
@@ -29,9 +28,23 @@ public class Span implements Cloneable
 	}
 
 
+	public Span setText(String aText)
+	{
+		mText = aText;
+		return this;
+	}
+
+
 	public Style getStyle()
 	{
 		return mStyle;
+	}
+
+
+	public Span setStyle(Style aStyle)
+	{
+		mStyle = aStyle;
+		return this;
 	}
 
 

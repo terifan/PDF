@@ -21,6 +21,7 @@ public class TestTextLayout
 		try
 		{
 			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
+//			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("resources/AtlassianMono-latin.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:\\temp\\output.pdf")).setCompress(!true))
 			{
@@ -60,6 +61,7 @@ public class TestTextLayout
 				try (Page page = pdf.addPage())
 				{
 					page.append(new TextArea(70, 790, 530, 750, new Paragraph(style0, "TextArea anchor + Paragraph alignment")).setAnchor(Anchor.NORTH));
+//					page.append(new TextArea(70, 790, 530, 750, new Paragraph(style0, "Name Olle")).setAnchor(Anchor.NORTH));
 
 					for (int y = 290, r = 0, i = 0; y < 800; y += 230, r++)
 					{

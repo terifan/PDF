@@ -14,10 +14,23 @@ public class TableCell implements Content
 	private Insets mPadding;
 
 
+	public TableCell()
+	{
+		mColSpan = 1;
+	}
+
+
 	public TableCell(Content aContent)
 	{
 		mColSpan = 1;
 		mContent = aContent;
+	}
+
+
+	public TableCell setContent(Content aContent)
+	{
+		mContent = aContent;
+		return this;
 	}
 
 

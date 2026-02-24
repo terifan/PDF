@@ -38,6 +38,8 @@ public class TrueTypeFont implements FontFile
 		mHHEA = new HHEA(mBuffer, mTables);
 		mHMTX = new HMTX(mHHEA, mBuffer, mTables);
 		mNAME = new NAME(mBuffer, mTables);
+
+//		System.out.println(mHEAD.mXMax - mHEAD.mXMin);
 	}
 
 
@@ -180,6 +182,8 @@ public class TrueTypeFont implements FontFile
 		int searchRange = mBuffer.getUint16();
 		int entrySelector = mBuffer.getUint16();
 		int rangeShift = mBuffer.getUint16();
+
+//		System.out.println(scalerType + " " + numTables + " " + searchRange + " " + entrySelector + " " + rangeShift);
 
 		for (int i = 0; i < numTables; i++)
 		{

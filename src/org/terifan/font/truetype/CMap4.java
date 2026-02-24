@@ -64,7 +64,7 @@ class CMap4 implements CMap
 
 					if (address < 0 || address > mGlyphIndexArray.length)
 					{
-//						System.out.println("Bad offset: " + address + ", range: " + glyphIndexArray.length);
+//						System.out.println("Bad offset: " + address + ", range: " + mGlyphIndexArray.length);
 						return -1;
 					}
 
