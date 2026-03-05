@@ -31,8 +31,8 @@ public class CMRTemplate
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/Segoeui-Bold.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/DMSans-Regular.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/DMSans-Bold.ttf").readAllBytes());
 
 			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(!true))
 			{
