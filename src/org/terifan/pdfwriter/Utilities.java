@@ -99,7 +99,7 @@ public class Utilities
 			aFillContent.println("Q");
 		}
 
-		if (aThickness != null && aBorderColor != null && aBorderColor.length > 0)
+		if (aThickness != null && aBorderColor != null && aBorderColor.length > 0 && (aThickness.top() > 0 || aThickness.bottom() > 0 || aThickness.left() > 0 || aThickness.right() > 0))
 		{
 			aLineContent.println("q");
 

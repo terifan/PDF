@@ -31,15 +31,15 @@ public class CMRTemplate
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/Segoeui-Regular.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/Segoeui-Bold.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/DMSans-Regular.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(CMRTest.class.getResourceAsStream("resources/DMSans-Bold.ttf").readAllBytes());
 
-			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(true))
+			try (PDFWriter pdf = new PDFWriter(aOutputStream).setCompress(!true))
 			{
-				Style style0 = new Style(font1, 5);
+				Style style0 = new Style(font1, 8);
 				Style style1 = new Style(font1, 6);
 				Style style2 = new Style(font1, 10);
-				Style style5 = new Style(font2, 13);
+				Style style5 = new Style(font2, 13).setLineExtra(4);
 				Style style7 = new Style(font2, 11).setCharacterSpacing(0.9);
 
 				Insets margins1 = new Insets(1, 4, 1, 4);
@@ -114,7 +114,7 @@ public class CMRTemplate
 							new Paragraph(style0, "* Bei gefährlichen Gütem ist, ausser der eventuellen Bescheinigung, auf der letzen Linie der Rubrik anzugeben: die Klasse, die Ziffer, sowie gegenfalls der Buchstabe.").setMargins(margins2)
 						));
 
-						page.append(new TableArea(300+5, 775-5, 555-10, 712-10, new Table(0.4, 1)
+						page.append(new TableArea(300 + 5, 775 - 5, 555 - 10, 712 - 10, new Table(0.4, 1)
 							.setExtendTableEnabled(true)
 							.setRowSpacing(3)
 							.addRow(new Paragraph(style0, "INTERNATIONALER FRACHTBRIEF"), new Paragraph(style0, "Diese Beförderung unterliegt trotz einer gegenteiligen Abmachung den Bestimmungen des Übereinkommens über den Beförderungsvertrag im internat. Straßengüterverkehr (CMR)"))
@@ -198,11 +198,11 @@ public class CMRTemplate
 
 							page.append(new TableArea(40, 460, 555, 318, productTable));
 
-							appendSectionHeader(page, style1, style5, 22, "Signature and stamp of the sender", "Unterschrift und stempel des absenders", 40+7, 175, 210, 35);
-							appendSectionHeader(page, style1, style5, 23, "Signature and stamp of the driver", "Unterschrift und stempel des frachtführers", 210+7, 175, 380, 35);
-							appendSectionHeader(page, style1, style5, 24, "Signature and stamp of the consignee", "Unterschrift und stempel des empfängers", 380+7, 175, 555, 35);
+							appendSectionHeader(page, style1, style5, 22, "Signature and stamp of the sender", "Unterschrift und stempel des absenders", 40 + 7, 175, 210, 35);
+							appendSectionHeader(page, style1, style5, 23, "Signature and stamp of the driver", "Unterschrift und stempel des frachtführers", 210 + 7, 175, 380, 35);
+							appendSectionHeader(page, style1, style5, 24, "Signature and stamp of the consignee", "Unterschrift und stempel des empfängers", 380 + 7, 175, 555, 35);
 
-							page.append(new TableArea(40, 95, 210, 35, new Table(2, 3)
+							page.append(new TableArea(40, 97, 210, 35, new Table(2, 3)
 								.setExtendTableEnabled(true)
 								.addRow(new Paragraph(style0, "Name").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderName()))
 								.addRow(new Paragraph(style0, "Date/Datum").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderDateTime()))
@@ -212,11 +212,11 @@ public class CMRTemplate
 								.addRow(new Paragraph(style0, "Carrier / Spediteur").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderHaulierName()))
 								.addRow(new Paragraph(style0, "Driver / Fahrer").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderDriverName()))
 								.addRow(new Paragraph(style0, "Remark / Bemerkung").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getSenderRemark()))
-								.setCellPadding(new Insets(0,5,0,5))
+								.setCellPadding(new Insets(0, 5, 0, 5))
 								.setRowSpacing(2)
 							));
 
-							page.append(new TableArea(210, 95, 380, 35, new Table(2, 3)
+							page.append(new TableArea(210, 97, 380, 35, new Table(2, 3)
 								.setExtendTableEnabled(true)
 								.addRow(new Paragraph(style0, "Name").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierName()))
 								.addRow(new Paragraph(style0, "Date/Datum").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierDateTime()))
@@ -226,11 +226,11 @@ public class CMRTemplate
 								.addRow(new Paragraph(style0, "Carrier / Spediteur").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierHaulierName()))
 								.addRow(new Paragraph(style0, "Driver / Fahrer").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierDriverName()))
 								.addRow(new Paragraph(style0, "Remark / Bemerkung").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getCarrierRemark()))
-								.setCellPadding(new Insets(0,5,0,5))
+								.setCellPadding(new Insets(0, 5, 0, 5))
 								.setRowSpacing(2)
 							));
 
-							page.append(new TableArea(380, 95, 555, 35, new Table(2, 3)
+							page.append(new TableArea(380, 97, 555, 35, new Table(2, 3)
 								.setExtendTableEnabled(true)
 								.addRow(new Paragraph(style0, "Name").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeName()))
 								.addRow(new Paragraph(style0, "Date/Datum").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeDateTime()))
@@ -240,7 +240,7 @@ public class CMRTemplate
 								.addRow(new Paragraph(style0, "Carrier / Spediteur").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeHaulierName()))
 								.addRow(new Paragraph(style0, "Driver / Fahrer").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeDriverName()))
 								.addRow(new Paragraph(style0, "Remark / Bemerkung").setAlignment(Alignment.RIGHT), new Paragraph(style0, aDocument.getConsigneeRemark()))
-								.setCellPadding(new Insets(0,5,0,5))
+								.setCellPadding(new Insets(0, 5, 0, 5))
 								.setRowSpacing(2)
 							));
 
@@ -279,7 +279,7 @@ public class CMRTemplate
 	{
 		return new Table(1, aNumberScale)
 			.setExtendTableEnabled(true)
-			.setCellPadding(new Insets(0,0,0,2))
+			.setCellPadding(new Insets(0, 0, 0, 2))
 			.addRow(
 				new Paragraph(style5, "" + aNumber)
 					.setMarginLeft(2)

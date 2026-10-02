@@ -3,8 +3,6 @@ package org.terifan.pdfwriter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Formatter;
-import java.util.Locale;
 import static org.terifan.pdfwriter.Utilities.roundDouble;
 
 
@@ -62,8 +60,6 @@ class Output implements AutoCloseable
 
 	public void print(String aText, Object... aParams) throws IOException
 	{
-//		byte[] buf = new Formatter(Locale.US).format(aText, aParams).toString().getBytes();
-
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for (int i = 0, pi = 0; i < aText.length(); i++)
 		{

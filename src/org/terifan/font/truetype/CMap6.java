@@ -5,6 +5,7 @@ class CMap6 implements CMap
 {
 	private int mFirstCode;
 	private int[] mGlyphIdArray;
+	private int mEntryCount;
 
 
 	public CMap6(ByteBufferReader aBuffer)
@@ -12,8 +13,15 @@ class CMap6 implements CMap
 		int length = aBuffer.getUint16();
 		int language = aBuffer.getUint16();
 		mFirstCode = aBuffer.getUint16();
-		int entryCount = aBuffer.getUint16();
-		mGlyphIdArray = aBuffer.getInt16Array(entryCount);
+		mEntryCount = aBuffer.getUint16();
+		mGlyphIdArray = aBuffer.getInt16Array(mEntryCount);
+	}
+
+
+	@Override
+	public int getEntryCount()
+	{
+		return mEntryCount;
 	}
 
 

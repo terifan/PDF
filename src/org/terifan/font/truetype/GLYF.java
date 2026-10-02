@@ -11,13 +11,6 @@ class GLYF
 	float xMax;
 	float yMax;
 
-//	int[] endPtsOfContours;
-//	int instructionLength;
-//	int[] instructions;
-//	int[] flags;
-//	int[] xCoordinates;
-//	int[] yCoordinates;
-
 
 	public GLYF(ByteBufferReader aBuffer, HashMap<String, Table> aTables, HEAD aHEAD, int aSymbol)
 	{
@@ -38,19 +31,29 @@ class GLYF
 		int old = aBuffer.position();
 		int offset;
 
-		if (aHEAD.mIndexToLocFormat == 1)
+		switch (aHEAD.mIndexToLocFormat)
 		{
-			aBuffer.position(o + aIndex * 4);
-			offset = aBuffer.getInt32();
-		}
-		else
-		{
-			aBuffer.position(o + aIndex * 2);
-			offset = aBuffer.getUint16() * 2;
+			case 0:
+				aBuffer.position(o + aIndex * 2);
+				offset = aBuffer.getUint16() * 2;
+				break;
+			case 1:
+				aBuffer.position(o + aIndex * 4);
+				offset = aBuffer.getInt32();
+				break;
+			default:
+				throw new IllegalArgumentException("" + aHEAD.mIndexToLocFormat);
 		}
 
 		aBuffer.position(old);
 
 		return aTables.get("glyf").mOffset + offset;
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return "GLYF{" + "xMin=" + xMin + ", yMin=" + yMin + ", xMax=" + xMax + ", yMax=" + yMax + '}';
 	}
 }

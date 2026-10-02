@@ -1,7 +1,6 @@
 package org.terifan.pdfwriter;
 
 import org.terifan.font.FontFile;
-import static org.terifan.pdfwriter.Insets.ZERO;
 
 
 public class Style implements Cloneable
@@ -26,7 +25,6 @@ public class Style implements Cloneable
 	{
 		mSize = 10;
 		mTextColor = Color.BLACK;
-		mBorderThickness = ZERO;
 	}
 
 
@@ -39,9 +37,13 @@ public class Style implements Cloneable
 	}
 
 
-	public Insets getBorderThickness()
+	public Insets getBorderThickness(Insets aInsets)
 	{
-		return mBorderThickness;
+		if (aInsets == null)
+		{
+			aInsets = new Insets();
+		}
+		return aInsets.set(mBorderThickness);
 	}
 
 
@@ -60,9 +62,13 @@ public class Style implements Cloneable
 	}
 
 
-	public Insets getMargins()
+	public Insets getMargins(Insets aInsets)
 	{
-		return mMargins;
+		if (aInsets == null)
+		{
+			aInsets = new Insets();
+		}
+		return aInsets.set(mMargins);
 	}
 
 
@@ -186,13 +192,13 @@ public class Style implements Cloneable
 
 	public double getAscent()
 	{
-		return scale(mFontFile.getAscent());
+		return scale(mFontFile.getAscent()) + mLineExtra / 2;
 	}
 
 
 	public double getDescent()
 	{
-		return scale(mFontFile.getDescent());
+		return scale(mFontFile.getDescent()) + mLineExtra / 2;
 	}
 
 
@@ -216,7 +222,7 @@ public class Style implements Cloneable
 
 	public double getLineHeight()
 	{
-		return scale(mFontFile.getLineHeight());
+		return scale(mFontFile.getLineHeight()) + mLineExtra;
 	}
 
 

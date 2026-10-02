@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
-import static org.terifan.pdfwriter.Insets.THIN;
-import static org.terifan.pdfwriter.Insets.ZERO;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
@@ -31,20 +29,47 @@ public class Paragraph implements Content, Cloneable
 		mSpans = new ArrayList<>();
 		mAlignment = Alignment.LEFT;
 		mMargins = new Insets();
-		mBorderThickness = ZERO;
 		mVerticalAlignment = VerticalAlignment.BASELINE;
 	}
 
 
 	public Paragraph(Style aStyle, String... aText)
 	{
-		this(aStyle, Arrays.asList(aText));
+		this();
+		add(aStyle, aText);
 	}
 
 
 	public Paragraph(Style aStyle, Collection<String> aText)
 	{
 		this();
+		add(aStyle, aText.toArray(String[]::new));
+	}
+
+
+	public Paragraph(Span... aSpans)
+	{
+		this();
+		add(aSpans);
+	}
+
+
+	public Paragraph(Collection<Span> aSpans)
+	{
+		this();
+		add(aSpans.toArray(Span[]::new));
+	}
+
+
+	public Paragraph add(Span... aSpan)
+	{
+		mSpans.addAll(Arrays.asList(aSpan));
+		return this;
+	}
+
+
+	public Paragraph add(Style aStyle, String... aText)
+	{
 		for (String s : aText)
 		{
 			if (s != null)
@@ -52,25 +77,6 @@ public class Paragraph implements Content, Cloneable
 				mSpans.add(new Span(aStyle, s));
 			}
 		}
-	}
-
-
-	public Paragraph(Span... aSpans)
-	{
-		this(Arrays.asList(aSpans));
-	}
-
-
-	public Paragraph(Collection<Span> aSpans)
-	{
-		this();
-		mSpans.addAll(aSpans);
-	}
-
-
-	public Paragraph add(Span aSpan)
-	{
-		mSpans.add(aSpan);
 		return this;
 	}
 
@@ -94,9 +100,13 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
-	public Insets getBorderThickness()
+	public Insets getBorderThickness(Insets aInsets)
 	{
-		return mBorderThickness;
+		if (aInsets == null)
+		{
+			aInsets = new Insets();
+		}
+		return aInsets.set(mBorderThickness);
 	}
 
 
@@ -252,6 +262,8 @@ public class Paragraph implements Content, Cloneable
 
 		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 
+		textOutput.println("q");
+
 		while (!mLayout.isEmpty())
 		{
 			Row row = mLayout.get(0);
@@ -326,25 +338,16 @@ public class Paragraph implements Content, Cloneable
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
-				Insets margins = style.getMargins();
-				Insets thickness = style.getBorderThickness();
-				if (margins == null)
-				{
-					margins = ZERO;
-				}
-				if (thickness == null)
-				{
-					thickness = ZERO;
-				}
+				Insets margins = style.getMargins(null);
+				Insets thickness = style.getBorderThickness(null);
 				topMargin = Math.max(topMargin, thickness.top() + margins.top());
 				botMargin = Math.max(botMargin, thickness.bottom() + margins.bottom());
 				maxAscent = Math.max(maxAscent, style.getAscent());
 				maxDescent = Math.min(maxDescent, style.getDescent());
 			}
 
-			double top = -100000;
+			double top = nextOffsetY;
 			double bot = 100000;
-			double extra = 0;
 			double gap = 0;
 
 			for (Chunk chunk : row)
@@ -352,24 +355,30 @@ public class Paragraph implements Content, Cloneable
 				Style style = chunk.span.getStyle();
 				chunk.y0 = nextOffsetY - maxAscent - style.getAdjust();
 				chunk.y1 = nextOffsetY - maxAscent - style.getAdjust() - row.height;
-				chunk.yt = Math.round(chunk.y0 - topMargin - style.getAscent()); // a round feels wrong but looks better when rendered!
+				chunk.yt = chunk.y0 - topMargin - style.getAscent();
+//				chunk.x0 += style.getBorderThickness(null).left();
+//				chunk.x1 += style.getBorderThickness(null).left();
+//				chunk.xt += style.getBorderThickness(null).left();
 
-				top = Math.max(top, nextOffsetY);
-				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0);
-
-				extra = Math.max(extra, style.getLineExtra());
 				gap = Math.max(gap, style.getLineGap());
 			}
 
-			bot -= extra;
+			for (Chunk chunk : row)
+			{
+				bot = Math.min(bot, nextOffsetY + chunk.y1 - chunk.y0);
+			}
+
 			if (!mLayout.isEmpty())
 			{
 				bot += gap;
 			}
 
+			Color lastColor = null;
+
 			for (Chunk chunk : row)
 			{
 				Style style = chunk.span.getStyle();
+				aPage.registerFont(style);
 
 				if (chunk.verticalAlignment != null && chunk.verticalAlignment != VerticalAlignment.TOP)
 				{
@@ -395,10 +404,7 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-				chunk.y1 -= extra;
-				chunk.yt -= extra;
-
-				renderRectangle(fillOutput, lineOutput, chunk.x0, top, row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, bot, style.getFillColor(), style.getBorderThickness(), style.getBorderPattern(), style.getBorderColor());
+				renderRectangle(fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, style.getFillColor(), style.getBorderThickness(null), style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
@@ -414,53 +420,43 @@ public class Paragraph implements Content, Cloneable
 
 				String text = chunk.span.getText();
 
-				double advanceX = chunk.x0 + style.getBorderThickness().left();
+				double offsetX = chunk.x0;
+				double advanceX = chunk.x0;
 				double advanceY = chunk.yt;
-				double offsetX = advanceX;
 
-				aPage.registerFont(style);
-
-				textOutput.println("BT");
-				textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
-				textOutput.println("1 0 0 1 0 0 Tm");
-				if (style.getTextColor() != null)
-				{
-					textOutput.println("%s rg", style.getTextColor());
-				}
-
-				for (int i = 0; i < chunk.length; i++)
+				for (int i = 0, prev = -1, curr; i < chunk.length; i++)
 				{
 					char ch = text.charAt(chunk.offset + i);
+					curr = Character.isWhitespace(ch) ? 0 : 1;
 
-					if (ch == ' ')
+					if (curr != prev)
 					{
-						textOutput.println("ET");
-
-						textOutput.println("BT");
-						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
-						textOutput.println("1 0 0 1 0 0 Tm");
-						textOutput.println("%f %f Td <%s> Tj", offsetX, chunk.yt, "%04X".formatted(style.getGlyphIndex(ch)));
-						textOutput.println("ET");
-
-						textOutput.println("BT");
-						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
-						textOutput.println("1 0 0 1 0 0 Tm");
-						if (style.getTextColor() != null)
+						if (i > 0)
 						{
-							textOutput.println("%s rg", style.getTextColor());
+							textOutput.println("ET");
 						}
 
-						offsetX += style.getAdvance(ch);
 						advanceX = offsetX;
 						advanceY = chunk.yt;
+
+						Color color = style.getTextColor();
+						if (color != null && !color.equals(lastColor))
+						{
+							textOutput.println("%s RG %s rg", color, color);
+							lastColor = color;
+						}
+
+						textOutput.println("BT");
+						textOutput.println("%s %f Tf", style.getIdentity(), style.getSize());
+						textOutput.println("1 0 0 1 0 0 Tm");
 					}
-					else if (ch >= ' ')
-					{
-						textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
-						advanceX = style.getAdvance(ch);
-						advanceY = 0;
-						offsetX += advanceX;
-					}
+
+ 					textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
+
+					advanceX = style.getAdvance(ch);
+					advanceY = 0;
+					offsetX += advanceX;
+					prev = curr;
 				}
 
 				textOutput.println("ET");
@@ -470,13 +466,12 @@ public class Paragraph implements Content, Cloneable
 			nextOffsetY -= row.height;
 		}
 
+		textOutput.println("Q");
+		textOutput.println("EMC");
+
 		aOutput.append(fillOutput);
 		aOutput.append(lineOutput);
-
-		if (textOutput.size() > 0)
-		{
-			aOutput.append(textOutput);
-		}
+		aOutput.append(textOutput);
 
 		return nextOffsetY;
 	}
@@ -513,6 +508,21 @@ public class Paragraph implements Content, Cloneable
 			return;
 		}
 
+		for (int i = 0; i < spans.size(); i++)
+		{
+			if (spans.get(i).getText().contains("\n"))
+			{
+				Span s = spans.remove(i);
+				int j = i;
+				for (String u : s.getText().split("\n"))
+				{
+					Span t = s.clone();
+					t.setText(u);
+					spans.add(j++, t);
+				}
+			}
+		}
+
 		double x = aBoundsLeft + mMargins.left();
 
 		for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
@@ -542,8 +552,7 @@ public class Paragraph implements Content, Cloneable
 					Chunk chunk = new Chunk(x, span, offset, chunkLen, span.getVerticalAlignment() != null ? span.getVerticalAlignment() : mVerticalAlignment);
 					currentRow.add(chunk);
 
-					x += span.getStyle().getBorderThickness().left();
-					x += span.getStyle().getBorderThickness().right();
+					x += span.getStyle().getBorderThickness(null).horizontal();
 
 					double bestX = x;
 					for (int i = 0; i < chunkLen; i++, offset++)
@@ -604,7 +613,10 @@ public class Paragraph implements Content, Cloneable
 			{
 				Style style = chunk.span.getStyle();
 
-				rowHeight = Math.max(rowHeight, style.getLineExtra() + style.getLineHeight() + gap + style.getBorderThickness().top() + style.getBorderThickness().bottom());
+				Insets margins = style.getMargins(null);
+				Insets borderThickness = style.getBorderThickness(null);
+
+				rowHeight = Math.max(rowHeight, margins.vertical() + style.getLineHeight() + gap + borderThickness.vertical());
 
 				width += chunk.x1 - chunk.x0;
 			}
@@ -620,12 +632,12 @@ public class Paragraph implements Content, Cloneable
 
 	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean oBreakLine, AtomicBoolean oLineEnd, double aLimitX, boolean aFirstWord)
 	{
-		if (aSpan.getText().charAt(aTextOffset) == '\n')
-		{
-			oBreakLine.set(true);
-			oLineEnd.set(true);
-			return 1;
-		}
+//		if (aSpan.getText().charAt(aTextOffset) == '\n')
+//		{
+//			oBreakLine.set(true);
+//			oLineEnd.set(true);
+//			return 1;
+//		}
 
 		int len = -1;
 
@@ -633,7 +645,7 @@ public class Paragraph implements Content, Cloneable
 		{
 			if (i == limit)
 			{
-				return len == -1 ? limit : len;
+				return limit;
 			}
 
 			if (aOffsetX + aSpan.getStyle().measureText(aSpan.getText(), aTextOffset, i) > aLimitX)
@@ -648,13 +660,12 @@ public class Paragraph implements Content, Cloneable
 
 			char c = aSpan.getText().charAt(aTextOffset + i);
 
-			if (c == '\n')
-			{
-				len = i + 1;
-				oBreakLine.set(true);
-				break;
-			}
-
+//			if (c == '\n')
+//			{
+//				len = i + 1;
+//				oBreakLine.set(true);
+//				break;
+//			}
 			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
 			{
 				len = i + 1;
