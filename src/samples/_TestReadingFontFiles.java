@@ -15,7 +15,7 @@ import org.terifan.pdfwriter.TextArea;
 /**
  * brute force testing Windows TTF files
  */
-public class TestReadingFontFiles
+public class _TestReadingFontFiles
 {
 	public static void main(String ... args)
 	{

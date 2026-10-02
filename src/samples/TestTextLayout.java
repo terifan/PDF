@@ -20,10 +20,12 @@ public class TestTextLayout
 	{
 		try
 		{
-			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("resources/DMSans-Regular.ttf").readAllBytes());
-//			Font font1 = new ExtendedFont(TestTextLayout.class.getResourceAsStream("resources/AtlassianMono-latin.ttf").readAllBytes());
+//			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/impact.ttf").readAllBytes());
+//			Font font2 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/Junicode.ttf").readAllBytes());
+//			Font font3 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/KaushanScript-Regular.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/VendSans-Regular.ttf").readAllBytes());
 
-			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:\\temp\\output.pdf")).setCompress(!true))
+			try (PDFWriter pdf = new PDFWriter(new FileOutputStream("c:\\temp\\output.pdf")))
 			{
 				Style style0 = new Style(font1, 15);
 				Style[] style1 = {

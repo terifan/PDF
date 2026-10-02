@@ -20,10 +20,10 @@ public class TestMultipleFonts
 		try
 		{
 			Font font0 = new StandardFont("Helvetica");
-			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/Roboto-Italic.ttf").readAllBytes());
-			Font font2 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/DMSans-Bold.ttf").readAllBytes());
-			Font font3 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/impact.ttf").readAllBytes());
-			Font font4 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/OpenSans-Regular.ttf").readAllBytes());
+			Font font1 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/impact.ttf").readAllBytes());
+			Font font2 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/Junicode.ttf").readAllBytes());
+			Font font3 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/KaushanScript-Regular.ttf").readAllBytes());
+			Font font4 = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/VendSans-Regular.ttf").readAllBytes());
 
 			Style style1 = new Style(font1, 11);
 			Style style2 = new Style(font2, 13);
