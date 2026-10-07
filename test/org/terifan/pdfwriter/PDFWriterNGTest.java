@@ -2,6 +2,8 @@ package org.terifan.pdfwriter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import static org.testng.Assert.assertEquals;
 import org.testng.annotations.Test;
 import samples.TestMultipleFonts;
@@ -60,6 +62,8 @@ public class PDFWriterNGTest
 				page.append(new ImageArea(300, 800, 550, 620, image1));
 			}
 		}
+
+		Files.write(Paths.get("c:\\temp\\output.pdf"), baos.toByteArray());
 
 		assertEquals(baos.toByteArray(), PDFWriterNGTest.class.getResourceAsStream("multifontExample.pdf").readAllBytes());
 	}
