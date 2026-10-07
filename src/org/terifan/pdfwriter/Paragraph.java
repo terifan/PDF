@@ -292,7 +292,7 @@ public class Paragraph implements Content, Cloneable
 					}
 					case CENTER:
 					{
-						double adjust = aBoundsRight - row.get(row.size() - 1).xt;
+						double adjust = aBoundsLeft + aBoundsRight - row.get(0).x0 - row.get(row.size() - 1).xt;
 						adjust /= 2;
 						for (Chunk chunk : row)
 						{
@@ -356,9 +356,6 @@ public class Paragraph implements Content, Cloneable
 				chunk.y0 = nextOffsetY - maxAscent - style.getAdjust();
 				chunk.y1 = nextOffsetY - maxAscent - style.getAdjust() - row.height;
 				chunk.yt = chunk.y0 - topMargin - style.getAscent();
-//				chunk.x0 += style.getBorderThickness(null).left();
-//				chunk.x1 += style.getBorderThickness(null).left();
-//				chunk.xt += style.getBorderThickness(null).left();
 
 				gap = Math.max(gap, style.getLineGap());
 			}
@@ -374,6 +371,7 @@ public class Paragraph implements Content, Cloneable
 			}
 
 			Color lastColor = null;
+			Dictionary lastExtGState = null;
 
 			for (Chunk chunk : row)
 			{
@@ -444,6 +442,14 @@ public class Paragraph implements Content, Cloneable
 						{
 							textOutput.println("%s RG %s rg", color, color);
 							lastColor = color;
+						}
+						if (style.getExtGState() != lastExtGState)
+						{
+							if (style.getExtGState() != null)
+							{
+								textOutput.println("%s gs", aPage.registerExtGState(style.getExtGState()));
+							}
+							lastExtGState = style.getExtGState();
 						}
 
 						textOutput.println("BT");

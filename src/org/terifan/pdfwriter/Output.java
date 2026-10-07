@@ -132,4 +132,29 @@ class Output implements AutoCloseable
 	{
 		return mSize;
 	}
+
+
+	/**
+	 * warning: Will return the internal stream as a String and may result in a non-descriptive text.
+	 */
+	@Override
+	public String toString()
+	{
+		return mOutput.toString();
+	}
+
+
+	static String writeSingle(Value aValue)
+	{
+		try
+		{
+			Output out = new Output();
+			aValue.writeTo(out);
+			return out.toString();
+		}
+		catch (IOException e)
+		{
+			throw new IllegalStateException(e);
+		}
+	}
 }

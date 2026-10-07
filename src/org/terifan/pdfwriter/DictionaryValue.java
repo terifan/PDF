@@ -25,4 +25,11 @@ public class DictionaryValue implements Value
 	{
 		mValue.writeTo(aOutput);
 	}
+
+
+	@Override
+	public String toString()
+	{
+		return Output.writeSingle(this);
+	}
 }

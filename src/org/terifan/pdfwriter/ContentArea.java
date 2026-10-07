@@ -114,7 +114,8 @@ public class ContentArea implements Producer
 				break;
 		}
 
-		boundsTop = mContentStream.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
+//		boundsTop = mContentStream.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
+		boundsTop = mContentStream.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, boundsTop-height, boundsLeft+width);
 
 		return baos.toString();
 	}

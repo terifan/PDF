@@ -19,6 +19,7 @@ public class Style implements Cloneable
 	private String mBorderPattern;
 	private double mLineExtra;
 	private Double mLineGap;
+	private Dictionary mExtGState;
 
 
 	public Style()
@@ -34,6 +35,19 @@ public class Style implements Cloneable
 
 		mSize = aSize;
 		setFont(aFont);
+	}
+
+
+	public Style setExtGState(Dictionary aExtGState)
+	{
+		mExtGState = aExtGState;
+		return this;
+	}
+
+
+	public Dictionary getExtGState()
+	{
+		return mExtGState;
 	}
 
 

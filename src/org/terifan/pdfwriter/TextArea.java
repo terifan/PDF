@@ -4,6 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import static org.terifan.pdfwriter.Anchor.CENTER;
+import static org.terifan.pdfwriter.Anchor.NORTH;
+import static org.terifan.pdfwriter.Anchor.NORTH_WEST;
+import static org.terifan.pdfwriter.Anchor.SOUTH;
+import static org.terifan.pdfwriter.Anchor.SOUTH_WEST;
+import static org.terifan.pdfwriter.Anchor.WEST;
 import static org.terifan.pdfwriter.Utilities.renderRectangle;
 
 
@@ -97,6 +103,9 @@ public class TextArea implements Producer
 			case EAST:
 				boundsTop = (mBoundsBottom + mBoundsTop + height) / 2;
 				break;
+			case NORTH:
+			case NORTH_EAST:
+			case NORTH_WEST:
 			default:
 				boundsTop = mBoundsTop;
 				break;
@@ -115,6 +124,9 @@ public class TextArea implements Producer
 			case SOUTH:
 				boundsLeft = (mBoundsLeft + mBoundsRight - width) / 2;
 				break;
+			case WEST:
+			case NORTH_WEST:
+			case SOUTH_WEST:
 			default:
 				boundsLeft = mBoundsLeft;
 				break;
@@ -126,7 +138,7 @@ public class TextArea implements Producer
 
 			for (Paragraph paragraph : mParagraphs)
 			{
-				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
+				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, boundsLeft + width);
 			}
 
 //			content.println("Q");

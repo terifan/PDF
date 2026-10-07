@@ -3,9 +3,10 @@ package org.terifan.pdfwriter;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 
-public class Dictionary
+public class Dictionary implements Value
 {
 	private LinkedHashMap<String, Value> mMap = new LinkedHashMap<>();
 
@@ -56,7 +57,8 @@ public class Dictionary
 	}
 
 
-	void writeTo(Output aOutput) throws IOException
+	@Override
+	public void writeTo(Output aOutput) throws IOException
 	{
 		aOutput.print("<<");
 		for (Entry<String, Value> entry : mMap.entrySet())
@@ -67,5 +69,48 @@ public class Dictionary
 			entry.getValue().writeTo(aOutput);
 		}
 		aOutput.print(" >>");
+	}
+
+
+	@Override
+	public int hashCode()
+	{
+		int hash = 3;
+		hash = 29 * hash + Objects.hashCode(this.mMap);
+		return hash;
+	}
+
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final Dictionary other = (Dictionary)obj;
+		return Objects.equals(this.mMap, other.mMap);
+	}
+
+
+	Dictionary putAll(Dictionary aValue)
+	{
+		mMap.putAll(aValue.mMap);
+		return this;
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return Output.writeSingle(this);
 	}
 }

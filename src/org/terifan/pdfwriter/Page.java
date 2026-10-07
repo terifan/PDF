@@ -13,6 +13,7 @@ public class Page implements AutoCloseable
 	private final Dimension mDimension;
 	private StringBuilder mBuffer;
 	private HashMap<String, Resource> mFonts;
+	private HashMap<String, Dictionary> mExtGState;
 	private int mImageCount;
 	private Ref mRefContent;
 	private Dictionary mXObjectResourceDictionary;
@@ -30,6 +31,7 @@ public class Page implements AutoCloseable
 		mResourcesDictionary = new Dictionary();
 		mIdentityMap = new HashMap<>();
 		mXObjectResourceDictionary = new Dictionary();
+		mExtGState = new HashMap<>();
 	}
 
 
@@ -125,6 +127,16 @@ public class Page implements AutoCloseable
 			resDic.put("/Font", fontsDic);
 		}
 
+		if (!mExtGState.isEmpty())
+		{
+			for (Entry<String, Dictionary> entry : mExtGState.entrySet())
+			{
+				resDic.put(entry.getKey(), new Dictionary().put("/Type", "/ExtGState").putAll(entry.getValue()));
+			}
+
+			System.out.println(resDic);
+		}
+
 		if (!mXObjectResourceDictionary.isEmpty())
 		{
 			mResourcesDictionary.put("/XObject", mXObjectResourceDictionary);
@@ -144,5 +156,20 @@ public class Page implements AutoCloseable
 	void setParent(ObjRef aPagesRef)
 	{
 		mParent = aPagesRef;
+	}
+
+
+	String registerExtGState(Dictionary aExtGState)
+	{
+		for (Entry<String, Dictionary> entry : mExtGState.entrySet())
+		{
+			if (entry.getValue().equals(aExtGState))
+			{
+				return entry.getKey();
+			}
+		}
+		String key = "/GS" + (1 + mExtGState.size());
+		mExtGState.put(key, aExtGState);
+		return key;
 	}
 }

@@ -1,6 +1,7 @@
 package org.terifan.pdfwriter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 
 public class NumberValue implements Value
@@ -34,6 +35,40 @@ public class NumberValue implements Value
 
 
 	@Override
+	public int hashCode()
+	{
+		int hash = 7;
+		hash = 53 * hash + Objects.hashCode(this.mDouble);
+		hash = 53 * hash + Objects.hashCode(this.mInteger);
+		return hash;
+	}
+
+
+	@Override
+	public boolean equals(Object obj)
+	{
+		if (this == obj)
+		{
+			return true;
+		}
+		if (obj == null)
+		{
+			return false;
+		}
+		if (getClass() != obj.getClass())
+		{
+			return false;
+		}
+		final NumberValue other = (NumberValue)obj;
+		if (!Objects.equals(this.mDouble, other.mDouble))
+		{
+			return false;
+		}
+		return Objects.equals(this.mInteger, other.mInteger);
+	}
+
+
+	@Override
 	public void writeTo(Output aOutput) throws IOException
 	{
 		if (mDouble != null)
@@ -49,5 +84,12 @@ public class NumberValue implements Value
 		{
 			aOutput.print(mInteger.toString());
 		}
+	}
+
+
+	@Override
+	public String toString()
+	{
+		return Output.writeSingle(this);
 	}
 }
