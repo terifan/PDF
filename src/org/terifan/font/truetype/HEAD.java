@@ -30,9 +30,18 @@ class HEAD
 
 	public HEAD(ByteBufferReader mBuffer, HashMap<String, Table> mTables)
 	{
-		mBuffer.position(mTables.get("head").mOffset);
+		Table table = mTables.get("head");
+		if (table.mLength < 54)
+		{
+			throw new IllegalArgumentException("Invalid head table length: " + table.mLength);
+		}
+		mBuffer.position(table.mOffset);
 
 		mVersion = mBuffer.getFixed();
+		if (mVersion != 1.0)
+		{
+			throw new IllegalArgumentException("Unsupported head table version: " + mVersion);
+		}
 		mFontRevision = mBuffer.getFixed();
 		mChecksumAdjustment = mBuffer.getUint32();
 
@@ -45,6 +54,10 @@ class HEAD
 
 		mFlags = mBuffer.getUint16();
 		mUnitsPerEm = mBuffer.getUint16();
+		if (mUnitsPerEm < 16 || mUnitsPerEm > 16384)
+		{
+			throw new IllegalArgumentException("Invalid unitsPerEm: " + mUnitsPerEm);
+		}
 		mCreated = mBuffer.getDate();
 		mModified = mBuffer.getDate();
 		mXMin = mBuffer.getFword();
@@ -56,6 +69,14 @@ class HEAD
 		mFontDirectionHint = mBuffer.getInt16();
 		mIndexToLocFormat = mBuffer.getInt16();
 		mGlyphDataFormat = mBuffer.getInt16();
+		if (mIndexToLocFormat != 0 && mIndexToLocFormat != 1)
+		{
+			throw new IllegalArgumentException("Invalid indexToLocFormat: " + mIndexToLocFormat);
+		}
+		if (mGlyphDataFormat != 0 || mXMin > mXMax || mYMin > mYMax)
+		{
+			throw new IllegalArgumentException("Invalid head table values");
+		}
 
 //		if((mFlags&1)!=0)System.out.println("Bit 0: Baseline for font at y=0.");
 //		if((mFlags&0b1)!=0)System.out.println("Bit 1: Left sidebearing point at x=0 (relevant only for TrueType rasterizers) - see additional information below regarding variable fonts.");

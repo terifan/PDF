@@ -3,8 +3,8 @@ package org.terifan.font.truetype;
 
 class LongHorMetric
 {
-	int mAdvanceWidth;
-	int mLeftSideBearing;
+	final int mAdvanceWidth;
+	final int mLeftSideBearing;
 
 
 	public LongHorMetric(int aAdvanceWidth, int aLeftSideBearing)

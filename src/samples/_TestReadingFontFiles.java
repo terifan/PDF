@@ -36,7 +36,8 @@ public class _TestReadingFontFiles
 				}
 				catch (Exception e)
 				{
-//					System.out.println("Error reading font file: " + path);
+					System.out.println("Error reading font file: " + path);
+					e.printStackTrace();
 					continue;
 				}
 				try
@@ -46,7 +47,7 @@ public class _TestReadingFontFiles
 						page.append(new TextArea(70, 780, 550, 70, new Paragraph(style, english)));
 					}
 
-//					System.out.println("English OK: " + path);
+					System.out.println("English OK: " + path);
 				}
 				catch (Exception e)
 				{
@@ -59,12 +60,12 @@ public class _TestReadingFontFiles
 						page.append(new TextArea(70, 780, 550, 70, new Paragraph(style, russian), new Paragraph(style, greek), new Paragraph(style, polish), new Paragraph(style, latvian)));
 					}
 
-//					System.out.println("Unicode OK: " + path);
+					System.out.println("Unicode OK: " + path);
 				}
 				catch (Exception e)
 				{
 					System.out.println("Error render unicode font: " + path);
-//					e.printStackTrace();
+					e.printStackTrace();
 				}
 			}
 		}

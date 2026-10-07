@@ -3,13 +3,17 @@ package org.terifan.font.truetype;
 
 class Table
 {
-	int mChecksum;
-	int mOffset;
-	int mLength;
+	final int mChecksum;
+	final int mOffset;
+	final int mLength;
 
 
 	public Table(int aChecksum, int aOffset, int aLength)
 	{
+		if (aOffset < 0 || aLength < 0)
+		{
+			throw new IllegalArgumentException("Negative table range: offset=" + aOffset + ", length=" + aLength);
+		}
 		mChecksum = aChecksum;
 		mOffset = aOffset;
 		mLength = aLength;

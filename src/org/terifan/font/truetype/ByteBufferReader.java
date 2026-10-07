@@ -1,17 +1,19 @@
 package org.terifan.font.truetype;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+
 
 class ByteBufferReader
 {
-	private byte[] mData;
+	private final byte[] mData;
 	private int mPosition;
 
 
 	public ByteBufferReader(byte[] aData)
 	{
-		mData = aData;
+		mData = Objects.requireNonNull(aData, "aData");
 	}
-
 
 	public int length()
 	{
@@ -21,6 +23,10 @@ class ByteBufferReader
 
 	public void position(int aPosition)
 	{
+		if (aPosition < 0 || aPosition > mData.length)
+		{
+			throw new IllegalArgumentException("Invalid buffer position: " + aPosition);
+		}
 		mPosition = aPosition;
 	}
 
@@ -39,27 +45,15 @@ class ByteBufferReader
 
 	public int getInt8()
 	{
-		try
-		{
-			return mData[mPosition++];
-		}
-		catch (ArrayIndexOutOfBoundsException e)
-		{
-			return 0;
-		}
+		requireAvailable(1);
+		return mData[mPosition++];
 	}
 
 
 	public int getUint8()
 	{
-		try
-		{
-			return 0xFF & mData[mPosition++];
-		}
-		catch (ArrayIndexOutOfBoundsException e)
-		{
-			return 0;
-		}
+		requireAvailable(1);
+		return 0xFF & mData[mPosition++];
 	}
 
 
@@ -99,7 +93,7 @@ class ByteBufferReader
 
 	public float getFword()
 	{
-		return getInt16() / 128f;
+		return getInt16();
 	}
 
 
@@ -111,29 +105,13 @@ class ByteBufferReader
 
 	public String getString(int aLength)
 	{
-		byte[] buf = new byte[aLength];
-
-		for (int i = 0; i < aLength; i++)
-		{
-			buf[i] = mData[mPosition++];
-		}
-
-		if ((buf.length & 1) == 0 && buf[0] == 0)
-		{
-			char[] chars = new char[buf.length / 2];
-			for (int i = 0, j = 0; i < buf.length; i+=2)
-			{
-				chars[j++] = (char)(256 * (0xff & buf[i + 0]) + (0xff & buf[i + 1]));
-			}
-			return new String(chars);
-		}
-
-		return new String(buf);
+		return new String(getByteArray(aLength), StandardCharsets.ISO_8859_1);
 	}
 
 
 	public int[] getUint16Array(int aLength)
 	{
+		requireArrayLength(aLength, 2);
 		int[] buffer = new int[aLength];
 		for (int i = 0; i < buffer.length; i++)
 		{
@@ -145,6 +123,7 @@ class ByteBufferReader
 
 	public int[] getInt16Array(int aLength)
 	{
+		requireArrayLength(aLength, 2);
 		int[] buffer = new int[aLength];
 		for (int i = 0; i < buffer.length; i++)
 		{
@@ -156,6 +135,7 @@ class ByteBufferReader
 
 	public int[] getUint8Array(int aLength)
 	{
+		requireArrayLength(aLength, 1);
 		int[] buffer = new int[aLength];
 		for (int i = 0; i < buffer.length; i++)
 		{
@@ -167,22 +147,41 @@ class ByteBufferReader
 
 	public byte[] getByteArray(int aLength)
 	{
+		requireArrayLength(aLength, 1);
 		byte[] buffer = new byte[aLength];
-		for (int i = 0; i < buffer.length; i++)
-		{
-			buffer[i] = (byte)getInt8();
-		}
+		System.arraycopy(mData, mPosition, buffer, 0, aLength);
+		mPosition += aLength;
 		return buffer;
 	}
 
 
 	public int[] getInt8Array(int aLength)
 	{
+		requireArrayLength(aLength, 1);
 		int[] buffer = new int[aLength];
 		for (int i = 0; i < buffer.length; i++)
 		{
 			buffer[i] = getInt8();
 		}
 		return buffer;
+	}
+
+
+	private void requireArrayLength(int aLength, int aElementSize)
+	{
+		if (aLength < 0 || aLength > Integer.MAX_VALUE / aElementSize)
+		{
+			throw new IllegalArgumentException("Invalid array length: " + aLength);
+		}
+		requireAvailable(aLength * aElementSize);
+	}
+
+
+	private void requireAvailable(int aLength)
+	{
+		if (aLength < 0 || mPosition > mData.length - aLength)
+		{
+			throw new IllegalStateException("Unexpected end of font data at offset " + mPosition + ", requested " + aLength + " bytes");
+		}
 	}
 }

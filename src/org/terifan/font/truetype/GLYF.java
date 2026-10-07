@@ -5,49 +5,37 @@ import java.util.HashMap;
 
 class GLYF
 {
-	int numberOfContours;
-	float xMin;
-	float yMin;
-	float xMax;
-	float yMax;
+	final float xMin;
+	final float yMin;
+	final float xMax;
+	final float yMax;
 
 
-	public GLYF(ByteBufferReader aBuffer, HashMap<String, Table> aTables, HEAD aHEAD, int aSymbol)
+	public GLYF(ByteBufferReader aBuffer, HashMap<String, Table> aTables, LOCA aLOCA, int aSymbol)
 	{
-		aBuffer.position(getGlyphOffset(aBuffer, aTables, aHEAD, aSymbol));
+		Table glyf = aTables.get("glyf");
+		int start = aLOCA.getStart(aSymbol);
+		int end = aLOCA.getEnd(aSymbol);
+		if (start == end)
+		{
+			xMin = yMin = xMax = yMax = 0;
+			return;
+		}
+		if (end - start < 10)
+		{
+			throw new IllegalArgumentException("Truncated glyf record for glyph " + aSymbol);
+		}
+		aBuffer.position(glyf.mOffset + start);
 
-		numberOfContours = aBuffer.getInt16();
+		aBuffer.getInt16();
 		xMin = aBuffer.getFword();
 		yMin = aBuffer.getFword();
 		xMax = aBuffer.getFword();
 		yMax = aBuffer.getFword();
-	}
-
-
-	private int getGlyphOffset(ByteBufferReader aBuffer, HashMap<String, Table> aTables, HEAD aHEAD, int aIndex)
-	{
-		int o = aTables.get("loca").mOffset;
-
-		int old = aBuffer.position();
-		int offset;
-
-		switch (aHEAD.mIndexToLocFormat)
+		if (xMin > xMax || yMin > yMax)
 		{
-			case 0:
-				aBuffer.position(o + aIndex * 2);
-				offset = aBuffer.getUint16() * 2;
-				break;
-			case 1:
-				aBuffer.position(o + aIndex * 4);
-				offset = aBuffer.getInt32();
-				break;
-			default:
-				throw new IllegalArgumentException("" + aHEAD.mIndexToLocFormat);
+			throw new IllegalArgumentException("Invalid glyf bounds for glyph " + aSymbol);
 		}
-
-		aBuffer.position(old);
-
-		return aTables.get("glyf").mOffset + offset;
 	}
 
 

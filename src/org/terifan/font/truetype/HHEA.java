@@ -26,13 +26,22 @@ class HHEA
 
 	public HHEA(ByteBufferReader aBuffer, HashMap<String, Table> aTables)
 	{
-		aBuffer.position(aTables.get("hhea").mOffset);
+		Table table = aTables.get("hhea");
+		if (table.mLength < 36)
+		{
+			throw new IllegalArgumentException("Invalid hhea table length: " + table.mLength);
+		}
+		aBuffer.position(table.mOffset);
 
 		mVersion = aBuffer.getFixed();
+		if (mVersion != 1.0)
+		{
+			throw new IllegalArgumentException("Unsupported hhea table version: " + mVersion);
+		}
 		mAscent = aBuffer.getFword();
 		mDescent = aBuffer.getFword();
 		mLineGap = aBuffer.getFword();
-		mAdvanceWidthMax = aBuffer.getFword();
+		mAdvanceWidthMax = aBuffer.getUint16();
 		mMinLeftSideBearing = aBuffer.getFword();
 		mMinRightSideBearing = aBuffer.getFword();
 		mXMaxExtent = aBuffer.getFword();
@@ -45,6 +54,10 @@ class HHEA
 		mReserved4 = aBuffer.getInt16();
 		mMetricDataFormat = aBuffer.getInt16();
 		mNumOfLongHorMetrics = aBuffer.getUint16();
+		if (mMetricDataFormat != 0 || mNumOfLongHorMetrics == 0 || mReserved1 != 0 || mReserved2 != 0 || mReserved3 != 0 || mReserved4 != 0)
+		{
+			throw new IllegalArgumentException("Invalid hhea metric fields");
+		}
 	}
 
 
