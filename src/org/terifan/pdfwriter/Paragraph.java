@@ -260,7 +260,7 @@ public class Paragraph implements Content, Cloneable
 
 		double nextOffsetY = aBoundsTop - mMargins.top();
 
-		renderRectangle(null,aPage,fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
+		renderRectangle(null, aPage, fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 
 		textOutput.println("q");
 
@@ -371,7 +371,6 @@ public class Paragraph implements Content, Cloneable
 			}
 
 			Color lastColor = null;
-			Dictionary lastFillExtGState = null;
 			Dictionary lastTextExtGState = null;
 
 			for (Chunk chunk : row)
@@ -403,11 +402,16 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-				renderRectangle(style.getExtGState(),aPage,fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, style.getFillColor(), style.getBorderThickness(null), style.getBorderPattern(), style.getBorderColor());
+				Insets borderThickness = style.getBorderThickness(null);
+
+				double rectX0 = chunk.x0;
+				double rectX1 = (row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1);
+
+				renderRectangle(style.getExtGState(), aPage, fillOutput, lineOutput, rectX0, Math.ceil(top), rectX1, (int)bot, style.getFillColor(), borderThickness, style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
-					double x1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
+					double x1 = rectX1;
 
 					fillOutput.println("%s rg", style.getHighlightColor());
 					fillOutput.println("%f %f m", chunk.x0, chunk.yt + style.getAscent());
@@ -419,8 +423,8 @@ public class Paragraph implements Content, Cloneable
 
 				String text = chunk.span.getText();
 
-				double offsetX = chunk.x0;
-				double advanceX = chunk.x0;
+				double offsetX = chunk.x0 + borderThickness.left();
+				double advanceX = offsetX;
 				double advanceY = chunk.yt;
 
 				for (int i = 0, prev = -1, curr; i < chunk.length; i++)
@@ -458,7 +462,7 @@ public class Paragraph implements Content, Cloneable
 						textOutput.println("1 0 0 1 0 0 Tm");
 					}
 
- 					textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
+					textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
 
 					advanceX = style.getAdvance(ch);
 					advanceY = 0;
@@ -530,7 +534,7 @@ public class Paragraph implements Content, Cloneable
 			}
 		}
 
-		double x = aBoundsLeft + mMargins.left();
+		double screenX = aBoundsLeft + mMargins.left();
 
 		for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
 		{
@@ -542,48 +546,51 @@ public class Paragraph implements Content, Cloneable
 				continue;
 			}
 
-			for (int offset = 0; offset < span.getText().length();)
+			for (int charOffset = 0; charOffset < span.getText().length();)
 			{
 				AtomicBoolean oBreakLine = new AtomicBoolean(false);
 				AtomicBoolean oLineEnd = new AtomicBoolean(false);
+				Insets borderThickness = style.getBorderThickness(null);
 
-				int chunkLen = findSpanCutoff(span, offset, x, oBreakLine, oLineEnd, aBoundsRight - mMargins.right(), currentRow.isEmpty());
+				double x0 = screenX + borderThickness.left();
+				double x1 = aBoundsRight - mMargins.right() - borderThickness.right();
+				int charLen = findSpanCutoff(span, charOffset, x0, oBreakLine, x1, currentRow.isEmpty());
 
-				if (chunkLen == 0)
+				if (charLen == 0)
 				{
 					break;
 				}
 
-				if (chunkLen > 0)
+				if (charLen > 0)
 				{
-					Chunk chunk = new Chunk(x, span, offset, chunkLen, span.getVerticalAlignment() != null ? span.getVerticalAlignment() : mVerticalAlignment);
+					Chunk chunk = new Chunk(screenX, span, charOffset, charLen, span.getVerticalAlignment() != null ? span.getVerticalAlignment() : mVerticalAlignment);
 					currentRow.add(chunk);
 
-					x += span.getStyle().getBorderThickness(null).horizontal();
+					screenX += borderThickness.horizontal();
 
-					double bestX = x;
-					for (int i = 0; i < chunkLen; i++, offset++)
+					double bestX = screenX;
+					for (int i = 0; i < charLen; i++, charOffset++)
 					{
-						char c = span.getText().charAt(offset);
+						char c = span.getText().charAt(charOffset);
 						if (c < ' ')
 						{
 							c = ' ';
 						}
-						x += style.getAdvance(c);
+						screenX += style.getAdvance(c);
 						if (c != ' ')
 						{
-							bestX = x;
+							bestX = screenX;
 						}
 					}
 
-					chunk.x1 = x;
+					chunk.x1 = screenX;
 					chunk.xt = bestX;
 					chunk.lineEnd = oLineEnd.get();
 				}
 
 				if (oBreakLine.get())
 				{
-					x = aBoundsLeft + mMargins.left();
+					screenX = aBoundsLeft + mMargins.left();
 					currentRow = new Row();
 					rows.add(currentRow);
 				}
@@ -637,15 +644,8 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
-	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean oBreakLine, AtomicBoolean oLineEnd, double aLimitX, boolean aFirstWord)
+	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean oBreakLine, double aLimitX, boolean aFirstWord)
 	{
-//		if (aSpan.getText().charAt(aTextOffset) == '\n')
-//		{
-//			oBreakLine.set(true);
-//			oLineEnd.set(true);
-//			return 1;
-//		}
-
 		int len = -1;
 
 		for (int i = 1, limit = aSpan.getText().length() - aTextOffset; i <= limit; i++)
@@ -655,7 +655,7 @@ public class Paragraph implements Content, Cloneable
 				return limit;
 			}
 
-			if (aOffsetX + aSpan.getStyle().measureText(aSpan.getText(), aTextOffset, i) > aLimitX)
+			if (aOffsetX + aSpan.getStyle().measureText(aSpan.getText(), aTextOffset, i) >= aLimitX)
 			{
 				if (len == -1 && aFirstWord)
 				{
@@ -667,13 +667,8 @@ public class Paragraph implements Content, Cloneable
 
 			char c = aSpan.getText().charAt(aTextOffset + i);
 
-//			if (c == '\n')
-//			{
-//				len = i + 1;
-//				oBreakLine.set(true);
-//				break;
-//			}
-			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
+//			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
+			if (c == ' ')
 			{
 				len = i + 1;
 			}
