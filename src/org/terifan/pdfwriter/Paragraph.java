@@ -260,7 +260,7 @@ public class Paragraph implements Content, Cloneable
 
 		double nextOffsetY = aBoundsTop - mMargins.top();
 
-		renderRectangle(fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
+		renderRectangle(null,aPage,fillOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, Math.max(aBoundsTop - mHeight, aBoundsBottom), mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 
 		textOutput.println("q");
 
@@ -371,7 +371,8 @@ public class Paragraph implements Content, Cloneable
 			}
 
 			Color lastColor = null;
-			Dictionary lastExtGState = null;
+			Dictionary lastFillExtGState = null;
+			Dictionary lastTextExtGState = null;
 
 			for (Chunk chunk : row)
 			{
@@ -402,7 +403,7 @@ public class Paragraph implements Content, Cloneable
 					chunk.yt += adjust;
 				}
 
-				renderRectangle(fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, style.getFillColor(), style.getBorderThickness(null), style.getBorderPattern(), style.getBorderColor());
+				renderRectangle(style.getExtGState(),aPage,fillOutput, lineOutput, chunk.x0, Math.ceil(top), row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1, (int)bot, style.getFillColor(), style.getBorderThickness(null), style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
@@ -443,13 +444,13 @@ public class Paragraph implements Content, Cloneable
 							textOutput.println("%s RG %s rg", color, color);
 							lastColor = color;
 						}
-						if (style.getExtGState() != lastExtGState)
+						if (style.getExtGState() != lastTextExtGState)
 						{
 							if (style.getExtGState() != null)
 							{
 								textOutput.println("%s gs", aPage.registerExtGState(style.getExtGState()));
 							}
-							lastExtGState = style.getExtGState();
+							lastTextExtGState = style.getExtGState();
 						}
 
 						textOutput.println("BT");

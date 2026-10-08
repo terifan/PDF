@@ -129,12 +129,12 @@ public class Page implements AutoCloseable
 
 		if (!mExtGState.isEmpty())
 		{
+			Dictionary extGStateDic = new Dictionary();
 			for (Entry<String, Dictionary> entry : mExtGState.entrySet())
 			{
-				resDic.put(entry.getKey(), new Dictionary().put("/Type", "/ExtGState").putAll(entry.getValue()));
+				extGStateDic.put(entry.getKey(), new Dictionary().put("/Type", "/ExtGState").putAll(entry.getValue()));
 			}
-
-			System.out.println(resDic);
+			resDic.put("/ExtGState", extGStateDic);
 		}
 
 		if (!mXObjectResourceDictionary.isEmpty())

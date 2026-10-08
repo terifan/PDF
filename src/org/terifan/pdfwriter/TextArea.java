@@ -79,7 +79,7 @@ public class TextArea implements Producer
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		renderRectangle(content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackground, null, null);
+		renderRectangle(null,aPage,content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackground, null, null);
 
 		double width = 0;
 		double height = 0;

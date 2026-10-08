@@ -595,7 +595,7 @@ public class Table implements Content
 		y -= mBorderThickness.bottom();
 
 //		renderRectangle(backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, THIN, mBorderPattern, Color.CYAN);
-		renderRectangle(backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
+		renderRectangle(null,aPage,backgroundOutput, lineOutput, aBoundsLeft, aBoundsTop, aBoundsRight, y, mFillColor, mBorderThickness, mBorderPattern, mBorderColor);
 
 		if (mExtendTableEnabled)
 		{
@@ -698,7 +698,7 @@ public class Table implements Content
 		double y0 = aBoundsTop;
 		double y1 = aBoundsTop - rowHeight;
 
-		renderRectangle(aFillOutput, aBorderOutput, aBoundsLeft, y0, aBoundsRight, y1, aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderPattern(), aRow.getBorderColor());
+		renderRectangle(null,aPage,aFillOutput, aBorderOutput, aBoundsLeft, y0, aBoundsRight, y1, aRow.getFillColor(), aRow.getBorderThickness(), aRow.getBorderPattern(), aRow.getBorderColor());
 
 		double _y0 = y0 - rowBorderThickness.top();
 		double _y1 = y1 + rowBorderThickness.bottom();
@@ -732,7 +732,7 @@ public class Table implements Content
 			}
 
 //			renderRectangle(aFillOutput, aBorderOutput, columnX0, _y0, columnX1, _y1, cellFillColor, new Insets(1, 1, 1, 1), borderPattern, Color.GREEN);
-			renderRectangle(aFillOutput, aBorderOutput, columnX0, _y0, columnX1, _y1, cellFillColor, cellBorderThickness, borderPattern, cellBorderColors);
+			renderRectangle(null,aPage,aFillOutput, aBorderOutput, columnX0, _y0, columnX1, _y1, cellFillColor, cellBorderThickness, borderPattern, cellBorderColors);
 
 			if (aTableRowIndex == 0 && mHeaderGridThickness > 0)
 			{

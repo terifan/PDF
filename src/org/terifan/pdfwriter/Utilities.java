@@ -83,11 +83,17 @@ public class Utilities
 	}
 
 
-	static void renderRectangle(Output aFillContent, Output aLineContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, String aBorderPattern, Color... aBorderColor) throws IOException
+	static void renderRectangle(Dictionary aExtGState, Page aPage, Output aFillContent, Output aLineContent, double aX0, double aY0, double aX1, double aY1, Color aFillColor, Insets aThickness, String aBorderPattern, Color... aBorderColor) throws IOException
 	{
 		if (aFillColor != null)
 		{
 			aFillContent.println("q");
+
+			if (aExtGState != null)
+			{
+				aFillContent.println("%s gs", aPage.registerExtGState(aExtGState));
+			}
+
 			aFillContent.print("%s rg ", aFillColor);
 			aFillContent.print("%f w ", 1.0);
 			aFillContent.print("%f %f m ", aX0 + left(aThickness), aY0 - top(aThickness));

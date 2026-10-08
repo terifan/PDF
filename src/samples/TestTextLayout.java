@@ -28,9 +28,9 @@ public class TestTextLayout
 				Style style0 = new Style(font1, 15);
 				Style[] style1 =
 				{
-					new Style(font1, 12).setFillColor(Color.YELLOW).setExtGState(new Dictionary().put("/ca", 0.5).put("/CA", 0.5)),
-					new Style(font1, 12).setFillColor(Color.YELLOW).setLineExtra(4).setExtGState(new Dictionary().put("/CA", 0.5)),
-					new Style(font1, 12).setFillColor(Color.YELLOW).setLineExtra(8).setExtGState(new Dictionary().put("/ca", 0.5))
+					new Style(font1, 12).setFillColor(Color.YELLOW).setExtGState(new Dictionary().put("/ca", 0.15).put("/CA", 0.15)),
+					new Style(font1, 12).setTextColor(Color.BLACK).setLineExtra(4).setExtGState(new Dictionary().put("/CA", 0.15)),
+					new Style(font1, 12).setFillColor(Color.YELLOW).setLineExtra(8).setExtGState(new Dictionary().put("/ca", 0.15))
 				};
 				Style style2 = new Style(font1, 10).setFillColor(Color.RED);
 				Style style3 = new Style(font1, 8).setTextColor(Color.GRAY);
