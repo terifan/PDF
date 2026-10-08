@@ -49,7 +49,7 @@ public class TestTable
 			};
 			int[] sizes =
 			{
-				8, 15, 20
+				6, 12, 24
 			};
 			Color[] textColors =
 			{
