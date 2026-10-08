@@ -79,7 +79,7 @@ public class TextArea implements Producer
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		Output content = new Output(baos);
 
-		renderRectangle(null,aPage,content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackground, null, null);
+		renderRectangle(null, aPage, content, content, mBoundsLeft, mBoundsTop, mBoundsRight, mBoundsBottom, mBackground, null, null);
 
 		double width = 0;
 		double height = 0;
@@ -96,7 +96,7 @@ public class TextArea implements Producer
 			case SOUTH:
 			case SOUTH_EAST:
 			case SOUTH_WEST:
-				boundsTop = mBoundsBottom + height + 1; // todo: +1 is because rounding errors
+				boundsTop = mBoundsBottom + height;
 				break;
 			case CENTER:
 			case WEST:
@@ -117,7 +117,7 @@ public class TextArea implements Producer
 			case NORTH_EAST:
 			case EAST:
 			case SOUTH_EAST:
-				boundsLeft = mBoundsRight - width - 1; // todo: -1 is because rounding errors
+				boundsLeft = mBoundsRight - width;
 				break;
 			case CENTER:
 			case NORTH:
@@ -134,15 +134,10 @@ public class TextArea implements Producer
 
 		if (!mParagraphs.isEmpty())
 		{
-//			content.println("q");
-
 			for (Paragraph paragraph : mParagraphs)
 			{
-				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
+				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, Math.max(mBoundsBottom, boundsTop - height), Math.min(mBoundsRight, boundsLeft + width));
 			}
-
-//			content.println("Q");
-//			content.println("EMC");
 		}
 
 		return baos.toString();

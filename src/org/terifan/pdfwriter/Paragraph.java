@@ -11,6 +11,7 @@ import static org.terifan.pdfwriter.Utilities.renderRectangle;
 public class Paragraph implements Content, Cloneable
 {
 	private ArrayList<Span> mSpans;
+	private Span mSplitSpan;
 	private Alignment mAlignment;
 	private VerticalAlignment mVerticalAlignment;
 	private double mHeight;
@@ -275,11 +276,10 @@ public class Paragraph implements Content, Cloneable
 
 			mLayout.remove(0);
 
+			Chunk firstChunk = row.isEmpty() ? null : row.get(0);
+			Chunk lastChunk = row.isEmpty() ? null : row.get(row.size() - 1);
 			if (mAlignment != null && !row.isEmpty())
 			{
-				Chunk firstChunk = row.get(0);
-				Chunk lastChunk = row.get(row.size() - 1);
-
 				switch (mAlignment)
 				{
 					case LEFT:
@@ -318,36 +318,43 @@ public class Paragraph implements Content, Cloneable
 					}
 					case JUSTIFY:
 					{
-						// unsupported, use left alignment!
-
-						double adjust = aBoundsLeft - firstChunk.x0 + mMargins.left();
-						for (Chunk chunk : row)
-						{
-							chunk.x0 += adjust;
-							chunk.x1 += adjust;
-							chunk.xt += adjust;
-						}
 						break;
 					}
 					case SPLIT:
 					{
-						double adjust = aBoundsRight - lastChunk.xt - mMargins.right();
-						for (int i = 1; i < row.size(); i++)
+						Span leftSpan = mSplitSpan;
+						Chunk lastRightChunk = null;
+						for (Chunk chunk : row)
 						{
-							Chunk chunk = row.get(i);
-							chunk.x0 += adjust;
-							chunk.x1 += adjust;
-							chunk.xt += adjust;
+							if (chunk.span != leftSpan)
+							{
+								lastRightChunk = chunk;
+							}
+						}
+						if (lastRightChunk != null)
+						{
+							double adjust = aBoundsRight - lastRightChunk.xt - mMargins.right();
+							for (Chunk chunk : row)
+							{
+								if (chunk.span != leftSpan)
+								{
+									chunk.x0 += adjust;
+									chunk.x1 += adjust;
+									chunk.xt += adjust;
+								}
+							}
 						}
 						break;
 					}
 				}
 			}
 
+			int justifiedSpaces = mAlignment == Alignment.JUSTIFY && row.softWrapped ? countJustifiableSpaces(row) : 0;
+			double justifiedSpace = justifiedSpaces == 0 ? 0 : Math.max(0, (aBoundsRight - mMargins.right() - lastChunk.xt) / justifiedSpaces);
+			int justifiedSpacesUsed = 0;
+
 			double topMargin = 0;
-			double botMargin = 0;
 			double maxAscent = -100000;
-			double maxDescent = 100000;
 
 			for (Chunk chunk : row)
 			{
@@ -355,9 +362,7 @@ public class Paragraph implements Content, Cloneable
 				Insets margins = style.getMargins(null);
 				Insets thickness = style.getBorderThickness(null);
 				topMargin = Math.max(topMargin, thickness.top() + margins.top());
-				botMargin = Math.max(botMargin, thickness.bottom() + margins.bottom());
 				maxAscent = Math.max(maxAscent, style.getAscent());
-				maxDescent = Math.min(maxDescent, style.getDescent());
 			}
 
 			double top = nextOffsetY;
@@ -417,9 +422,11 @@ public class Paragraph implements Content, Cloneable
 				}
 
 				Insets borderThickness = style.getBorderThickness(null);
+				int chunkJustifiedSpaces = Math.min(countSpaces(chunk), justifiedSpaces - justifiedSpacesUsed);
+				double chunkJustifyOffset = justifiedSpace * justifiedSpacesUsed;
 
-				double rectX0 = chunk.x0;
-				double rectX1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
+				double rectX0 = chunk.x0 + chunkJustifyOffset;
+				double rectX1 = (chunk == lastChunk ? chunk.xt : chunk.x1) + chunkJustifyOffset + justifiedSpace * chunkJustifiedSpaces;
 
 				renderRectangle(style.getExtGState(), aPage, fillOutput, lineOutput, rectX0, Math.ceil(top), rectX1, (int)bot, style.getFillColor(), borderThickness, style.getBorderPattern(), style.getBorderColor());
 
@@ -435,7 +442,7 @@ public class Paragraph implements Content, Cloneable
 
 				String text = chunk.span.getText();
 
-				double offsetX = chunk.x0 + borderThickness.left();
+				double offsetX = chunk.x0 + borderThickness.left() + chunkJustifyOffset;
 				double advanceX = offsetX;
 				double advanceY = chunk.yt;
 
@@ -476,9 +483,15 @@ public class Paragraph implements Content, Cloneable
 
 					textOutput.println("%f %f Td <%s> Tj ", advanceX, advanceY, "%04X".formatted(style.getGlyphIndex(ch)));
 
-					advanceX = style.getAdvance(ch);
+					double characterAdvance = style.getAdvance(ch);
+					if (ch == ' ' && justifiedSpacesUsed < justifiedSpaces)
+					{
+						characterAdvance += justifiedSpace;
+						justifiedSpacesUsed++;
+					}
+					advanceX = characterAdvance;
 					advanceY = 0;
-					offsetX += advanceX;
+					offsetX += characterAdvance;
 					prev = curr;
 				}
 
@@ -531,22 +544,19 @@ public class Paragraph implements Content, Cloneable
 			return;
 		}
 
-		for (int i = 0; i < spans.size(); i++)
+		mSplitSpan = null;
+		for (Span span : spans)
 		{
-			if (spans.get(i).getText().contains("\n"))
+			if (span.getText() != null && !span.getText().isEmpty())
 			{
-				Span s = spans.remove(i);
-				int j = i;
-				for (String u : s.getText().split("\n"))
-				{
-					Span t = s.clone();
-					t.setText(u);
-					spans.add(j++, t);
-				}
+				mSplitSpan = span;
+				break;
 			}
 		}
 
 		double screenX = aBoundsLeft + mMargins.left();
+		boolean endedWithLineBreak = false;
+		boolean skipLeadingLineFeed = false;
 
 		for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
 		{
@@ -558,10 +568,46 @@ public class Paragraph implements Content, Cloneable
 				continue;
 			}
 
-			for (int charOffset = 0; charOffset < span.getText().length();)
+			int firstCharacterOffset = 0;
+			if (skipLeadingLineFeed)
 			{
+				if (span.getText().isEmpty())
+				{
+					continue;
+				}
+				if (span.getText().charAt(0) == '\n')
+				{
+					firstCharacterOffset = 1;
+				}
+				skipLeadingLineFeed = false;
+			}
+
+			for (int charOffset = firstCharacterOffset; charOffset < span.getText().length();)
+			{
+				char currentChar = span.getText().charAt(charOffset);
+				if (currentChar == '\n' || currentChar == '\r')
+				{
+					Insets styleMargins = style.getMargins(null);
+					Insets borderThickness = style.getBorderThickness(null);
+					double emptyLineHeight = styleMargins.vertical() + style.getLineHeight() + borderThickness.vertical();
+					currentRow.minimumHeight = Math.max(currentRow.minimumHeight, emptyLineHeight);
+					currentRow.minimumGap = Math.max(currentRow.minimumGap, style.getLineGap());
+					currentRow = new Row();
+					currentRow.minimumHeight = emptyLineHeight;
+					currentRow.minimumGap = style.getLineGap();
+					rows.add(currentRow);
+					screenX = aBoundsLeft + mMargins.left();
+					boolean followedByLineFeed = currentChar == '\r' && charOffset + 1 < span.getText().length() && span.getText().charAt(charOffset + 1) == '\n';
+					if (currentChar == '\r' && charOffset + 1 == span.getText().length())
+					{
+						skipLeadingLineFeed = startsWithLineFeed(spans, spanIndex + 1);
+					}
+					charOffset += followedByLineFeed ? 2 : 1;
+					endedWithLineBreak = true;
+					continue;
+				}
+
 				AtomicBoolean oBreakLine = new AtomicBoolean(false);
-				AtomicBoolean oLineEnd = new AtomicBoolean(false);
 				Insets borderThickness = style.getBorderThickness(null);
 
 				double x0 = screenX + borderThickness.left();
@@ -570,7 +616,15 @@ public class Paragraph implements Content, Cloneable
 
 				if (charLen == 0)
 				{
-					break;
+					if (!oBreakLine.get())
+					{
+						break;
+					}
+					currentRow.softWrapped = true;
+					currentRow = new Row();
+					rows.add(currentRow);
+					screenX = aBoundsLeft + mMargins.left();
+					continue;
 				}
 
 				if (charLen > 0)
@@ -597,11 +651,12 @@ public class Paragraph implements Content, Cloneable
 
 					chunk.x1 = screenX;
 					chunk.xt = bestX;
-					chunk.lineEnd = oLineEnd.get();
+					endedWithLineBreak = false;
 				}
 
 				if (oBreakLine.get())
 				{
+					currentRow.softWrapped = true;
 					screenX = aBoundsLeft + mMargins.left();
 					currentRow = new Row();
 					rows.add(currentRow);
@@ -609,7 +664,7 @@ public class Paragraph implements Content, Cloneable
 			}
 		}
 
-		if (rows.get(rows.size() - 1).isEmpty())
+		if (rows.get(rows.size() - 1).isEmpty() && !endedWithLineBreak)
 		{
 			rows.remove(rows.size() - 1);
 		}
@@ -622,9 +677,9 @@ public class Paragraph implements Content, Cloneable
 		{
 			Row row = mLayout.get(i);
 
-			double rowHeight = 0;
+			double rowHeight = row.minimumHeight;
 			double width = 0;
-			double gap = 0;
+			double gap = row.minimumGap;
 
 			if (i < mLayout.size() - 1)
 			{
@@ -646,6 +701,10 @@ public class Paragraph implements Content, Cloneable
 
 				width += chunk.x1 - chunk.x0;
 			}
+			if (row.isEmpty() && i < mLayout.size() - 1)
+			{
+				rowHeight += gap;
+			}
 
 			row.height = rowHeight;
 			mHeight += rowHeight;
@@ -656,33 +715,50 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
+	private static boolean startsWithLineFeed(ArrayList<Span> aSpans, int aStartIndex)
+	{
+		for (int i = aStartIndex; i < aSpans.size(); i++)
+		{
+			String text = aSpans.get(i).getText();
+			if (text != null && !text.isEmpty())
+			{
+				return text.charAt(0) == '\n';
+			}
+		}
+		return false;
+	}
+
+
 	private static int findSpanCutoff(Span aSpan, int aTextOffset, double aOffsetX, AtomicBoolean oBreakLine, double aLimitX, boolean aFirstWord)
 	{
 		int len = -1;
 
 		for (int i = 1, limit = aSpan.getText().length() - aTextOffset; i <= limit; i++)
 		{
+			char character = aSpan.getText().charAt(aTextOffset + i - 1);
+			if (character == '\n' || character == '\r')
+			{
+				return i - 1;
+			}
+
+			if (aOffsetX + aSpan.getStyle().measureText(aSpan.getText(), aTextOffset, i) > aLimitX)
+			{
+				oBreakLine.set(true);
+				if (len != -1)
+				{
+					return len;
+				}
+				return aFirstWord ? Math.max(1, i - 1) : 0;
+			}
+
+			if (character == ' ')
+			{
+				len = i;
+			}
+
 			if (i == limit)
 			{
 				return limit;
-			}
-
-			if (aOffsetX + aSpan.getStyle().measureText(aSpan.getText(), aTextOffset, i) >= aLimitX)
-			{
-				if (len == -1 && aFirstWord)
-				{
-					len = i - 1;
-				}
-				oBreakLine.set(true);
-				break;
-			}
-
-			char c = aSpan.getText().charAt(aTextOffset + i);
-
-//			if (c == ' ' || c == '-' || c == ',' || c == '.' || c == ':' || c == ';' || c == '/')
-			if (c == ' ')
-			{
-				len = i + 1;
 			}
 		}
 
@@ -690,9 +766,57 @@ public class Paragraph implements Content, Cloneable
 	}
 
 
+	private static int countJustifiableSpaces(Row aRow)
+	{
+		int count = 0;
+		boolean hasTextAfter = false;
+
+		for (int i = aRow.size() - 1; i >= 0; i--)
+		{
+			Chunk chunk = aRow.get(i);
+			String text = chunk.span.getText();
+			for (int j = chunk.offset + chunk.length - 1; j >= chunk.offset; j--)
+			{
+				char c = text.charAt(j);
+				if (c == ' ')
+				{
+					if (hasTextAfter)
+					{
+						count++;
+					}
+				}
+				else
+				{
+					hasTextAfter = true;
+				}
+			}
+		}
+
+		return count;
+	}
+
+
+	private static int countSpaces(Chunk aChunk)
+	{
+		int count = 0;
+		String text = aChunk.span.getText();
+		for (int i = aChunk.offset; i < aChunk.offset + aChunk.length; i++)
+		{
+			if (text.charAt(i) == ' ')
+			{
+				count++;
+			}
+		}
+		return count;
+	}
+
+
 	static class Row extends ArrayList<Chunk>
 	{
 		double height;
+		double minimumHeight;
+		double minimumGap;
+		boolean softWrapped;
 	}
 
 
@@ -708,7 +832,6 @@ public class Paragraph implements Content, Cloneable
 		int offset;
 		int length;
 		VerticalAlignment verticalAlignment;
-		boolean lineEnd;
 
 
 		public Chunk(double aX0, Span aSpan, int aOffset, int aLength, VerticalAlignment aVerticalAlignment)
@@ -724,7 +847,7 @@ public class Paragraph implements Content, Cloneable
 		@Override
 		public String toString()
 		{
-			return "Chunk{" + "x0=" + x0 + ", x1=" + x1 + ", y0=" + y0 + ", y1=" + y1 + ", xt=" + xt + ", yt=" + yt + ", offset=" + offset + ", length=" + length + ", verticalAlignment=" + verticalAlignment + ", lineEnd=" + lineEnd + '}';
+			return "Chunk{" + "x0=" + x0 + ", x1=" + x1 + ", y0=" + y0 + ", y1=" + y1 + ", xt=" + xt + ", yt=" + yt + ", offset=" + offset + ", length=" + length + ", verticalAlignment=" + verticalAlignment + '}';
 		}
 	}
 

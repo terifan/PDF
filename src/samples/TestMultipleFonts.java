@@ -47,10 +47,10 @@ public class TestMultipleFonts
 					page.registerFont(font0);
 					page.append("BT " + font0.getIdentity() + " 24 Tf 440 820 Td (layout sample) Tj ET\n");
 
-					page.append(new TextArea(70, 780, 550, 595, new Paragraph(style1, russian)));
-					page.append(new TextArea(70, 625, 300, 455, new Paragraph(style2, greek)));
-					page.append(new TextArea(70, 430, 300, 250, new Paragraph(style3, polish)));
-					page.append(new TextArea(330, 430, 550, 70, new Paragraph(style4, latvian)));
+					page.append(new TextArea(70, 780, 550, 595, new Paragraph(style1, russian).setAlignment(Alignment.JUSTIFY)));
+					page.append(new TextArea(70, 625, 300, 455, new Paragraph(style2, greek).setAlignment(Alignment.JUSTIFY)));
+					page.append(new TextArea(70, 430, 300, 250, new Paragraph(style3, polish).setAlignment(Alignment.JUSTIFY)));
+					page.append(new TextArea(330, 430, 550, 70, new Paragraph(style4, latvian).setAlignment(Alignment.JUSTIFY)));
 
 					page.append(new ImageArea(330, 625, 550, 465, image1));
 					page.append(new ImageArea(70, 250, 300, 70, image2));
@@ -58,7 +58,7 @@ public class TestMultipleFonts
 
 				try (Page page = pdf.addPage())
 				{
-					Paragraph paragraph = new Paragraph(style2, english);
+					Paragraph paragraph = new Paragraph(style2, english).setAlignment(Alignment.JUSTIFY);
 
 					page.append(new TextArea(70, 800, 290, 610, paragraph));
 					page.append(new TextArea(70, 610, 550, 70, paragraph));

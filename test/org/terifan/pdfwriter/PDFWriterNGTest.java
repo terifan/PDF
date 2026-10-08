@@ -5,12 +5,45 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 import org.testng.annotations.Test;
 import samples.TestMultipleFonts;
 
 
 public class PDFWriterNGTest
 {
+	@Test
+	public void testParagraphLineBreaksAndNarrowWrapping() throws IOException
+	{
+		Font font = new ExtendedFont(TestMultipleFonts.class.getResourceAsStream("resources/VendSans-Regular.ttf").readAllBytes());
+		Style style = new Style(font, 12).setLineGap(0.0);
+		String[] lineBreaks = {"\n", "\r", "\r\n", "\r\r", "\n\n", "\r\n\r\n"};
+		int[] expectedRows = {2, 2, 2, 3, 3, 3};
+		for (int i = 0; i < lineBreaks.length; i++)
+		{
+			Paragraph paragraph = new Paragraph(style, "first" + lineBreaks[i] + "second");
+			paragraph.layout(0, 200);
+			assertEquals(paragraph.getLayoutHeight(), style.getLineHeight() * expectedRows[i], 0.001, lineBreaks[i]);
+		}
+
+		Paragraph splitCrLf = new Paragraph(new Span(style, "first\r"), new Span(style, "\nsecond"));
+		splitCrLf.layout(0, 200);
+		assertEquals(splitCrLf.getLayoutHeight(), style.getLineHeight() * 2, 0.001);
+
+		Paragraph multiline = new Paragraph(style, "first\nsecond");
+		multiline.layout(0, 200);
+		assertTrue(multiline.getLayoutHeight() >= style.getLineHeight() * 2);
+
+		Paragraph trailingLine = new Paragraph(style, "first\n");
+		trailingLine.layout(0, 200);
+		assertTrue(trailingLine.getLayoutHeight() >= style.getLineHeight() * 2);
+
+		Paragraph narrow = new Paragraph(style, "WW");
+		narrow.layout(0, 0);
+		assertTrue(narrow.getLayoutHeight() >= style.getLineHeight() * 2);
+	}
+
+
 	@Test
 	public void testSomeMethod() throws IOException
 	{

@@ -5,7 +5,6 @@ import org.terifan.pdfwriter.Alignment;
 import org.terifan.pdfwriter.Color;
 import org.terifan.pdfwriter.ExtendedFont;
 import org.terifan.pdfwriter.Font;
-import org.terifan.pdfwriter.Insets;
 import org.terifan.pdfwriter.PDFWriter;
 import org.terifan.pdfwriter.Page;
 import org.terifan.pdfwriter.Paragraph;
