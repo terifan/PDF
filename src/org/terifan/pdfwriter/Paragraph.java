@@ -316,10 +316,23 @@ public class Paragraph implements Content, Cloneable
 						}
 						break;
 					}
+					case JUSTIFY:
+					{
+						// unsupported, use left alignment!
+
+						double adjust = aBoundsLeft - firstChunk.x0 + mMargins.left();
+						for (Chunk chunk : row)
+						{
+							chunk.x0 += adjust;
+							chunk.x1 += adjust;
+							chunk.xt += adjust;
+						}
+						break;
+					}
 					case SPLIT:
 					{
 						double adjust = aBoundsRight - lastChunk.xt - mMargins.right();
-						for (int i = row.size() / 2; i < row.size(); i++)
+						for (int i = 1; i < row.size(); i++)
 						{
 							Chunk chunk = row.get(i);
 							chunk.x0 += adjust;
