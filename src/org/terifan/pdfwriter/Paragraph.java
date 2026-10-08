@@ -277,11 +277,14 @@ public class Paragraph implements Content, Cloneable
 
 			if (mAlignment != null && !row.isEmpty())
 			{
+				Chunk firstChunk = row.get(0);
+				Chunk lastChunk = row.get(row.size() - 1);
+
 				switch (mAlignment)
 				{
 					case LEFT:
 					{
-						double adjust = aBoundsLeft - row.get(0).x0 + mMargins.left();
+						double adjust = aBoundsLeft - firstChunk.x0 + mMargins.left();
 						for (Chunk chunk : row)
 						{
 							chunk.x0 += adjust;
@@ -292,7 +295,7 @@ public class Paragraph implements Content, Cloneable
 					}
 					case CENTER:
 					{
-						double adjust = aBoundsLeft + aBoundsRight - row.get(0).x0 - row.get(row.size() - 1).xt;
+						double adjust = aBoundsLeft + aBoundsRight - firstChunk.x0 - lastChunk.xt;
 						adjust /= 2;
 						for (Chunk chunk : row)
 						{
@@ -304,8 +307,7 @@ public class Paragraph implements Content, Cloneable
 					}
 					case RIGHT:
 					{
-						double adjust = aBoundsRight - row.get(row.size() - 1).xt;
-						adjust -= mMargins.right();
+						double adjust = aBoundsRight - lastChunk.xt - mMargins.right();
 						for (Chunk chunk : row)
 						{
 							chunk.x0 += adjust;
@@ -316,8 +318,7 @@ public class Paragraph implements Content, Cloneable
 					}
 					case SPLIT:
 					{
-						double adjust = aBoundsRight - row.get(row.size() - 1).xt;
-						adjust -= mMargins.right();
+						double adjust = aBoundsRight - lastChunk.xt - mMargins.right();
 						for (int i = row.size() / 2; i < row.size(); i++)
 						{
 							Chunk chunk = row.get(i);
@@ -405,19 +406,17 @@ public class Paragraph implements Content, Cloneable
 				Insets borderThickness = style.getBorderThickness(null);
 
 				double rectX0 = chunk.x0;
-				double rectX1 = (row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1);
+				double rectX1 = row.indexOf(chunk) == row.size() - 1 ? chunk.xt : chunk.x1;
 
 				renderRectangle(style.getExtGState(), aPage, fillOutput, lineOutput, rectX0, Math.ceil(top), rectX1, (int)bot, style.getFillColor(), borderThickness, style.getBorderPattern(), style.getBorderColor());
 
 				if (style.getHighlightColor() != null)
 				{
-					double x1 = rectX1;
-
 					fillOutput.println("%s rg", style.getHighlightColor());
-					fillOutput.println("%f %f m", chunk.x0, chunk.yt + style.getAscent());
-					fillOutput.println("%f %f l", x1, chunk.yt + style.getAscent());
-					fillOutput.println("%f %f l", x1, chunk.yt + style.getDescent());
-					fillOutput.println("%f %f l", chunk.x0, chunk.yt + style.getDescent());
+					fillOutput.println("%f %f m", rectX0, chunk.yt + style.getAscent());
+					fillOutput.println("%f %f l", rectX1, chunk.yt + style.getAscent());
+					fillOutput.println("%f %f l", rectX1, chunk.yt + style.getDescent());
+					fillOutput.println("%f %f l", rectX0, chunk.yt + style.getDescent());
 					fillOutput.println("f");
 				}
 

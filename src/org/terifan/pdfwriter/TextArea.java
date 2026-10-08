@@ -138,7 +138,7 @@ public class TextArea implements Producer
 
 			for (Paragraph paragraph : mParagraphs)
 			{
-				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, boundsLeft + width);
+				boundsTop = paragraph.produce(aPDFWriter, content, aPage, boundsTop, boundsLeft, mBoundsBottom, mBoundsRight);
 			}
 
 //			content.println("Q");
