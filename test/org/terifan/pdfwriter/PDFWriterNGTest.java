@@ -41,6 +41,12 @@ public class PDFWriterNGTest
 		Paragraph narrow = new Paragraph(style, "WW");
 		narrow.layout(0, 0);
 		assertTrue(narrow.getLayoutHeight() >= style.getLineHeight() * 2);
+
+		double wordWidth = style.measureText("a", 0, 1);
+		double narrowWidth = wordWidth + style.getAdvance(' ') * 0.5;
+		Paragraph wrappedWords = new Paragraph(style, "a a");
+		wrappedWords.layout(0, narrowWidth);
+		assertEquals(wrappedWords.getLayoutHeight(), style.getLineHeight() * 2, 0.001);
 	}
 
 

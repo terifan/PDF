@@ -557,6 +557,7 @@ public class Paragraph implements Content, Cloneable
 		double screenX = aBoundsLeft + mMargins.left();
 		boolean endedWithLineBreak = false;
 		boolean skipLeadingLineFeed = false;
+		boolean skipLeadingSpaces = false;
 
 		for (int spanIndex = 0; spanIndex < spans.size(); spanIndex++)
 		{
@@ -585,6 +586,13 @@ public class Paragraph implements Content, Cloneable
 			for (int charOffset = firstCharacterOffset; charOffset < span.getText().length();)
 			{
 				char currentChar = span.getText().charAt(charOffset);
+				if (skipLeadingSpaces && currentRow.isEmpty() && currentChar == ' ')
+				{
+					charOffset++;
+					continue;
+				}
+				skipLeadingSpaces = false;
+
 				if (currentChar == '\n' || currentChar == '\r')
 				{
 					Insets styleMargins = style.getMargins(null);
@@ -624,6 +632,7 @@ public class Paragraph implements Content, Cloneable
 					currentRow = new Row();
 					rows.add(currentRow);
 					screenX = aBoundsLeft + mMargins.left();
+					skipLeadingSpaces = true;
 					continue;
 				}
 
@@ -660,6 +669,7 @@ public class Paragraph implements Content, Cloneable
 					screenX = aBoundsLeft + mMargins.left();
 					currentRow = new Row();
 					rows.add(currentRow);
+					skipLeadingSpaces = true;
 				}
 			}
 		}
